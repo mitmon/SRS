@@ -29,5 +29,7 @@ Depends:
     raster,
     rgdal,
     sjmisc,
+    sf,
+    sp,
     tidyverse
 RoxygenNote: 7.1.2

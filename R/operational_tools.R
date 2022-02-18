@@ -22,11 +22,11 @@ FFP <- function(inputFile){
 #' Load Raster
 #'
 #' Load raster into work space
-#' @param raster Location of input raster file
-#' @return Raster stack
+#' @param inputRaster Location of input raster file
+#' @return Raster
 #' @export
-loadRaster <-function(raster){
-    return(stack(raster))
+loadRaster <-function(inputRaster){
+    return(raster(inputRaster))
 }
 
 #' Shapefile (Vector file)
@@ -39,6 +39,37 @@ loadShapefile <-function(shapefile){
   return(shapefile(shapefile))
 }
 
+#' Write permanent data
+#'
+#' Write permanent data. This tool will write any data that is currently in
+#' the same folder as the input data.
+#' @param inputData Input data that needs to be saved
+#' @return Saves the input data to a folder location
+#' @export
+writePermData <- function(inputData, exportName){
+  exportLocation <-paste0(getwd(),"/")
+
+  if(class(inputData)[1] == "RasterLayer"){
+    writeRaster(inputData,
+                paste0(exportLocation,exportName),
+                format = "GTiff",
+                overwrite = TRUE)
+  }
+
+  else if(class(inputData)[1] == "RasterStack"){
+    writeRaster(inputData,
+                paste0(exportLocation,exportName),
+                format = "GTiff",
+                overwrite = TRUE)
+  }
+  else if(class(inputData)[1] == "SpatialPolygonsDataFrame"){
+    shapefile(inputData, paste0(exportLocation,exportName))
+  }
+  else {
+    stop("Error in writePermData Input data is not a raster stack, raster
+               layer, or shapefile.")}
+}
+
 #' Write temp data
 #'
 #' Write temporary data to temp folder for further processing
@@ -47,11 +78,11 @@ loadShapefile <-function(shapefile){
 #' @param tempName Temp name for the files
 #' @return Saves the input data to a temporary location
 #' @export
-writeTempData <- function(inputData, tempName){
-  tempLocation <-paste0(getwd(),"/data/temp/")
+writeTempData <- function(inputData, tempFolder, tempName){
+  tempLocation <-paste0(getwd(),"/data/temp/",tempFolder,"/")
 
   if(!file.exists(tempLocation)){
-    dir.create(paste0(tempLocation))
+    dir.create(tempLocation)
   }
 
   if(class(inputData)[1] == "RasterLayer"){
@@ -73,7 +104,6 @@ writeTempData <- function(inputData, tempName){
     stop("Error in writeTempData. Input data is not a raster stack, raster
                layer, or shapefile.")}
 }
-
 
 #' Erase temp data
 #'
@@ -130,15 +160,15 @@ batchMaskRaster <- function(inputFolder){
   listFiles <- lapply(listFiles,
                       function(x)
                         if(str_contains(x,".tif")){
-                          FFP(paste0("/data/default_data/test_data/",x))
+                          x
                         } else if(str_contains(x,".shp")){
-                          FFP(paste0("/data/default_data/test_data/",x))
+                          x
                         } else {
                           pass()
                         })
   listFiles <- compact(listFiles)
   # Get extents of the files
-  listFiles_extents <- lapply(listFiles,
+  listFiles_data <- lapply(listFiles,
                       function(x)
                         if(str_contains(x,".tif")){
                           loadRaster(FFP(paste0("/data/default_data/test_data/",x)))
@@ -148,19 +178,37 @@ batchMaskRaster <- function(inputFolder){
                           pass()
                         })
   # Get largest extent
-  listFiles_extents <- lapply(listFiles_extents, raster::extent)
+  listFiles_extents <- lapply(listFiles_data, raster::extent)
   do.call(raster::merge, listFiles_extents)
-  listFiles_extents <- st_as_sf(coords = c(xmin(listFiles_extents[[1]]),xmax(listFiles_extents[[1]]),
-                                           ymin(listFiles_extents[[1]]),ymax(listFiles_extents[[1]])))
-  # Mask files that are not part of the largest extent
-  for(i in 1:length(listFiles)){
-    tempFile <- FFP(paste0("/data/default_data/test_data/",listFiles[i]))
-    if(extent(tempFile) != listFiles_extents[[1]]){
-      return(mask(tempFile, mask = ))
-    }
 
+  # Get extents of the files
+  listFiles_data <- lapply(listFiles,
+                           function(x)
+                             if(str_contains(x,".tif")){
+                               loadRaster(FFP(paste0("/data/default_data/test_data/",x)))
+                             } else {
+                               pass()
+                             })
+  listFiles_data <- compact(listFiles_data)
+  # Create temporary Shape file with the bounding box of the largest file
+  xMax <- max(sapply(listFiles_extents, function(x) (xmax(x))))
+  yMax <- max(sapply(listFiles_extents, function(x) (ymax(x))))
+  xMin <- min(sapply(listFiles_extents, function(x) (xmin(x))))
+  yMin <- min(sapply(listFiles_extents, function(x) (ymin(x))))
+
+  # Create a raster with the coordinate for the largest extent
+  listFiles_raster <- raster()
+  values(listFiles_raster) <- 0
+  extent(listFiles_raster) <- c(xMin,xMax,yMin,yMax)
+  projection(listFiles_raster) <- CRS("+proj=longlat +datum=WGS84")
+
+  # Mask files that are not part of the largest extent
+  for(i in 1:length(listFiles_data)){
+    tempmask <- extend(listFiles_data[[i]],listFiles_raster)
+    writePermData(tempmask,paste0("data/default_data/test_data/masked_",names(tempmask)))
   }
-  print(paste0("Masked ", length(listFiles)," files."))
+
+  print(paste0("Masked ", length(listFiles_data)," files."))
 }
 
 #' Batch Crop Raster
@@ -177,57 +225,62 @@ batchCropRaster <- function(inputFolder,inputExtent){
   for(i in 1:length(listFiles)){
     # Determine if the input extent is a shape file, raster layer or
     # coordinates in EPSG4326/WGS84 format.
+    if(str_contains(listFiles[i],".tif")){
 
-    # Get temp file
-    tempFile <- loadRaster(paste0(inputFolder,"/",listFiles[i]))
-    # Get input extent type
-    inputExtentType <- 0
-    if(str_contains(inputExtent,".shp")){
-      inputExtentType <- 1
-    }
-    else if(str_contains(inputExtent,".tif")){
-      inputExtentType <- 2
-    }
-    else if(str_contains(inputExtent,"UDAOI")){
-      inputExtentType <- 3
-    } else {
-      inputExtentType <- NA
-    }
-
-    if(inputExtentType == 1){
-      # Load the shapefile
-      inputExtent <- loadShapefile(inputExtent)
-      # Run function for total number of crops
-      for(j in 1:length(inputExtent$Id)){
-        # Crop tempFile
-        tempcrop <- crop(tempFile,inputExtent[j,])
-        # Write the file to temp location
-        writeTempData(tempcrop,tempName = (paste0("temp_",j,"/",listFiles[i])))
+      # Get temp file
+      tempFile <- loadRaster(paste0(inputFolder,"/",listFiles[i]))
+      # Get input extent type
+      inputExtentType <- 0
+      if(str_contains(inputExtent,".shp")){
+        inputExtentType <- 1
       }
-    }
+      else if(str_contains(inputExtent,".tif")){
+        inputExtentType <- 2
+      }
+      else if(str_contains(inputExtent,"UDAOI")){
+        inputExtentType <- 3
+      } else {
+        inputExtentType <- NA
+      }
 
-    else if(inputExtentType == 2) {
-      # Load the raster file
-      inputExtent <- loadRaster(inputExtent)
-      # Crop tempFile
-      tempcrop <- crop(tempFile,inputExtent)
-      # Write the file to temp location
-        writeTempData(tempFile,tempName = (paste0("temp_",j,"/",listFiles[i])))
-    }
 
-    ######## Add this part in the future ########
+      if(inputExtentType == 1){
+        # Load the shapefile
+        inputExtentsf <- loadShapefile(inputExtent)
+        # Run function for total number of crops
+        for(j in 1:length(inputExtentsf$Id)){
+          # Crop tempFile
+          tempcrop <- crop(tempFile,inputExtentsf[j,])
+          # Write the file to temp location
+          writeTempData(tempcrop,paste0("temp_",j,"/"),tempName = (paste0(listFiles[i])))
+        }
+      }
 
-    # else if(inputExtentType == 3) {
-    #   # Load the raster file
-    #   inputExtent <- loadRaster(inputExtent)
-    #   # Crop tempFile
-    #   tempcrop <- crop(tempFile,inputExtent)
-    #   # Write the file to temp location
-    #   writeTempData(tempFile,tempName = (paste0("temp_",j,"/",listFiles[i])))
-    # }
-    else {
-      stop("Error in batch crop. Input data is not a raster stack, raster
-                 layer, or shapefile.")
+      else if(inputExtentType == 2) {
+        # Load the raster file
+        inputExtentr <- loadRaster(inputExtent)
+        # Crop tempFile
+        tempcrop <- crop(tempFile,inputExtentr)
+        # Write the file to temp location
+          writeTempData(tempFile,paste0("temp_",j,"/"),tempName = (paste0(listFiles[i])))
+      }
+
+      ######## Add this part in the future ########
+
+      # else if(inputExtentType == 3) {
+      #   # Load the raster file
+      #   inputExtent <- loadRaster(inputExtent)
+      #   # Crop tempFile
+      #   tempcrop <- crop(tempFile,inputExtent)
+      #   # Write the file to temp location
+      #   writeTempData(tempFile,tempName = (paste0("temp_",j,"/",listFiles[i])))
+      # }
+      else {
+        stop("Error in batch crop. Input data is not a raster stack, raster
+                   layer, or shapefile.")
+      }
+    } else {
+      next
     }
   }
 }
