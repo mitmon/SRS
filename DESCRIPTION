@@ -1,0 +1,33 @@
+Package: SRS.6.3.0
+Type: Package
+Title: Suitability Rating System Version 6
+Version: 6.3.0
+Author: Mitch Krafczek (AAFC)
+Maintainer: Mitch Krafczek <mitchell.krafczek@agr.gc.ca>
+Description: The suitability rating system is the 6th iteration of the Agriculture
+ and Agri-Foods land suitability rating system (https://sis.agr.gc.ca/cansis/publications/manuals/1995-lsrs/index.html). 
+ The original system was created in response to the number of concerns regarding 
+ the Canada Land Inventory (CLI). Namely, the following has been identified:
+    - Modifications of the CLI by several agencies had resulted in a variety of
+    non-comarable approaches in land capability rating across Canada. 
+    - The influence of climate on land suitability for crop production was not 
+    adequately taken into account
+    - Organic soils were not included
+    - Lack of specificity in definitions and application guidelines had led to 
+    inconsistent ratings among land rating practitioners.
+    The 6th version looks to expand on the previous versions, introducting raster 
+    data processing, open source based calculations, front facing client systems,
+    and back-end 'on-the-fly' data processing for user specific requirements.
+License: Open Government License - Canada, Her Majesty the Queen in right of Canada.
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    dplyr,
+    future,
+    parallel,
+    plyr,
+    raster,
+    rgdal,
+    sjmisc,
+    tidyverse
+RoxygenNote: 7.1.2
