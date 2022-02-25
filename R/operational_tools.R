@@ -1,6 +1,11 @@
 # Operational Tools
 
-# Data Management Tools
+# This library provides the operational tools for the suitability rating system.
+
+# Creation date: Feb 18, 2022
+# Last updated: Feb 24, 2022
+
+####################### Data Management Tools #######################
 
 #' Pass function
 #'
@@ -26,7 +31,7 @@ FFP <- function(inputFile){
 #' @return Raster
 #' @export
 loadRaster <-function(inputRaster){
-    return(raster(inputRaster))
+    return(stack(inputRaster))
 }
 
 #' Shapefile (Vector file)
@@ -46,28 +51,26 @@ loadShapefile <-function(shapefile){
 #' @param inputData Input data that needs to be saved
 #' @return Saves the input data to a folder location
 #' @export
-writePermData <- function(inputData, exportName){
-  exportLocation <-paste0(getwd(),"/")
+writePermData <- function(inputData, exportLocation, exportName, exportType){
 
-  if(class(inputData)[1] == "RasterLayer"){
+    if(!file.exists(exportLocation)){
+    dir.create(exportLocation)
+  }
+
+  if(class(inputData)[1] == "RasterLayer" || class(inputData)[1] == "RasterStack" || class(inputData)[1] == "RasterBrick"){
     writeRaster(inputData,
                 paste0(exportLocation,exportName),
-                format = "GTiff",
+                bandorder ='BIL',
+                format = exportType,
                 overwrite = TRUE)
   }
 
-  else if(class(inputData)[1] == "RasterStack"){
-    writeRaster(inputData,
-                paste0(exportLocation,exportName),
-                format = "GTiff",
-                overwrite = TRUE)
-  }
   else if(class(inputData)[1] == "SpatialPolygonsDataFrame"){
     shapefile(inputData, paste0(exportLocation,exportName))
   }
   else {
     stop("Error in writePermData Input data is not a raster stack, raster
-               layer, or shapefile.")}
+               layer, raster brick, or shapefile.")}
 }
 
 #' Write temp data
@@ -78,23 +81,18 @@ writePermData <- function(inputData, exportName){
 #' @param tempName Temp name for the files
 #' @return Saves the input data to a temporary location
 #' @export
-writeTempData <- function(inputData, tempFolder, tempName){
-  tempLocation <-paste0(getwd(),"/data/temp/",tempFolder,"/")
+writeTempData <- function(inputData, tempFolder, tempName, exportType){
+  tempLocation <- FFP(paste0("/data/temp/",tempFolder,"/"))
 
   if(!file.exists(tempLocation)){
     dir.create(tempLocation)
   }
 
-  if(class(inputData)[1] == "RasterLayer"){
+  if(class(inputData)[1] == "RasterLayer" || class(inputData)[1] == "RasterStack" || class(inputData)[1] == "RasterBrick"){
     writeRaster(inputData,
                 paste0(tempLocation,tempName),
-                format = "GTiff",
-                overwrite = TRUE)
-  }
-  else if(class(inputData)[1] == "RasterStack"){
-    writeRaster(inputData,
-                paste0(tempLocation,tempName),
-                format = "GTiff",
+                bandorder ='BIL',
+                format = exportType,
                 overwrite = TRUE)
   }
   else if(class(inputData)[1] == "SpatialPolygonsDataFrame"){
@@ -116,7 +114,61 @@ eraseTempData <- function(file){
   return(print(paste0("Successfully deleted: ", file)))
 }
 
-# Spatial Tools
+#' Soil texture
+#'
+#' Determine soil texture based on percentage silt and clay percentages. Future
+#' updates will reference soil lookup tables to best determine soil texture and
+#' type.
+#' @param siltPercent Percentage of silt in soil composition
+#' @param clayPercent Percentage of clay in soil composition
+#' @return The texture of the soil profile based on percent silt clay
+#' @export
+soilTexture <- function(siltPercent,clayPercent){
+  return((siltPercent + clayPercent))
+}
+
+#' Surface and subsurface average calculation
+#'
+#' Calculate the average surface value.
+#' @param divideDepth Depth that delineates the difference between surface and
+#' subsurface parameters. The depth is currently default to 60cm but the user can
+#' specify an alternative depth. Example, any layer less than 60cm deep is
+#' considered surface and any layer greater than 60cm is subsurface.
+#' @param inputRaster The input raster that will be used to determine the average
+#' surface and subsurface values.
+#' @return The average for the surface and subsurface along with average overall
+#' @export
+surfaceAndSubsurface <- function(divideDepth,inputRaster){
+
+  tempname <- names(inputRaster)
+  tempname <- str_split(tempname,"b")
+  baseRaster <- raster(inputRaster)
+
+  for(i in 3:length(tempname)){
+    if(as.numeric(tempname[[i]][2]) < divideDepth){
+      divide <- i + 2
+      break
+    }
+  }
+
+  inputRaster <- as.data.frame(inputRaster, xy = TRUE, na.rm = FALSE)
+
+  inputRaster$surface <- rowMeans(inputRaster[,c(3:divide)])
+  inputRaster$subsurface <- rowMeans(inputRaster[,c(divide:(ncol(inputRaster)-2))])
+  inputRaster$all <- rowMeans(inputRaster[,c(3:ncol(inputRaster))])
+
+  tempstack <- stack()
+
+  for(i in (ncol(inputRaster)-2):ncol(inputRaster)){
+    values(baseRaster) <- inputRaster[,i]
+    tempstack <- stack(tempstack,baseRaster)
+  }
+
+  return(tempstack)
+
+}
+
+####################### Spatial Tools #######################
 
 #' Reproject input data
 #'
@@ -145,15 +197,95 @@ reprojectFile <- function(inputFile,projection){
 
 #' Batch Mask Raster
 #'
+#' Batch mask an array of input files.
+#' ** This tool is meant to be used to mask dead space around two images. This
+#' tool helps with issues of miss-aligned input files by filling the extra space
+#' in the larger of the two input files with with NA data.**
+#' @param requiredDataArray
+#' @param inputFolder Input file array.
+#' @param exportFolder Export folder. Location where data is saved.
+#' @return Masked input file
+#' @export
+batchMaskRaster <- function(requiredDataArray, inputFolder, exportFolder){
+
+  # Load files in folder
+  listFiles <- list.files(inputFolder)
+  # Get only required .tif files
+  listFiles <- listFiles[listFiles %in% requiredDataArray]
+  # Get extents of the files
+  listFiles_data <- lapply(listFiles,
+                           function(x)
+                             if(str_contains(x,".tif")){
+                               loadRaster(FFP(paste0("/data/default_data/test_data/",x)))
+                             } else if(str_contains(x,".shp")){
+                               loadShapefile(FFP(paste0("/data/default_data/test_data/",x)))
+                             } else {
+                               pass()
+                             })
+  # Get largest extent
+  listFiles_extents <- lapply(listFiles_data, raster::extent)
+  do.call(raster::merge, listFiles_extents)
+
+  # Get extents of the files
+  listFiles_data <- lapply(listFiles,
+                           function(x)
+                             if(str_contains(x,".tif")){
+                               loadRaster(FFP(paste0("/data/default_data/test_data/",x)))
+                             } else {
+                               pass()
+                             })
+  listFiles_data <- compact(listFiles_data)
+
+  # Reproject files so they are all the same extent
+  for(i in 1:length(listFiles_data)){
+    replace(listFiles_data,i,reprojectFile(listFiles_data[[i]],"WGS84"))
+  }
+
+  # Create temporary Shape file with the bounding box of the largest file
+  xMax <- max(sapply(listFiles_extents, function(x) (xmax(x))))
+  yMax <- max(sapply(listFiles_extents, function(x) (ymax(x))))
+  xMin <- min(sapply(listFiles_extents, function(x) (xmin(x))))
+  yMin <- min(sapply(listFiles_extents, function(x) (ymin(x))))
+
+  # Create a raster with the coordinate for the largest extent
+  listFiles_raster <- raster()
+  values(listFiles_raster) <- 0
+  extent(listFiles_raster) <- c(xMin,xMax,yMin,yMax)
+  projection(listFiles_raster) <- CRS("+proj=longlat +datum=WGS84")
+
+  listFilesNew <- c()
+
+  for(i in 1: length(listFiles)){
+    if(str_contains(listFiles[i],".tif")){
+      listFilesNew <- c(listFilesNew, listFiles[i])
+    } else {
+      next
+    }
+  }
+
+  listFiles <- listFilesNew
+
+  # Mask files that are not part of the largest extent
+  for(i in 1:length(listFiles_data)){
+    tempmask <- extend(listFiles_data[[i]],listFiles_raster)
+    tempname <- listFiles[i]
+    writePermData(tempmask,FFP(paste0(exportFolder)),paste0("masked_",tempname),'raster')
+  }
+
+  print(paste0("Masked ", length(listFiles_data)," files."))
+}
+
+#' Batch Mask Folder
+#'
 #' Batch mask a folder of files.
 #' ** This tool is meant to be used to mask dead space around two images. This
 #' tool helps with issues of miss-aligned input files by filling the extra space
 #' in the larger of the two input files with with NA data.**
-#' @param inputFolder
-#' @param inputExtent Extent to mask to. Input is a shape file or raster
+#' @param inputFolder Input folder
+#' @param exportFolder Export folder. Location where data is saved.
 #' @return Masked input file
 #' @export
-batchMaskRaster <- function(inputFolder){
+batchMaskFolder <- function(inputFolder, exportFolder){
 
   listFiles <- list.files(inputFolder)
   # Get only .tif and .shp files
@@ -190,6 +322,12 @@ batchMaskRaster <- function(inputFolder){
                                pass()
                              })
   listFiles_data <- compact(listFiles_data)
+
+  # Reproject files so they are all the same extent
+  for(i in 1:length(listFiles_data)){
+    replace(listFiles_data,i,reprojectFile(listFiles_data[[i]],"WGS84"))
+  }
+
   # Create temporary Shape file with the bounding box of the largest file
   xMax <- max(sapply(listFiles_extents, function(x) (xmax(x))))
   yMax <- max(sapply(listFiles_extents, function(x) (ymax(x))))
@@ -205,7 +343,7 @@ batchMaskRaster <- function(inputFolder){
   # Mask files that are not part of the largest extent
   for(i in 1:length(listFiles_data)){
     tempmask <- extend(listFiles_data[[i]],listFiles_raster)
-    writePermData(tempmask,paste0("data/default_data/test_data/masked_",names(tempmask)))
+    writePermData(tempmask,FFP(paste0(exportFolder)),paste0("masked_",names(tempmask)), 'raster')
   }
 
   print(paste0("Masked ", length(listFiles_data)," files."))
@@ -220,29 +358,29 @@ batchMaskRaster <- function(inputFolder){
 #' @export
 batchCropRaster <- function(inputFolder,inputExtent){
 
+  # Get input extent type
+  inputExtentType <- 0
+  if(str_contains(inputExtent,".shp")){
+    inputExtentType <- 1
+  }
+  else if(str_contains(inputExtent,".tif")){
+    inputExtentType <- 2
+  }
+  else if(str_contains(inputExtent,"UDAOI")){
+    inputExtentType <- 3
+  } else {
+    inputExtentType <- NA
+  }
+
   listFiles <- list.files(inputFolder)
 
   for(i in 1:length(listFiles)){
     # Determine if the input extent is a shape file, raster layer or
     # coordinates in EPSG4326/WGS84 format.
-    if(str_contains(listFiles[i],".tif")){
+    if(str_contains(listFiles[i],".tif") || str_contains(listFiles[i],".gri")){
 
       # Get temp file
       tempFile <- loadRaster(paste0(inputFolder,"/",listFiles[i]))
-      # Get input extent type
-      inputExtentType <- 0
-      if(str_contains(inputExtent,".shp")){
-        inputExtentType <- 1
-      }
-      else if(str_contains(inputExtent,".tif")){
-        inputExtentType <- 2
-      }
-      else if(str_contains(inputExtent,"UDAOI")){
-        inputExtentType <- 3
-      } else {
-        inputExtentType <- NA
-      }
-
 
       if(inputExtentType == 1){
         # Load the shapefile
