@@ -3,7 +3,7 @@
 # This library contains the soil index parameters.
 
 # Creation date: Feb 23, 2022
-# Last updated: Feb 23, 2022
+# Last updated: Feb 28, 2022
 
 #' Soil Moisture deduction
 #'
@@ -19,7 +19,7 @@
 #' the study site.
 #' @return Deduction points for the basic climate rating.
 #' @export
-soilMoistureDeduction <- function(ratingTableArray,ppe,siltPercent,clayPercent){
-  texture <- soilTexture(siltPercent,clayPercent)
-
-}
+# soilMoistureDeduction <- function(ratingTableArray,ppe,siltPercent,clayPercent){
+#   texture <- soilTexture(siltPercent,clayPercent)
+#
+# }

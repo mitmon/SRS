@@ -45,15 +45,6 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
   # Get files in temp folder
   for(i in 1:(length(list.files(FFP(paste0("/data/temp/"))))-1)){
     tempListFiles <- list.files(FFP(paste0("/data/temp/temp_",i)))
-    # tempListFilesNew <- c()
-    # for(m in 1:length(tempListFiles)){
-    #   for(n in 1:length(requiredDataArray)){
-    #     if(str_contains(tempListFiles[m],requiredDataArray[n])){
-    #       tempListFilesNew <- c(tempListFilesNew, tempListFiles[m])
-    #     }
-    #   }
-    # }
-    # tempListFiles <- tempListFilesNew
 
     for(j in 1:(length(tempListFiles))){
 
@@ -61,7 +52,7 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
       # user request. Call the surface and subsurface function and appending
       # results to the input raster.
       if(index == "soil"){
-        if(j ==1){
+        if(j == 1){
           tempRasterStack <- surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
       } else {
         tempRasterStack <- stack(tempRasterStack,surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))))
@@ -73,7 +64,19 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
         tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
       }
     }
-  }
+
+    # 3b. Save the input files name for later when loading data again. The
+    # column names will be used later.
+    if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/processOrder.txt")))){
+      fileLocation <- FFP(paste0("/data/temp/temp_",i,"/processOrder.txt"))
+      file.create(fileLocation)
+      writeLines(tempListFiles[[j]],fileLocation)
+    } else {
+      fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/processOrder.txt")))
+      fileDataTemp <- readLines(fileLocation)
+      writeLines(paste0(fileDataTemp,",",tempListFiles[[j]]),fileLocation)
+    }
+      }
     # Save temporary raster table file
     writePermData(tempRasterStack, FFP(paste0('/data/temp/temp_',i,'/')), paste0('table_temp_',i),'GTiff')
   }

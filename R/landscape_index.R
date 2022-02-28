@@ -3,7 +3,7 @@
 # This library contains the landscape index parameters.
 
 # Creation date: Feb 23, 2022
-# Last updated: Feb 24, 2022
+# Last updated: Feb 28, 2022
 
 #' Basic landscape rating
 #'
@@ -13,7 +13,7 @@
 #' @param slopeLength Slope length based on LS calculation.
 #' @param temperatureFactor Input effective growing degree days or crop heat units for
 #' the study site.
-#' @return Deduction points for the basic climate rating.
+#' @return Deduction points for the basic landscape rating.
 #' @export
 basicLandscapeRating <- function(slopePercent,slopeLength){
   if(is.na(slopePercent) || is.na(slopeLength)){
@@ -29,7 +29,7 @@ basicLandscapeRating <- function(slopePercent,slopeLength){
   } else {
     pointDeduct <- 0
   }
-  return(pointDeduct)
+  return(100 - pointDeduct)
 }
 
 #' Interim landscape rating
@@ -64,3 +64,33 @@ interimLandscapeRating <- function(surfaceStoniness,coarseFragment,woodContent){
   }
   return(pointDeduct)
 }
+
+#' Landscape rating
+#'
+#' The landscape rating calculates the rating class for the landscape index.
+#' @param basicLandscape Basic landscape rating calculated
+#' @param coarseFragmentModifications Coarse fragment modifications.
+#' @param otherModifiers Other modifying factors such as pattern and flooding.
+#' @return The landscape rating.
+#' @export
+landscapeRating <- function(basicLandscape, coarseFragmentModifications, otherModifiers){
+
+  # Basic landscape rating is lower of moisture component and temperature factor.
+  # The basicLandscapeRating function returns the minimum of the two so no further
+  # calculations are required.
+  a <- basicLandscape
+  # Coarse fragment modifications is a percentage deduction modifier for the
+  # interim landscape rating function. The CFM uses stoniness (cubic m / ha),
+  # coarse fragments (% vol / ha), wood content (% by volume).
+  b <- a * (coarseFragmentModifications / 100)
+  c <- a - b
+  # Other modifiers is the percentage deduction for pattern and flooding.
+  d <- c * (otherModifiers / 100)
+  # landscape rating
+  rating <- (a - b - d)
+  rating[rating < 0] <- 0
+  rating[rating > 100] <- 100
+  return(rating)
+
+}
+
