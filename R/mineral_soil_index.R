@@ -139,31 +139,27 @@ mineralSoilMoistureDeduction <- function(ppe,surfaceSiltPercent,surfaceClayPerce
   } else {
     WTA <- waterTableAdjustmentDF()
     bounds <- WTA[1,]
-    for(i in 1:length(bounds)){
-      if(texture < bounds[3]){
-        tempcol <- 2
-      } else if(texture < bounds[4]){
-        tempcol <- 3
-      } else {
-        tempcol <- 4
-      }
+    if(texture < bounds[3]){
+      tempcol <- 2
+    } else if(texture < bounds[4]){
+      tempcol <- 3
+    } else {
+      tempcol <- 4
     }
     tempcol <- WTA[,tempcol]
     bounds <- WTA[,1]
-    for(i in 1:length(bounds)){
-      if(waterTableDepth < bounds[3]){
-        WTAPointDeduct <- tempcol[2]
-      } else if(waterTableDepth < bounds[4]){
-        WTAPointDeduct <- tempcol[3]
-      } else if(waterTableDepth < bounds[5]){
-        WTAPointDeduct <- tempcol[4]
-      } else if(waterTableDepth < bounds[6]){
-        WTAPointDeduct <- tempcol[5]
-      } else if(waterTableDepth < bounds[7]){
-        WTAPointDeduct <- tempcol[6]
-      } else {
-        WTAPointDeduct <- tempcol[7]
-      }
+    if(waterTableDepth < bounds[3]){
+      WTAPointDeduct <- tempcol[2]
+    } else if(waterTableDepth < bounds[4]){
+      WTAPointDeduct <- tempcol[3]
+    } else if(waterTableDepth < bounds[5]){
+      WTAPointDeduct <- tempcol[4]
+    } else if(waterTableDepth < bounds[6]){
+      WTAPointDeduct <- tempcol[5]
+    } else if(waterTableDepth < bounds[7]){
+      WTAPointDeduct <- tempcol[6]
+    } else {
+      WTAPointDeduct <- tempcol[7]
     }
   }
 
@@ -351,55 +347,51 @@ basicSoilRating <- function(subsurfaceSiltPercent,subsurfaceClayPercent,subsurfa
     texture <- soilTexture(subsurfaceSiltPercent,subsurfaceClayPercent)
     subSCDF <- subsurfaceSCDF()
     bounds <- subSCDF[1,]
-    for(i in 1:length(bounds)){
-      if(texture < bounds[3]){
-        tempcol <- 2
-      } else if(texture < bounds[4]){
-        tempcol <- 3
-      } else if(texture < bounds[5]){
-        tempcol <- 4
-      } else if(texture < bounds[6]){
-        tempcol <- 5
-      } else if(texture < bounds[7]){
-        tempcol <- 6
-      } else if(texture < bounds[8]){
-        tempcol <- 7
-      } else if(texture < bounds[9]){
-        tempcol <- 8
-      } else if(texture < bounds[10]){
-        tempcol <- 9
-      } else if(texture < bounds[11]){
-        tempcol <- 10
-      } else {
-        tempcol <- 11
-      }
+    if(texture < bounds[3]){
+      tempcol <- 2
+    } else if(texture < bounds[4]){
+      tempcol <- 3
+    } else if(texture < bounds[5]){
+      tempcol <- 4
+    } else if(texture < bounds[6]){
+      tempcol <- 5
+    } else if(texture < bounds[7]){
+      tempcol <- 6
+    } else if(texture < bounds[8]){
+      tempcol <- 7
+    } else if(texture < bounds[9]){
+      tempcol <- 8
+    } else if(texture < bounds[10]){
+      tempcol <- 9
+    } else if(texture < bounds[11]){
+      tempcol <- 10
+    } else {
+      tempcol <- 11
     }
     tempcol <- subSCDF[,tempcol]
     bounds <- subSCDF[,1]
-    for(i in 1:length(subSCDF)){
-      if(subsurfaceBulkDensity < bounds[3]){
-        DPointDeduct <- tempcol[2]
-      } else if(subsurfaceBulkDensity < bounds[4]){
-        DPointDeduct <- tempcol[3]
-      } else if(subsurfaceBulkDensity < bounds[5]){
-        DPointDeduct <- tempcol[4]
-      } else if(subsurfaceBulkDensity < bounds[6]){
-        DPointDeduct <- tempcol[5]
-      } else if(subsurfaceBulkDensity < bounds[7]){
-        DPointDeduct <- tempcol[6]
-      } else if(subsurfaceBulkDensity < bounds[8]){
-        DPointDeduct <- tempcol[7]
-      } else if(subsurfaceBulkDensity < bounds[9]){
-        DPointDeduct <- tempcol[8]
-      } else if(subsurfaceBulkDensity < bounds[10]){
-        DPointDeduct <- tempcol[9]
-      } else if(subsurfaceBulkDensity < bounds[11]){
-        DPointDeduct <- tempcol[10]
-      } else if(subsurfaceBulkDensity < bounds[12]){
-        DPointDeduct <- tempcol[11]
-      } else {
-        DPointDeduct <- tempcol[12]
-      }
+    if(subsurfaceBulkDensity < bounds[3]){
+      DPointDeduct <- tempcol[2]
+    } else if(subsurfaceBulkDensity < bounds[4]){
+      DPointDeduct <- tempcol[3]
+    } else if(subsurfaceBulkDensity < bounds[5]){
+      DPointDeduct <- tempcol[4]
+    } else if(subsurfaceBulkDensity < bounds[6]){
+      DPointDeduct <- tempcol[5]
+    } else if(subsurfaceBulkDensity < bounds[7]){
+      DPointDeduct <- tempcol[6]
+    } else if(subsurfaceBulkDensity < bounds[8]){
+      DPointDeduct <- tempcol[7]
+    } else if(subsurfaceBulkDensity < bounds[9]){
+      DPointDeduct <- tempcol[8]
+    } else if(subsurfaceBulkDensity < bounds[10]){
+      DPointDeduct <- tempcol[9]
+    } else if(subsurfaceBulkDensity < bounds[11]){
+      DPointDeduct <- tempcol[10]
+    } else if(subsurfaceBulkDensity < bounds[12]){
+      DPointDeduct <- tempcol[11]
+    } else {
+      DPointDeduct <- tempcol[12]
     }
   }
 
@@ -409,29 +401,25 @@ basicSoilRating <- function(subsurfaceSiltPercent,subsurfaceClayPercent,subsurfa
   } else {
     subIDF <- subsurfaceImpedingDF()
     bounds <- subSCDF[1,]
-    for(i in 1:length(bounds)){
-      if(ppe > bounds[3]){
-        tempcol <- 2
-      } else if(ppe > bounds[4]){
-        tempcol <- 3
-      } else {
-        tempcol <- 4
-      }
+    if(ppe > bounds[3]){
+      tempcol <- 2
+    } else if(ppe > bounds[4]){
+      tempcol <- 3
+    } else {
+      tempcol <- 4
     }
     tempcol <- subIDF[,tempcol]
     bounds <- subIDF[,1]
-    for(i in 1:length(subIDF)){
-      if(impedingLayerDepth < bounds[3]){
-        ImpedingPercentDeduct <- tempcol[2]
-      } else if(impedingLayerDepth < bounds[4]){
-        ImpedingPercentDeduct <- tempcol[3]
-      } else if(impedingLayerDepth < bounds[5]){
-        ImpedingPercentDeduct <- tempcol[4]
-      } else if(impedingLayerDepth < bounds[6]){
-        ImpedingPercentDeduct <- tempcol[5]
-      } else {
-        DPointDeduct <- tempcol[6]
-      }
+    if(impedingLayerDepth < bounds[3]){
+      ImpedingPercentDeduct <- tempcol[2]
+    } else if(impedingLayerDepth < bounds[4]){
+      ImpedingPercentDeduct <- tempcol[3]
+    } else if(impedingLayerDepth < bounds[5]){
+      ImpedingPercentDeduct <- tempcol[4]
+    } else if(impedingLayerDepth < bounds[6]){
+      ImpedingPercentDeduct <- tempcol[5]
+    } else {
+      DPointDeduct <- tempcol[6]
     }
   }
 
