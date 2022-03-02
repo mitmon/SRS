@@ -3,7 +3,22 @@
 # This library contains the landscape index parameters.
 
 # Creation date: Feb 23, 2022
-# Last updated: Feb 28, 2022
+# Last updated: Mar 02, 2022
+
+#' Landscape Index Main
+#'
+#' The landscape index main calls all required function and produces the rating
+#' for landscape over the study site.
+#' @return Landscape rating
+#' @export
+landscapeIndexMain %<-% function(slopePercent,slopeLength,surfaceStoniness, coarseFragment, woodContent){
+
+  one <- basicLandscapeRating(slopePercent,slopeLength)
+  two <- interimLandscapeRating(surfaceStoniness,coarseFragment,woodContent)
+  three <- 0
+  return(climateRating(one,two,three))
+
+}
 
 #' Basic landscape rating
 #'

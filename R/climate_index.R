@@ -3,13 +3,13 @@
 # This library contains the climate index parameters.
 
 # Creation date: Feb 23, 2022
-# Last updated: Feb 23, 2022
+# Last updated: Mar 02, 2022
 
 #' Climate Index Main
 #'
 #' The climate index main calls all required function and produces the rating
 #' for climate over the study site.
-#' @param ratingTableArray Rating table lower and upper bounds for deduction.
+#' @param ratingTableArrayMC Rating table lower and upper bounds for deduction for the moisture component.
 #' @param ppe Precipitation minus potential evapotranspiration
 #' @param temperatureFactor Input effective growing degree days or crop heat
 #' units for the study site.
@@ -19,7 +19,11 @@
 #' if the crop uses crop heat units (CHU) use CHU.
 #' @return Deduction points for the basic climate rating.
 #' @export
-climateIndexMain <- function(ratingTableArray, ppe, temperatureFactor, ppeSpring, ppeFall, type){
+climateIndexMain %<-% function(ratingTableArrayMC,ratingTableArrayESM,ratingTableArrayEFM, ppe, temperatureFactor, ppeSpring, ppeFall, type){
+
+  one <- basicClimateRating(ratingTableArrayMC,ppe,temperatureFactor,type)
+  two <- climateModifyingFactors(ratingTableArrayESM,ratingTableArrayEFM, ppeSpring, ppeFall)
+  return(climateRating(one,two))
 
 }
 
@@ -29,7 +33,7 @@ climateIndexMain <- function(ratingTableArray, ppe, temperatureFactor, ppeSpring
 #' The basic climate rating is a designed to return the point deduction
 #' for the moisture component and temperature factors. The max deduction is
 #' taken for between the moisture factor and the temperature factor.
-#' @param ratingTableArray Rating table lower and upper bounds for deduction.
+#' @param ratingTableArrayMC Rating table lower and upper bounds for deduction for the moisture component.
 #' @param ppe Precipitation minus potential evapotranspiration
 #' @param temperatureFactor Input effective growing degree days or crop heat units for
 #' the study site.
@@ -37,15 +41,15 @@ climateIndexMain <- function(ratingTableArray, ppe, temperatureFactor, ppeSpring
 #' if the crop uses crop heat units (CHU) use CHU.
 #' @return Deduction points for the basic climate rating.
 #' @export
-basicClimateRating <- function(ratingTableArray,ppe,temperatureFactor,type){
+basicClimateRating <- function(ratingTableArrayMC,ppe,temperatureFactor,type){
 
-  moistureFactor <- moistureComponent(ratingTableArray[1], ppe)
+  moistureFactor <- moistureComponent(ratingTableArrayMC[1], ppe)
 
   # Need to determine if it's EGDD or CHU
   if(type == "EGDD"){
-    temperatureFactor <- egddComponent(ratingTableArray[2], temperatureFactor)
+    temperatureFactor <- egddComponent(ratingTableArrayMC[2], temperatureFactor)
   } else if(type == "CHU"){
-    temperatureFactor <- chuComponent(ratingTableArray[2],temperatureFactor)
+    temperatureFactor <- chuComponent(ratingTableArrayMC[2],temperatureFactor)
   } else {
     stop("Error determining if the crop uses effective growing degree days or
          crop heat units. Please specify EGDD or CHU")
@@ -60,12 +64,13 @@ basicClimateRating <- function(ratingTableArray,ppe,temperatureFactor,type){
 #' The climate modifying factors is a designed to return the percentage deduction
 #' for early spring moisture, excess fall moisture, and early fall frost. Max
 #' deduction for each modifying factor is limited to 10% max modification.
-#' @param ratingTableArray Rating table lower and upper bounds for deduction.
+#' @param ratingTableArrayESM Rating table lower and upper bounds for deduction for ESM.
+#' @param ratingTableArrayEFM Rating table lower and upper bounds for deduction for EFM.
 #' @param ppeSpring Precipitation minus potential evapotranspiration for spring
 #' @param ppeFall Precipitation minus potential evapotranspiration for fall
 #' @return
 #' @export
-climateModifyingFactors <- function(ratingTableArray, ppeSpring, ppeFall){
+climateModifyingFactors <- function(ratingTableArrayESM,ratingTableArrayEFM, ppeSpring, ppeFall){
 
   # Early spring moisture
   esm <- esmComponent(ratingTableArray, ppeSpring)
