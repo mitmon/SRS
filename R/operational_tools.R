@@ -31,7 +31,7 @@ FFP <- function(inputFile){
 #' @return Raster
 #' @export
 loadRaster <-function(inputRaster){
-    return(stack(inputRaster))
+  return(stack(inputRaster))
 }
 
 #' Shapefile (Vector file)
@@ -53,7 +53,7 @@ loadShapefile <-function(shapefile){
 #' @export
 writePermData <- function(inputData, exportLocation, exportName, exportType){
 
-    if(!file.exists(exportLocation)){
+  if(!file.exists(exportLocation)){
     dir.create(exportLocation)
   }
 
@@ -216,9 +216,9 @@ batchMaskRaster <- function(requiredDataArray, inputFolder, exportFolder){
   listFiles_data <- lapply(listFiles,
                            function(x)
                              if(str_contains(x,".tif")){
-                               loadRaster(FFP(paste0("/data/default_data/test_data/",x)))
+                               loadRaster(paste0(inputFolder,x))
                              } else if(str_contains(x,".shp")){
-                               loadShapefile(FFP(paste0("/data/default_data/test_data/",x)))
+                               loadShapefile(paste0(inputFolder,x))
                              } else {
                                pass()
                              })
@@ -230,7 +230,7 @@ batchMaskRaster <- function(requiredDataArray, inputFolder, exportFolder){
   listFiles_data <- lapply(listFiles,
                            function(x)
                              if(str_contains(x,".tif")){
-                               loadRaster(FFP(paste0("/data/default_data/test_data/",x)))
+                               loadRaster(paste0(inputFolder,x))
                              } else {
                                pass()
                              })
@@ -267,9 +267,9 @@ batchMaskRaster <- function(requiredDataArray, inputFolder, exportFolder){
 
   # Mask files that are not part of the largest extent
   for(i in 1:length(listFiles_data)){
-    tempmask <- extend(listFiles_data[[i]],listFiles_raster)
+    tempmask <- extend(stack(listFiles_data[[i]]),listFiles_raster)
     tempname <- listFiles[i]
-    writePermData(tempmask,FFP(paste0(exportFolder)),paste0("masked_",tempname),'raster')
+    writePermData(tempmask,paste0(exportFolder),paste0("masked_",tempname),'raster')
   }
 
   print(paste0("Masked ", length(listFiles_data)," files."))
@@ -301,14 +301,14 @@ batchMaskFolder <- function(inputFolder, exportFolder){
   listFiles <- compact(listFiles)
   # Get extents of the files
   listFiles_data <- lapply(listFiles,
-                      function(x)
-                        if(str_contains(x,".tif")){
-                          loadRaster(FFP(paste0("/data/default_data/test_data/",x)))
-                        } else if(str_contains(x,".shp")){
-                          loadShapefile(FFP(paste0("/data/default_data/test_data/",x)))
-                        } else {
-                          pass()
-                        })
+                           function(x)
+                             if(str_contains(x,".tif")){
+                               loadRaster(FFP(paste0("/data/default_data/test_data/",x)))
+                             } else if(str_contains(x,".shp")){
+                               loadShapefile(FFP(paste0("/data/default_data/test_data/",x)))
+                             } else {
+                               pass()
+                             })
   # Get largest extent
   listFiles_extents <- lapply(listFiles_data, raster::extent)
   do.call(raster::merge, listFiles_extents)
@@ -400,7 +400,7 @@ batchCropRaster <- function(inputFolder,inputExtent){
         # Crop tempFile
         tempcrop <- crop(tempFile,inputExtentr)
         # Write the file to temp location
-          writeTempData(tempFile,paste0("temp_",j,"/"),tempName = (paste0(listFiles[i])))
+        writeTempData(tempFile,paste0("temp_",j,"/"),tempName = (paste0(listFiles[i])))
       }
 
       ######## Add this part in the future ########
@@ -422,4 +422,3 @@ batchCropRaster <- function(inputFolder,inputExtent){
     }
   }
 }
-

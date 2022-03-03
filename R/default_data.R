@@ -80,7 +80,7 @@ depthOfTopSoilDF <- function(){
                c(0,5,10,15,20)))
 }
 
-#' Surface reaction (pH) data table
+#' Surface mineral reaction (pH) data table
 #'
 #' The surface reaction (pH) data table
 #' @return Surface reaction (pH) data table
@@ -91,7 +91,7 @@ surfaceReactionDF <- function(){
                c(60,20,5,0,5,15,30,55,80)))
 }
 
-#' Surface salinity data table
+#' Surface mineral salinity data table
 #'
 #' The surface salinity (dS/m) data table
 #' @return Surface salinity (dS/m) data table
@@ -162,7 +162,7 @@ surfaceWSADF <- function(){
 
 #' Water supplying ability data frame
 #'
-#' The subsurface water supplying ability aid determines the soils ability to retain and supply water to plants.
+#' The subsurface water supplying ability helps determine the soils ability to retain and supply water to plants.
 #' @return The subsurface water supplying ability data frame
 #' @export
 subsurfaceWSADF <- function(){
@@ -176,4 +176,48 @@ subsurfaceWSADF <- function(){
                c(0.18,100,100,90,70,45,20),
                c(0.20,100,100,95,80,60,30),
                c(0.22,100,100,95,90,70,50)))
+}
+
+#' Organic structure and consistence data frame
+#'
+#' The organic structure and consistence data frame helps determine the preparation
+#' of a proper seedbed.
+#' @return The organic structure and consistence data frame
+#' @export
+organicSCDF <- function(){
+  # First column is the precipitation minus potential evapotranspiration
+  return(cbind(c(0,-250,-200,-150,-100,-50,0,50),
+               c(0.04,60,50,40,30,25,20,15),
+               c(0.07,50,40,30,25,15,10,5),
+               c(0.10,40,30,20,15,10,5,0),
+               c(0.13,35,25,15,10,5,0,5),
+               c(0.16,30,20,10,5,5,5,15),
+               c(0.18,25,15,15,20,25,30,40),
+               c(0.20,20,15,15,20,25,30,40),
+               c(0.22,15,20,25,30,35,40,50)))
+}
+
+#' Surface organic reaction (pH) data table
+#'
+#' The surface organic reaction (pH) data table
+#' @return Surface reaction (pH) data table
+#' @export
+surfaceOrganicReactionDF <- function(){
+  # First column is the soil pH
+  return(cbind(c(0,7.5,7,6.5,6,5.5,5,4.5,4,3.5,3),
+               c(0.04,50,45,40,40,40,45,50,55,60,70),
+               c(0.10,35,30,30,30,30,35,40,45,50,60),
+               c(0.16,25,20,20,20,20,25,30,35,45,55),
+               c(0.20,15,10,10,10,10,15,20,30,40,50)))
+}
+
+#' Surface organic salinity data table
+#'
+#' The surface organic salinity (dS/m) data table
+#' @return Surface salinity (dS/m) data table
+#' @export
+surfaceOrganicSalinityDF <- function(){
+  # First column is the soil salinity
+  return(cbind(c(2,4,8,16),
+               c(0,20,50,75)))
 }

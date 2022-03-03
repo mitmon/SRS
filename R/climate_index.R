@@ -19,7 +19,7 @@
 #' if the crop uses crop heat units (CHU) use CHU.
 #' @return Deduction points for the basic climate rating.
 #' @export
-climateIndexMain %<-% function(ratingTableArrayMC,ratingTableArrayESM,ratingTableArrayEFM, ppe, temperatureFactor, ppeSpring, ppeFall, type){
+climateIndexMain <- function(ratingTableArrayMC,ratingTableArrayESM,ratingTableArrayEFM, ppe, temperatureFactor, ppeSpring, ppeFall, type){
 
   one <- basicClimateRating(ratingTableArrayMC,ppe,temperatureFactor,type)
   two <- climateModifyingFactors(ratingTableArrayESM,ratingTableArrayEFM, ppeSpring, ppeFall)

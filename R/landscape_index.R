@@ -11,7 +11,7 @@
 #' for landscape over the study site.
 #' @return Landscape rating
 #' @export
-landscapeIndexMain %<-% function(slopePercent,slopeLength,surfaceStoniness, coarseFragment, woodContent){
+landscapeIndexMain <- function(slopePercent,slopeLength,surfaceStoniness, coarseFragment, woodContent){
 
   one <- basicLandscapeRating(slopePercent,slopeLength)
   two <- interimLandscapeRating(surfaceStoniness,coarseFragment,woodContent)

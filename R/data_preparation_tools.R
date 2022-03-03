@@ -10,7 +10,7 @@
 #'
 #' This tools prepares input raster data for further processing. The result is
 #' a raster stack that will be later used to calculate the rating tables
-#' for climate, soil, and landscape indices.
+#' for climate, mineral, organic, and landscape indices.
 #' @param index The index is the type of index the user is requesting. Options
 #' are climate, soil, or landscape. Future versions will expand the indices.
 #' @param requiredDataArray
@@ -37,7 +37,7 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
 
   # 2. Align and crop raster files for further processing
   # Mask files so they are all the same extent
-  batchMaskRaster(append(requiredDataArray,sfname[1]),rasterStackFolder,"/data/temp/input_data/")
+  batchMaskRaster(append(requiredDataArray,sfname[1]),rasterStackFolder,FFP("/data/temp/input_data/"))
   # Crop files into tiles for quicker processing
   batchCropRaster(FFP(paste0("/data/temp/input_data/")),shapefileAOI)
 
@@ -51,7 +51,7 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
       # 3a. Determine if surface and subsurface averages are required based on the
       # user request. Call the surface and subsurface function and appending
       # results to the input raster.
-      if(index == "soil"){
+      if(index == "mineral"){
         if(j == 1){
           tempRasterStack <- surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
       } else {
@@ -78,6 +78,10 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
     }
       }
     # Save temporary raster table file
+    if(index == "landscape"){
+      writePermData(tempRasterStack, FFP(paste0('/data/temp/temp_',i,'/')), paste0('DEM'),'GTiff')
+    } else {
     writePermData(tempRasterStack, FFP(paste0('/data/temp/temp_',i,'/')), paste0('table_temp_',i),'GTiff')
+    }
   }
 }

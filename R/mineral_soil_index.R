@@ -11,7 +11,7 @@
 #' for mineral soil over the study site.
 #' @return
 #' @export
-mineralSoilIndexMain %<-% function(ppe,surfaceSiltPercent,surfaceClayPercent,subsurfaceSiltPercent,subsurfaceClayPercent,waterTableDepth,
+mineralSoilIndexMain <- function(ppe,surfaceSiltPercent,surfaceClayPercent,subsurfaceSiltPercent,subsurfaceClayPercent,waterTableDepth,
                                  surfaceOC,depthOfTopSoil,surfacepH,surfaceSalinity,surfaceSodicity,depthOfPeat,subsurfaceBulkDensity,
                                  impedingLayerDepth,subsurfacepH,subsurfaceSalinity,subsurfaceSodicity){
 
@@ -208,7 +208,7 @@ interimSoilRating <- function(surfaceSiltPercent,surfaceClayPercent,surfaceOC,de
     FPointDeduct <- 0
   } else {
     OMDF <- OMDTDF()
-    bounds <- OMDF[1,]
+    bounds <- OMDF[,1]
     if(surfaceOC > bounds[1]){
       FPointDeduct <- OMDF[1,2]
     } else if(surfaceOC > bounds[2]){
@@ -227,7 +227,7 @@ interimSoilRating <- function(surfaceSiltPercent,surfaceClayPercent,surfaceOC,de
     EPointDeduct <- 0
   } else {
     DTSDF <- depthOfTopSoilDF()
-    bounds <- DTSDF[1,]
+    bounds <- DTSDF[,1]
     if(depthOfTopSoil > bounds[1]){
       EPointDeduct <- DTSDF[1,2]
     } else if(depthOfTopSoil > bounds[2]){
@@ -246,7 +246,7 @@ interimSoilRating <- function(surfaceSiltPercent,surfaceClayPercent,surfaceOC,de
     VPointDeduct <- 0
   } else {
     SRDF <- surfaceReactionDF()
-    bounds <- SRDF[1,]
+    bounds <- SRDF[,1]
     if(surfacepH > bounds[1]){
       VPointDeduct <- SRDF[1,2]
     } else if(surfacepH > bounds[2]){
@@ -275,7 +275,7 @@ interimSoilRating <- function(surfaceSiltPercent,surfaceClayPercent,surfaceOC,de
     NPointDeduct <- 0
   } else {
     SSDF <- surfaceSalinityDF()
-    bounds <- SSDF[1,]
+    bounds <- SSDF[,1]
     if(surfaceSalinity < bounds[1]){
       NPointDeduct <- SSDF[1,2]
     } else if(surfaceSalinity < bounds[2]){
@@ -292,7 +292,7 @@ interimSoilRating <- function(surfaceSiltPercent,surfaceClayPercent,surfaceOC,de
     YPointDeduct <- 0
   } else {
     SSDF <- surfaceSodicityDF()
-    bounds <- SSDF[1,]
+    bounds <- SSDF[,1]
     if(surfaceSodicity < bounds[1]){
       YPointDeduct <- SSDF[1,3]
     } else if(surfaceSodicity < bounds[2]){
@@ -521,7 +521,7 @@ mineralSoilRating <- function(moistureDeduct,surfaceFactors,subsurfaceFactors,dr
   g <- f * (drainage/100)
   # Mineral soil rating
   rating <- (f - g)
-  rating[rating < 0] <- 0
+  rating[rating < 0] <- 1
   rating[rating > 100] <- 100
   return(rating)
 }
