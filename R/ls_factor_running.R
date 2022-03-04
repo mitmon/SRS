@@ -7,6 +7,8 @@
 
 lsFactorFunction <- function(DEM,counter){
 
+  # DEM <- reclassify(DEM, cbind(NaN, NA, 0), right = FALSE)
+
   units <- "Meter"
 
   less5 <- 0.5*100
@@ -105,10 +107,9 @@ lsFactorFunction <- function(DEM,counter){
 
   # Step: Calc max downhill slope angle
 
-  # fDircArray <- flowdir
   values(baseRaster) <- array(flowdir, dim = c(nRows, nCols))
   fDircArray <- baseRaster
-  elevArray <- raster(DEM)
+  elevArray <- DEM
   maxDHSArray <- array(c(NA), dim = c(nRows, nCols))
   pb <- txtProgressBar(title = "Progress bar",min = 0, max = nRows, style = 3)
 
@@ -513,7 +514,10 @@ lsFactorFunction <- function(DEM,counter){
       # they also flow to the same receiving cell
 
       slopeFunction <- function(w,x,y,z){
-        if(!is.na(x) && !is.null(x) && !is.na(y) && !is.null(y) && !is.na(z) && !is.null(z)){
+        if(length(w) == 0 || length(x) == 0 || length(y) == 0 || length(z) == 0){
+          return(-999)
+        }
+        else if(!is.na(x) && !is.null(x) && !is.na(y) && !is.null(y) && !is.na(z) && !is.null(z)){
           if(x == w && y != -999 && z != -999){
             return(c(y,z))
           } else(return(-999))
@@ -729,20 +733,26 @@ lsFactorFunction <- function(DEM,counter){
 
 
 
+
   ########################
   if(is.na(rasterlist[1])){
     rasterlist <- rasterlist[-1]
     rasterName <- rasterName[-1]
   }
 
-
-  writeTempData(rasterlist,FFP(paste0("/data/temp/temp_",counter)),rasterName,"GTiff")
-
+  if(!is_empty(rasterlist)){
+    for(ii in 1:length(rasterlist)){
+      # Need to change this so that a raster is passed instead of just the data.
+      # Use the "baseRaster" as the raster base and just apply the values.
+      writeTempData(rasterlist[ii],paste0("temp_",counter),rasterName[ii],"GTiff")
+    }
+  }
 }
 
 
 
 # Create a temp list of the number of files in the folder
+lsFunction <- function(){
 num_files <- length(list.files(path = paste0(getwd(),"/data/temp/")))
 
 for(nn in 1:(num_files-1)){
@@ -751,12 +761,22 @@ for(nn in 1:(num_files-1)){
     if(str_contains(tempfolder[mm],"DEM") && str_contains(tempfolder[mm],".tif")){
 
       dem <- loadRaster(paste0(FFP(paste0("/data/temp/temp_",nn,"/")),tempfolder[mm]))
-      lsFactorFunction(raster(dem[[1]]),nn)
+      dem[is.na(dem[[1]])] <- 0
+      dem <- raster(dem, layer=1)
+
+      if(any(getValues(dem) > 0)){
+        print(paste0("Stating ls function for temp DEM number ", nn))
+        lsFactorFunction(dem,nn)
+      } else {
+        writeTempData(dem,paste0("/temp_",nn),paste0("lfactor_",nn),"GTiff")
+        writeTempData(dem,paste0("/temp_",nn),paste0("slope_",nn),"GTiff")
+      }
+      next
     } else {
       next
     }
   }
-}
+}}
 
 gc()
 

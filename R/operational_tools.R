@@ -267,7 +267,7 @@ batchMaskRaster <- function(requiredDataArray, inputFolder, exportFolder){
 
   # Mask files that are not part of the largest extent
   for(i in 1:length(listFiles_data)){
-    tempmask <- extend(stack(listFiles_data[[i]]),listFiles_raster)
+    tempmask <- extend(brick(listFiles_data[[i]]),listFiles_raster)
     tempname <- listFiles[i]
     writePermData(tempmask,paste0(exportFolder),paste0("masked_",tempname),'raster')
   }
