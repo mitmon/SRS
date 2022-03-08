@@ -216,6 +216,7 @@ numberCutsComponent <- function(inputArray,egdd){
 }
 
 ################################################################################
+# Future updates.
 #' User defined crop input
 #'
 #' The user can define their own crop parameters. This function inputs the user
@@ -224,9 +225,3 @@ numberCutsComponent <- function(inputArray,egdd){
 #' @return
 #' @export
 
-#' Alfalfa crop module
-#'
-#' Default data inputs for alfalfa crops.
-#' @param inputData
-#' @return
-#' @export
