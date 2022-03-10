@@ -752,31 +752,20 @@ lsFactorFunction <- function(DEM,counter){
 
 
 # Create a temp list of the number of files in the folder
-lsFunction <- function(){
-num_files <- length(list.files(path = paste0(getwd(),"/data/temp/")))
+lsFunction <- function(dem,nn){
 
-for(nn in 1:(num_files-1)){
-  tempfolder <- list.files(path= paste0(getwd(),"/data/temp/temp_",nn,"/"))
-  for(mm in 1:length(tempfolder)){
-    if(str_contains(tempfolder[mm],"DEM") && str_contains(tempfolder[mm],".tif")){
+  dem <- loadRaster(dem)
+  dem[is.na(dem[[1]])] <- 0
+  dem <- raster(dem, layer=1)
 
-      dem <- loadRaster(paste0(FFP(paste0("/data/temp/temp_",nn,"/")),tempfolder[mm]))
-      dem[is.na(dem[[1]])] <- 0
-      dem <- raster(dem, layer=1)
-
-      if(any(getValues(dem) > 0)){
-        print(paste0("Stating ls function for temp DEM number ", nn))
-        lsFactorFunction(dem,nn)
-      } else {
-        writeTempData(dem,paste0("/temp_",nn),paste0("lfactor_",nn),"GTiff")
-        writeTempData(dem,paste0("/temp_",nn),paste0("slope_",nn),"GTiff")
-      }
-      next
-    } else {
-      next
-    }
+  if(any(getValues(dem) > 0)){
+    print(paste0("Stating ls function for temp DEM number ", nn))
+    lsFactorFunction(dem,nn)
+  } else {
+    writeTempData(dem,paste0("/temp_",nn),paste0("lfactor"),"GTiff")
+    writeTempData(dem,paste0("/temp_",nn),paste0("slope"),"GTiff")
   }
-}}
+}
 
 gc()
 

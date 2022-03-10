@@ -97,6 +97,12 @@ writeTempData <- function(inputData, tempFolder, tempName, exportType){
   }
   else if(class(inputData)[1] == "SpatialPolygonsDataFrame"){
     shapefile(inputData, paste0(tempLocation,tempName))
+  } else if(class(inputData[[1]]) == "RasterLayer" || class(inputData[[1]]) == "RasterStack" || class(inputData[[1]]) == "RasterBrick"){
+    writeRaster(inputData[[1]],
+                paste0(tempLocation,tempName),
+                bandorder ='BIL',
+                format = exportType,
+                overwrite = TRUE)
   }
   else {
     stop("Error in writeTempData. Input data is not a raster stack, raster
@@ -481,11 +487,30 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
       # 3a. Determine if surface and subsurface averages are required based on the
       # user request. Call the surface and subsurface function and appending
       # results to the input raster.
-      if(index == "mineral"){
+      if(index == "mineral" && (str_contains(tempListFiles[j], 'bulk') ||
+                                str_contains(tempListFiles[j], 'clay') ||
+                                str_contains(tempListFiles[j], 'silt') ||
+                                str_contains(tempListFiles[j], 'organic') ||
+                                str_contains(tempListFiles[j], 'pH'))){
         if(j == 1){
           tempRasterStack <- surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
         } else {
           tempRasterStack <- stack(tempRasterStack,surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))))
+        }
+      } else if(index == "organic" && (str_contains(tempListFiles[j], 'bulk') ||
+                                  str_contains(tempListFiles[j], 'pH'))){
+        if(j == 1){
+          tempRasterStack <- surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
+        } else {
+          tempRasterStack <- stack(tempRasterStack,surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))))
+        }
+      } else if(index == "landscape" && (str_contains(tempListFiles[j], 'DEM'))){
+        if(j == 1){
+          lsFunction(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])),i)
+          tempRasterStack <-  loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))
+        } else {
+          lsFunction(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])),i)
+          tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
         }
       } else {
         if(j == 1){
@@ -497,29 +522,29 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
 
       # 3b. Save the input files name for later when loading data again. The
       # column names will be used later.
-      if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/processOrder.txt")))){
-        fileLocation <- FFP(paste0("/data/temp/temp_",i,"/processOrder.txt"))
+      if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder.txt")))){
+        fileLocation <- FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder.txt"))
         file.create(fileLocation)
         writeLines(tempListFiles[[j]],fileLocation)
       } else {
-        fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/processOrder.txt")))
+        fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder.txt")))
         fileDataTemp <- readLines(fileLocation)
         writeLines(paste0(fileDataTemp,",",tempListFiles[[j]]),fileLocation)
       }
     }
     # Save temporary raster table file
-    if(index == "landscape"){
-      writePermData(tempRasterStack, FFP(paste0('/data/temp/dataTable_',i,'/')), paste0('DEM'),'GTiff')
-      unlink(FFP(paste0('/data/temp/temp_',i)), recursive = TRUE)
-      if(i == (length(list.files(FFP(paste0("/data/temp/")))) - numTempFiles)){
-        unlink(FFP(paste0('/data/temp/input_data')), recursive = TRUE)
-      }
-    } else {
+    # if(index == "landscape" && (str_contains(tempListFiles[j], 'DEM'))){
+    #   writePermData(tempRasterStack, FFP(paste0('/data/temp/dataTable_',i,'/')), paste0('DEM'),'GTiff')
+    #   unlink(FFP(paste0('/data/temp/temp_',i)), recursive = TRUE)
+    #   if(i == (length(list.files(FFP(paste0("/data/temp/")))) - numTempFiles)){
+    #     unlink(FFP(paste0('/data/temp/input_data')), recursive = TRUE)
+    #   }
+    # } else {
       writePermData(tempRasterStack, FFP(paste0('/data/temp/dataTable_',i,'/')), paste0(index,'_table_temp_',i),'GTiff')
       unlink(FFP(paste0('/data/temp/temp_',i)), recursive = TRUE)
       if(i == (length(list.files(FFP(paste0("/data/temp/")))) - abs(numTempFiles))){
         unlink(FFP(paste0('/data/temp/input_data')), recursive = TRUE)
-      }
+      # }
     }
   }
 }
