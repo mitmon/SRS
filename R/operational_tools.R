@@ -522,30 +522,26 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
 
       # 3b. Save the input files name for later when loading data again. The
       # column names will be used later.
-      if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder.txt")))){
-        fileLocation <- FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder.txt"))
+      if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))){
+        fileLocation <- FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt"))
         file.create(fileLocation)
         writeLines(tempListFiles[[j]],fileLocation)
       } else {
-        fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder.txt")))
+        fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))
         fileDataTemp <- readLines(fileLocation)
         writeLines(paste0(fileDataTemp,",",tempListFiles[[j]]),fileLocation)
       }
     }
-    # Save temporary raster table file
-    # if(index == "landscape" && (str_contains(tempListFiles[j], 'DEM'))){
-    #   writePermData(tempRasterStack, FFP(paste0('/data/temp/dataTable_',i,'/')), paste0('DEM'),'GTiff')
-    #   unlink(FFP(paste0('/data/temp/temp_',i)), recursive = TRUE)
-    #   if(i == (length(list.files(FFP(paste0("/data/temp/")))) - numTempFiles)){
-    #     unlink(FFP(paste0('/data/temp/input_data')), recursive = TRUE)
-    #   }
-    # } else {
-      writePermData(tempRasterStack, FFP(paste0('/data/temp/dataTable_',i,'/')), paste0(index,'_table_temp_',i),'GTiff')
+
+      # 3c. Write data table to data table processing file and copy processing
+      # order text over.
+      writePermData(tempRasterStack, FFP(paste0('/data/temp/dataTable/')), paste0(index,'_table_temp_',i),'GTiff')
+      if(file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))){
+        file.copy(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")),FFP(paste0('/data/temp/dataTable/')))
+      }
+      # 3d. Remove the temp files.
       unlink(FFP(paste0('/data/temp/temp_',i)), recursive = TRUE)
-      if(i == (length(list.files(FFP(paste0("/data/temp/")))) - abs(numTempFiles))){
-        unlink(FFP(paste0('/data/temp/input_data')), recursive = TRUE)
-      # }
-    }
   }
+      unlink(FFP(paste0('/data/temp/input_data')), recursive = TRUE)
 }
 
