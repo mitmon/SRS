@@ -16,12 +16,13 @@ organicSoilIndexMain <- function(egdd,
                                    surfacepH,surfaceSalinity,
                                    subsurfacepH,subsurfaceSalinity){
 
-  one <- organicBaseRating(egdd)
-  two <- organicSoilMoistureDeduction(ppe,surfaceBD,subsurfaceBD,depthToWaterTable)
-  three <- interimOrganicRating(surfaceBD, ppe, surfacepH,surfaceSalinity)
-  four <- basicOrganicRating(subsurfaceBD,subsurfacepH,subsurfaceSalinity)
+  one <- mapply(organicBaseRating,egdd)
+  two <- mapply(organicSoilMoistureDeduction,ppe,surfaceBD,subsurfaceBD,depthToWaterTable)
+  three <- mapply(interimOrganicRating,surfaceBD, ppe, surfacepH,surfaceSalinity)
+  four <- mapply(basicOrganicRating,subsurfaceBD,subsurfacepH,subsurfaceSalinity)
   five <- 0
-  return(organicSoilRating(one,two,three,four,five))
+  results <- mapply(organicSoilRating,one,two,three,four,five)
+  return(results)
 
 }
 
@@ -297,7 +298,7 @@ basicOrganicRating <- function(subsurfaceBD,subsurfacepH,subsurfaceSalinity){
 
   # 1. Structure and consistence (B)
   if(is.na(subsurfaceBD)){
-    BPercentDeduction <- 0
+    BPercentDeduct <- 0
   } else {
     if(subsurfaceBD < 0.07){
       BPercentDeduct <- 20
@@ -310,7 +311,7 @@ basicOrganicRating <- function(subsurfaceBD,subsurfacepH,subsurfaceSalinity){
     } else if(subsurfaceBD < 0.22){
       BPercentDeduct <- 10
     } else {
-      BPrecentDeduct <- 20
+      BPercentDeduct <- 20
     }
   }
 
@@ -345,7 +346,7 @@ basicOrganicRating <- function(subsurfaceBD,subsurfacepH,subsurfaceSalinity){
 
   # 5. Return the percent deduction for basic organic rating (subsurface factors).
   # Ensure that the value will not be over 100 or less than 0
-  tempsum <- sum(BPrecentDeduct, VPercentDeduct, NPercentDeduct)
+  tempsum <- sum(BPercentDeduct, VPercentDeduct, NPercentDeduct)
   tempsum[tempsum < 0] <- 1
   tempsum[tempsum > 100] <- 100
   return(tempsum)

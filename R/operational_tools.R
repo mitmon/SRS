@@ -148,7 +148,7 @@ surfaceAndSubsurface <- function(divideDepth,inputRaster){
 
   tempname <- names(inputRaster)
   tempname <- str_split(tempname,"b")
-  baseRaster <- raster(inputRaster)
+  baseRaster <- raster(inputRaster[[1]])
 
   for(i in 3:length(tempname)){
     if(as.numeric(tempname[[i]][2]) < divideDepth){
@@ -483,11 +483,13 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
     tempListFiles <- list.files(FFP(paste0("/data/temp/temp_",i)))
 
     for(j in 1:(length(tempListFiles))){
-
+      if(str_contains(tempListFiles[j], '.gri')){
+        next
       # 3a. Determine if surface and subsurface averages are required based on the
       # user request. Call the surface and subsurface function and appending
       # results to the input raster.
-      if(index == "mineral" && (str_contains(tempListFiles[j], 'bulk') ||
+      } else if(index == "mineral" && str_contains(tempListFiles[j], '.grd')
+                            && (str_contains(tempListFiles[j], 'bulk') ||
                                 str_contains(tempListFiles[j], 'clay') ||
                                 str_contains(tempListFiles[j], 'silt') ||
                                 str_contains(tempListFiles[j], 'organic') ||
@@ -497,14 +499,16 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
         } else {
           tempRasterStack <- stack(tempRasterStack,surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))))
         }
-      } else if(index == "organic" && (str_contains(tempListFiles[j], 'bulk') ||
+      } else if(index == "organic" && str_contains(tempListFiles[j], '.grd')
+                                   && (str_contains(tempListFiles[j], 'bulk') ||
                                   str_contains(tempListFiles[j], 'pH'))){
         if(j == 1){
           tempRasterStack <- surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
         } else {
           tempRasterStack <- stack(tempRasterStack,surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))))
         }
-      } else if(index == "landscape" && (str_contains(tempListFiles[j], 'DEM'))){
+      } else if(index == "landscape" && str_contains(tempListFiles[j], '.grd')
+                                     && (str_contains(tempListFiles[j], 'DEM'))){
         if(j == 1){
           lsFunction(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])),i)
           tempRasterStack <-  loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))

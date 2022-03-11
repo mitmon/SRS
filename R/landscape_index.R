@@ -13,10 +13,11 @@
 #' @export
 landscapeIndexMain <- function(slopePercent,slopeLength,surfaceStoniness, coarseFragment, woodContent){
 
-  one <- basicLandscapeRating(slopePercent,slopeLength)
-  two <- interimLandscapeRating(surfaceStoniness,coarseFragment,woodContent)
+  one <- mapply(basicLandscapeRating,slopePercent,slopeLength)
+  two <- mapply(interimLandscapeRating,surfaceStoniness,coarseFragment,woodContent)
   three <- 0
-  return(climateRating(one,two,three))
+  result <- mapply(landscapeRating,one,two,three)
+  return(result)
 
 }
 
@@ -44,7 +45,11 @@ basicLandscapeRating <- function(slopePercent,slopeLength){
   } else {
     pointDeduct <- 0
   }
-  return(100 - pointDeduct)
+
+  pointDeduct <- 100 - pointDeduct
+  pointDeduct[pointDeduct < 0] <- 0
+  pointDeduct[pointDeduct > 100] <- 100
+  return(pointDeduct)
 }
 
 #' Interim landscape rating
