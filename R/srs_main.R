@@ -28,15 +28,91 @@ srsMain <- function(indices,rasterStackFolder,shapefileAOI){
     }
   }
   # 2. Indices
+
   # 2a. Climate index
   for(i in 1:totalFiles){
     tempFile <- read.delim(FFP(paste0('/data/temp/dataTable/climate_processOrder_',i,'.txt')), header = FALSE, sep = ",")
   }
   climateIndexMain(ratingTableArrayMC,ratingTableArrayESM,ratingTableArrayEFM, ppe, temperatureFactor, ppeSpring, ppeFall, type)
+
   # 2b. Mineral soil index
-  mineralIndexMain(ppe,surfaceSiltPercent,surfaceClayPercent,subsurfaceSiltPercent,subsurfaceClayPercent,waterTableDepth,
-                   surfaceOC,depthOfTopSoil,surfacepH,surfaceSalinity,surfaceSodicity,depthOfPeat,subsurfaceBulkDensity,
-                   impedingLayerDepth,subsurfacepH,subsurfaceSalinity,subsurfaceSodicity)
+  for(i in 1:totalFiles){
+    tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/mineral_processOrder_',i,'.txt')), header = FALSE, sep = ",")
+    count <- 1
+    tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/mineral_table_temp_',i,'.tif')))
+    baseMineralRaster <- raster(tempDF)
+    for(j in 1:length(tempOrder)){
+      if(count <= length(tempDF[1])){
+        if(str_contains(tempOrder[j], "ppe")){
+          temp <- raster(tempDF, layer = count)
+          assign(paste0("mineralDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
+          count <- count + 1
+        } else if(str_contains(tempOrder[j], "silt")){
+          temp <- raster(tempDF, layer = count)
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("mineralDF_2"),temp)
+          temp <- raster(tempDF, layer = (j+1))
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("mineralDF_3"),temp)
+          count <- count + 3
+        } else if(str_contains(tempOrder[j], "clay")){
+          temp <- raster(tempDF, layer = count)
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("mineralDF_4"),temp)
+          temp <- raster(tempDF, layer = (j+1))
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("mineralDF_5"),temp)
+          count <- count + 3
+        } else if(str_contains(tempOrder[j], "organiccarbon")){
+          temp <- raster(tempDF, layer = count)
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("mineralDF_6"),temp)
+          count <- count + 3
+        } else if(str_contains(tempOrder[j], "pH")){
+          temp <- raster(tempDF, layer = count)
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("mineralDF_7"),temp)
+          temp <- raster(tempDF, layer = (count+1))
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("mineralDF_8"),temp)
+          count <- count + 3
+        } else if(str_contains(tempOrder[j], "bulk")){
+          temp <- raster(tempDF, layer = (count+1))
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("mineralDF_9"),temp)
+          count <- count + 3
+        }
+      } else if(j < length(tempDF[1])){
+        next
+      } else {
+        break
+      }
+      # In future versions, allow for adjustable number of input parameters.
+    }
+
+    mineralResults <- matrix(mapply(mineralSoilIndexMain,
+                                    get(paste0('mineralDF_1'))[3],
+                                    get(paste0('mineralDF_2'))[3],
+                                    get(paste0('mineralDF_4'))[3],
+                                    get(paste0('mineralDF_3'))[3],
+                                    get(paste0('mineralDF_5'))[3],
+                                    125,
+                                    get(paste0('mineralDF_6'))[3],
+                                    NA,
+                                    get(paste0('mineralDF_7'))[3],
+                                    NA,
+                                    NA,
+                                    NA,
+                                    get(paste0('mineralDF_9'))[3],
+                                    NA,
+                                    get(paste0('mineralDF_8'))[3],
+                                    NA,
+                                    NA),ncol = 1)
+    values(baseMineralRaster) <- mineralResults
+    writePermData(baseMineralRaster,'~/Library/Mobile Documents/com~apple~CloudDocs/Desktop/AAFC/SRS_V6_3/SRS.6.3.0/data/temp/results/',
+                  paste0('mineralResults_',i),"GTiff")
+  }
+
   # 2c. Organic soil index
   for(i in 1:totalFiles){
     tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/organic_processOrder_',i,'.txt')), header = FALSE, sep = ",")
@@ -53,7 +129,7 @@ srsMain <- function(indices,rasterStackFolder,shapefileAOI){
           temp <- raster(tempDF, layer = count)
           assign(paste0("organicDF_2"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
           count <- count + 1
-        } else if(str_contains(tempOrder[j], "bulkdensity")){
+        } else if(str_contains(tempOrder[j], "bulk")){
           temp <- raster(tempDF, layer = count)
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("organicDF_3"),temp)
