@@ -15,11 +15,12 @@ mineralSoilIndexMain <- function(ppe,surfaceSiltPercent,surfaceClayPercent,subsu
                                  surfaceOC,depthOfTopSoil,surfacepH,surfaceSalinity,surfaceSodicity,depthOfPeat,subsurfaceBulkDensity,
                                  impedingLayerDepth,subsurfacepH,subsurfaceSalinity,subsurfaceSodicity){
 
-  one <- mineralSoilMoistureDeduction(ppe,surfaceSiltPercent,surfaceClayPercent,subsurfaceSiltPercent,subsurfaceClayPercent,waterTableDepth)
-  two <- interimSoilRating(surfaceSiltPercent,surfaceClayPercent,surfaceOC,depthOfTopSoil,surfacepH,surfaceSalinity,surfaceSodicity,depthOfPeat)
-  three <- basicSoilRating(subsurfaceSiltPercent,subsurfaceClayPercent,subsurfaceBulkDensity,impedingLayerDepth,ppe,subsurfacepH,subsurfaceSalinity,subsurfaceSodicity)
+  one <- mapply(mineralSoilMoistureDeduction,ppe,surfaceSiltPercent,surfaceClayPercent,subsurfaceSiltPercent,subsurfaceClayPercent,waterTableDepth)
+  two <- mapply(interimSoilRating,surfaceSiltPercent,surfaceClayPercent,surfaceOC,depthOfTopSoil,surfacepH,surfaceSalinity,surfaceSodicity,depthOfPeat)
+  three <- mapply(basicSoilRating,subsurfaceSiltPercent,subsurfaceClayPercent,subsurfaceBulkDensity,impedingLayerDepth,ppe,subsurfacepH,subsurfaceSalinity,subsurfaceSodicity)
   four <- 0
-  return(mineralSoilRating(one,two,three,four))
+  results <- mapply(mineralSoilRating,one,two,three,four)
+  return(results)
 
 }
 
@@ -134,7 +135,7 @@ mineralSoilMoistureDeduction <- function(ppe,surfaceSiltPercent,surfaceClayPerce
   }
 
   # 2. Water table adjustments
-  if(is.na(waterTableDepth)){
+  if(is.na(waterTableDepth) || is.na(surfaceSiltPercent) || is.na(surfaceClayPercent)){
     WTAPointDeduct <- 0
   } else {
     WTA <- waterTableAdjustmentDF()

@@ -38,41 +38,42 @@ srsMain <- function(indices,rasterStackFolder,shapefileAOI){
                    surfaceOC,depthOfTopSoil,surfacepH,surfaceSalinity,surfaceSodicity,depthOfPeat,subsurfaceBulkDensity,
                    impedingLayerDepth,subsurfacepH,subsurfaceSalinity,subsurfaceSodicity)
   # 2c. Organic soil index
-  tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/organic_processOrder_',i,'.txt')), header = FALSE, sep = ",")
-
   for(i in 1:totalFiles){
+    tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/organic_processOrder_',i,'.txt')), header = FALSE, sep = ",")
     count <- 1
     tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/organic_table_temp_',i,'.tif')))
     baseOrganicRaster <- raster(tempDF)
-    for(j in 1:length(tempDF[1])){
-      if((j %% 2) != 0){
-        if(str_contains(tempOrder[count], "egdd")){
-          temp <- raster(tempDF, layer = j)
+    for(j in 1:length(tempOrder)){
+      if(count <= length(tempDF[1])){
+        if(str_contains(tempOrder[j], "egdd")){
+          temp <- raster(tempDF, layer = count)
           assign(paste0("organicDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
           count <- count + 1
-        } else if(str_contains(tempOrder[count], "ppe")){
-          temp <- raster(tempDF, layer = j)
+        } else if(str_contains(tempOrder[j], "ppe")){
+          temp <- raster(tempDF, layer = count)
           assign(paste0("organicDF_2"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
           count <- count + 1
-        } else if(str_contains(tempOrder[count], "bulkdensity")){
-          temp <- raster(tempDF, layer = j)
+        } else if(str_contains(tempOrder[j], "bulkdensity")){
+          temp <- raster(tempDF, layer = count)
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("organicDF_3"),temp)
-          temp <- raster(tempDF, layer = (j+1))
+          temp <- raster(tempDF, layer = (count+1))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("organicDF_4"),temp)
-          count <- count + 1
-        } else if(str_contains(tempOrder[count], "pH")){
-          temp <- raster(tempDF, layer = j)
+          count <- count + 3
+        } else if(str_contains(tempOrder[j], "pH")){
+          temp <- raster(tempDF, layer = count)
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("organicDF_5"),temp)
-          temp <- raster(tempDF, layer = (j+1))
+          temp <- raster(tempDF, layer = (count+1))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("organicDF_6"),temp)
-          count <- count + 1
+          count <- count + 3
         }
-      } else {
+      } else if(j < length(tempDF[1])){
         next
+      } else {
+        break
       }
       # In future versions, allow for adjustable number of input parameters.
     }
