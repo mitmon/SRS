@@ -4,7 +4,7 @@
 # Agri-Foods Canada's suitability rating system.
 
 # Creation date: Mar 06, 2022
-# Last updated: Mar 06, 2022
+# Last updated: Mar 14, 2022
 
 #' SRS Main Function
 #'
@@ -18,22 +18,89 @@
 #' Correct landscape file to be the same as organic and mineral
 #' with the "count".
 
-srsMain <- function(indices,rasterStackFolder,shapefileAOI){
+srsMain <- function(cropType,indices,rasterStackFolder,shapefileAOI){
 
   # 1. Data prep tools
-  for(i in 1:length(indices)){
-    dataPrep(indices[[i,1]],indices[[i,2]],rasterStackFolder,shapefileAOI)
-    if(i == length(indices)){
-      totalFiles <- i
-    }
+  # 1a. Convert geoJSON string to shapefile.
+  if(!file.exists(FFP(paste0("/data/temp/shapefileAOI.geoJSON")))){
+    fileLocation <- FFP(paste0("/data/temp/shapefileAOI.geoJSON"))
+    file.create(fileLocation)
+    writeLines(shapefileAOI,fileLocation)
+  } else {
+    fileLocation <- FFP(paste0("/data/temp/shapefileAOI.geoJSON"))
+    file.remove(fileLocation)
+    file.create(fileLocation)
+    writeLines(shapefileAOI,fileLocation)
   }
-  # 2. Indices
 
+  # 1b. Create data tables for each index
+
+  # Prepare climate data for the climate index
+  dataPrep("climate",c("ppe_SM.tif","ppe_Apr_SM.tif","ppe_Sep_SM.tif","apr_sep_egdd_T5_2001-2020_SM.tif"),
+           FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
+  # Prepare mineral soil data for the mineral soil index
+  dataPrep("mineral",c("siltcontent_SM.tif","claycontent_SM.tif","organiccarbon_SM.tif","pH_SM.tif"),
+           FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
+  # Prepare organic soil data for the organic soil index
+  dataPrep("organic",c("apr_sep_egdd_T5_2001-2020_SM.tif","ppe_SM.tif","bulkdensity_SM.tif","pH_SM.tif"),
+           FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
+  # Prepare landscape data for the landscape index
+  dataPrep("landscape",c("DEM_SM.tif"),
+           FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
+
+  # 2. Indices
   # 2a. Climate index
   for(i in 1:totalFiles){
-    tempFile <- read.delim(FFP(paste0('/data/temp/dataTable/climate_processOrder_',i,'.txt')), header = FALSE, sep = ",")
+    tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/climate_processOrder_',i,'.txt')), header = FALSE, sep = ",")
+    count <- 1
+    tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/climate_table_temp_',i,'.tif')))
+    baseClimateRaster <- raster(tempDF)
+    for(j in 1:length(tempOrder)){
+      if(count <= length(tempDF[1])){
+        if(str_contains(tempOrder[j], "egdd") || str_contains(tempOrder[j], "chu")){
+          temp <- raster(tempDF, layer = count)
+          assign(paste0("climateDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
+          count <- count + 1
+        } else if(str_contains(tempOrder[j], "ppe_Apr")){
+          temp <- raster(tempDF, layer = count)
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("climateDF_2"),temp)
+          count <- count + 1
+        } else if(str_contains(tempOrder[j], "ppe_Sep")){
+          temp <- raster(tempDF, layer = count)
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("climateDF_3"),temp)
+          count <- count + 1
+        } else if(str_contains(tempOrder[j], "ppe")){
+          temp <- raster(tempDF, layer = count)
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("climateDF_4"),temp)
+          count <- count + 1
+        }
+      } else if(j < length(tempDF[1])){
+        next
+      } else {
+        break
+      }
+      # In future versions, allow for adjustable number of input parameters.
+    }
+    #   {"Potential evapotranspiration in growing season (Apr)":[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]],
+    #     "Potential evapotranspiration in growing season (May-Aug)":[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]],
+    #     "Mean min temperature by day":[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]]}
+
+    climateResults <- matrix(mapply(climateIndexMain,
+                                    ratingTableArrayMC,
+                                    ratingTableArrayESM,
+                                    ratingTableArrayEFM,
+                                    get(paste0('climateDF_3'))[3],
+                                    get(paste0('climateDF_1'))[3],
+                                    get(paste0('climateDF_2'))[3],
+                                    get(paste0('climateDF_4'))[3],
+                                    cropType),ncol = 1)
+    values(baseClimateRaster) <- climateResults
+    writePermData(baseClimateRaster,FFP(paste0('/data/temp/results/')),
+                  paste0('climateResults_',i),"GTiff")
   }
-  climateIndexMain(ratingTableArrayMC,ratingTableArrayESM,ratingTableArrayEFM, ppe, temperatureFactor, ppeSpring, ppeFall, type)
 
   # 2b. Mineral soil index
   for(i in 1:totalFiles){
@@ -109,7 +176,7 @@ srsMain <- function(indices,rasterStackFolder,shapefileAOI){
                                     NA,
                                     NA),ncol = 1)
     values(baseMineralRaster) <- mineralResults
-    writePermData(baseMineralRaster,'~/Library/Mobile Documents/com~apple~CloudDocs/Desktop/AAFC/SRS_V6_3/SRS.6.3.0/data/temp/results/',
+    writePermData(baseMineralRaster,FFP(paste0('/data/temp/results/')),
                   paste0('mineralResults_',i),"GTiff")
   }
 
@@ -164,21 +231,43 @@ srsMain <- function(indices,rasterStackFolder,shapefileAOI){
                                     get(paste0('organicDF_6'))[3],
                                     NA),ncol = 1)
     values(baseOrganicRaster) <- organicResults
-    writePermData(baseOrganicRaster,'~/Library/Mobile Documents/com~apple~CloudDocs/Desktop/AAFC/SRS_V6_3/SRS.6.3.0/data/temp/results/',
+    writePermData(baseOrganicRaster,FFP(paste0('/data/temp/results/')),
                   paste0('organicResults_',i),"GTiff")
   }
+
   # 2d. Landscape index
   for(i in 1:totalFiles){
+    tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/landscape_processOrder_',i,'.txt')), header = FALSE, sep = ",")
+    count <- 1
     tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/landscape_table_temp_',i,'.tif')))
-    baseOrganicRaster <- raster(tempDF)
-    for(j in 1:length(tempDF[1])){
-      temp <- raster(tempDF, layer = j)
-      assign(paste0("landscapeDF_",j),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
+    baseLandscapeRaster <- raster(tempDF)
+    for(j in 1:length(tempOrder)){
+      if(count <= length(tempDF[1])){
+        if(str_contains(tempOrder[j], "slopePercent")){
+          temp <- raster(tempDF, layer = count)
+          assign(paste0("landscapeDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
+          count <- count + 1
+        } else if(str_contains(tempOrder[j], "slopeLength") || str_contains(tempOrder[j], "lFactor")){
+          temp <- raster(tempDF, layer = count)
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("landscapeDF_2"),temp)
+          count <- count + 1
+        }
+      } else if(j < length(tempDF[1])){
+        next
+      } else {
+        break
+      }
       # In future versions, allow for adjustable number of input parameters.
     }
-    landscapeResults <- matrix(mapply(landscapeIndexMain, get(paste0('landscapeDF_1'))[3],get(paste0('landscapeDF_2'))[3],NA,NA,NA),ncol = 1)
-    values(baseOrganicRaster) <- landscapeResults
-    writePermData(baseOrganicRaster,'~/Library/Mobile Documents/com~apple~CloudDocs/Desktop/AAFC/SRS_V6_3/SRS.6.3.0/data/temp/results/',
+    landscapeResults <- matrix(mapply(landscapeIndexMain,
+                                      get(paste0('landscapeDF_1'))[3],
+                                      get(paste0('landscapeDF_2'))[3],
+                                      NA,
+                                      NA,
+                                      NA),ncol = 1)
+    values(baseLandscapeRaster) <- landscapeResults
+    writePermData(baseLandscapeRaster,FFP(paste0('/data/temp/results/')),
                   paste0('landscapeResults_',i),"GTiff")
   }
   # 3. Final rating

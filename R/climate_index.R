@@ -21,12 +21,12 @@
 #' @export
 climateIndexMain <- function(ratingTableArrayMC,ratingTableArrayESM,ratingTableArrayEFM, ppe, temperatureFactor, ppeSpring, ppeFall, type){
 
-  one <- basicClimateRating(ratingTableArrayMC,ppe,temperatureFactor,type)
-  two <- climateModifyingFactors(ratingTableArrayESM,ratingTableArrayEFM, ppeSpring, ppeFall)
-  return(climateRating(one,two))
+  one <- mapply(basicClimateRating,ratingTableArrayMC,ppe,temperatureFactor,type)
+  two <- mapply(climateModifyingFactors,ratingTableArrayESM,ratingTableArrayEFM, ppeSpring, ppeFall)
+  results <- mapply(climateRating, one, two)
+  return(results)
 
 }
-
 
 #' Basic climate rating
 #'

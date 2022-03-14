@@ -1,1 +1,0 @@
-masked_bulkdensity_SM.grd,masked_claycontent_SM.grd,masked_organiccarbon_SM.grd,masked_pH_SM.grd,masked_ppe_SM.grd,masked_siltcontent_SM.grd

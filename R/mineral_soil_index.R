@@ -194,10 +194,14 @@ interimSoilRating <- function(surfaceSiltPercent,surfaceClayPercent,surfaceOC,de
   if(is.na(surfaceSiltPercent) || is.na(surfaceClayPercent) || is.na(surfaceOC)){
     DPointDeduct <- 0
   } else {
-    surfaceSandPercent <- 100 - surfaceSiltPercent - surfaceClayPercent
-    DPointDeduct <- surfaceOC
-    DPointDeduct[surfaceOC>3] <- 0
-    DPointDeduct[surfaceOC<=3] <- (3 / surfaceOC[surfaceOC<3]) + ((surfaceSandPercent[surfaceOC<3]) / 3 * surfaceOC[surfaceOC<3]) + surfaceSiltPercent[surfaceOC<3]
+    if(surfaceOC > 3){
+      DPointDeduct <- 0
+    } else {
+      DPointDeduct <- 1.114*(surfaceOC)^2 - 9.0829*(surfaceOC)+18.733
+    }
+    # DPointDeduct <- surfaceOC
+    # DPointDeduct[surfaceOC > 3] <- 0
+    # DPointDeduct[surfaceOC <= 3] <- (3 / surfaceOC[surfaceOC < 3]) + ((surfaceSandPercent[surfaceOC<3]) / 3 * surfaceOC[surfaceOC<3]) + surfaceSiltPercent[surfaceOC<3]
 
     #Prevent negative deductions and deductions greater than 10 points.
     DPointDeduct[DPointDeduct<0] <- 0
