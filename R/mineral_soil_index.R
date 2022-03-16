@@ -44,7 +44,7 @@ mineralSoilMoistureDeduction <- function(ppe,surfaceSiltPercent,surfaceClayPerce
 
   # 1. Available water holding capacity
   # 1a. Surface available water holding capacity
-  if(is.na(surfaceSiltPercent) || is.na(surfaceClayPercent)){
+  if(is.na(surfaceSiltPercent) || is.na(surfaceClayPercent) || is.na(ppe)){
     surfaceAWHCDFPointDeduct <- 0
   } else {
     texture <- soilTexture(surfaceSiltPercent,surfaceClayPercent)
@@ -138,6 +138,7 @@ mineralSoilMoistureDeduction <- function(ppe,surfaceSiltPercent,surfaceClayPerce
   if(is.na(waterTableDepth) || is.na(surfaceSiltPercent) || is.na(surfaceClayPercent)){
     WTAPointDeduct <- 0
   } else {
+    texture <- soilTexture(surfaceSiltPercent,surfaceClayPercent)
     WTA <- waterTableAdjustmentDF()
     bounds <- WTA[1,]
     if(texture < bounds[3]){

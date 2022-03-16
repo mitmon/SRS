@@ -39,7 +39,7 @@ srsMain <- function(cropType,indices,rasterStackFolder,shapefileAOI){
   dataPrep("climate",c("ppe_SM.tif","ppe_Apr_SM.tif","ppe_Sep_SM.tif","apr_sep_egdd_T5_2001-2020_SM.tif"),
            FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
   # Prepare mineral soil data for the mineral soil index
-  dataPrep("mineral",c("siltcontent_SM.tif","claycontent_SM.tif","organiccarbon_SM.tif","pH_SM.tif"),
+  dataPrep("mineral",c("ppe_SM.tif","siltcontent_SM.tif","claycontent_SM.tif","organiccarbon_SM.tif","pH_SM.tif","bulkdensity_SM.tif"),
            FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
   # Prepare organic soil data for the organic soil index
   dataPrep("organic",c("apr_sep_egdd_T5_2001-2020_SM.tif","ppe_SM.tif","bulkdensity_SM.tif","pH_SM.tif"),
@@ -49,6 +49,14 @@ srsMain <- function(cropType,indices,rasterStackFolder,shapefileAOI){
            FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
 
   # 2. Indices
+  totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
+  totalFiles <- 0
+  for(i in 1:length(totalFilestemp)){
+    if(str_contains(totalFilestemp[i],"climate") && str_contains(totalFilestemp[i],".tif")){
+      totalFiles <- totalFiles + 1
+    }
+  }
+
   # 2a. Climate index
   for(i in 1:totalFiles){
     tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/climate_processOrder_',i,'.txt')), header = FALSE, sep = ",")
@@ -87,6 +95,20 @@ srsMain <- function(cropType,indices,rasterStackFolder,shapefileAOI){
     #   {"Potential evapotranspiration in growing season (Apr)":[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]],
     #     "Potential evapotranspiration in growing season (May-Aug)":[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]],
     #     "Mean min temperature by day":[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]]}
+    ratingTableArrays <- str_split(test,"~", simplify = TRUE)
+    for(i in 1:length(ratingTableArrays)){
+      if(i != 1 && (i %% 2 == 0)){
+        tempSplit <- str_split(ratingTableArrays[i],"")
+        # tempSplit <- substr(tempSplit[3],2,nchar(tempSplit[3])-1)
+        tempSplit <- tempSplit[[1]][-1]
+        tempSplit <- tempSplit[-(length(tempSplit))]
+        # tempSplit <-
+      }
+    }
+    ratingTableArrays <- substr(ratingTableArrays[3],2,nchar(ratingTableArrays[3])-1)
+    ratingTableArrayMC <- 1
+    ratingTableArrayESM <- 1
+    ratingTableArrayEFM <- 1
 
     climateResults <- matrix(mapply(climateIndexMain,
                                     ratingTableArrayMC,
@@ -271,5 +293,40 @@ srsMain <- function(cropType,indices,rasterStackFolder,shapefileAOI){
                   paste0('landscapeResults_',i),"GTiff")
   }
   # 3. Final rating
-  writePermData()
+
+  # Check to make sure folder exists.
+  if(!file.exists(FFP(paste0("/data/results/")))){
+    fileLocation <- FFP(paste0("/data/results/"))
+    file.create(fileLocation)
+  }
+
+  # Stack all the data layers and select the worst result from all the indices
+  totalFiles <- list.files(FFP(paste0("/data/temp/results/")))
+  baseRaster <- NULL
+
+  for(i in 1:(length(totalFiles)/4)){
+    while(i <= length(totalFiles)){
+      if(str_contains(paste0("climateResults_",i)) ||
+         str_contains(paste0("mineralResults_",i)) ||
+         str_contains(paste0("organicResults_",i)) ||
+         str_contains(paste0("landscapeResults_",i))){
+
+        if(i == 1){
+          tempRasterStack <- loadRaster(FFP(paste0("/data/temp/results/")))
+          baseRaster <- raster(tempRasterStack)
+        } else {
+          tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/results/"))))
+        }
+      }
+      i <- i + 1
+    }
+
+    value(baseRaster) <- mapply(function(w,x,y,z) return(max(w,x,y,z)),raster(tempRasterStack, layer = 1),
+                         raster(tempRasterStack, layer = 2),
+                         raster(tempRasterStack, layer = 3),
+                         raster(tempRasterStack, layer = 4))
+
+    writePermData(baseRaster,FFP(paste0("/data/results/")),paste0("FinalResults_",i,".tif"),"GTiff")
+  }
+
 }
