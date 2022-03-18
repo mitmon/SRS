@@ -21,17 +21,6 @@
 srsMain <- function(cropType,indices,rasterStackFolder,shapefileAOI){
 
   # 1. Data prep tools
-  # 1a. Convert geoJSON string to shapefile.
-  if(!file.exists(FFP(paste0("/data/temp/shapefileAOI.geoJSON")))){
-    fileLocation <- FFP(paste0("/data/temp/shapefileAOI.geoJSON"))
-    file.create(fileLocation)
-    writeLines(shapefileAOI,fileLocation)
-  } else {
-    fileLocation <- FFP(paste0("/data/temp/shapefileAOI.geoJSON"))
-    file.remove(fileLocation)
-    file.create(fileLocation)
-    writeLines(shapefileAOI,fileLocation)
-  }
 
   # 1b. Create data tables for each index
 
@@ -92,23 +81,6 @@ srsMain <- function(cropType,indices,rasterStackFolder,shapefileAOI){
       }
       # In future versions, allow for adjustable number of input parameters.
     }
-    #   {"Potential evapotranspiration in growing season (Apr)":[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]],
-    #     "Potential evapotranspiration in growing season (May-Aug)":[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]],
-    #     "Mean min temperature by day":[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]]}
-    ratingTableArrays <- str_split(test,"~", simplify = TRUE)
-    for(i in 1:length(ratingTableArrays)){
-      if(i != 1 && (i %% 2 == 0)){
-        tempSplit <- str_split(ratingTableArrays[i],"")
-        # tempSplit <- substr(tempSplit[3],2,nchar(tempSplit[3])-1)
-        tempSplit <- tempSplit[[1]][-1]
-        tempSplit <- tempSplit[-(length(tempSplit))]
-        # tempSplit <-
-      }
-    }
-    ratingTableArrays <- substr(ratingTableArrays[3],2,nchar(ratingTableArrays[3])-1)
-    ratingTableArrayMC <- 1
-    ratingTableArrayESM <- 1
-    ratingTableArrayEFM <- 1
 
     climateResults <- matrix(mapply(climateIndexMain,
                                     ratingTableArrayMC,
