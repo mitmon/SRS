@@ -29,27 +29,46 @@ serverPrep <- function(cropType,indices,rasterStackFolder,shapefileAOI){
   }
 
   # 2. Convert the indices array string into an array to be used later
-  ratingTableArrays <- str_split(indices,"~", simplify = TRUE)
-  for(i in 1:length(ratingTableArrays)){
-    if(i != 1 && (i %% 2 == 0)){
-      tempSplit <- str_split(ratingTableArrays[i],"")
-      # tempSplit <- substr(tempSplit[3],2,nchar(tempSplit[3])-1)
-      tempSplit <- tempSplit[[1]][-1]
-      tempSplit <- tempSplit[-(length(tempSplit))]
-      # tempSplit <-
+  # function to convert nested list string into nested list
+  strNL_to_NL <- function(str) {
+    # change the "," between the lists for easy split
+    strv2 <- gsub(",\\[", "+[", str)
+    temp <- unlist(strsplit(strv2, "\\+"))
+
+    nl <- list() # the nested list
+    for(i in 1:length(temp)){
+      li <- c() # the list in nested list
+      temp2 <- unlist(strsplit(temp[i], ","))
+      # convert string into number & append to list
+      for(j in 1:length(temp2)){
+        if (grepl( "[", temp2[j], fixed = TRUE))
+          li <- c(li, as.numeric(substr(temp2[j],2,2)))
+        else if (grepl( "]", temp2[j], fixed = TRUE))
+          li <- c(li, as.numeric(substr(temp2[j],1,1)))
+        else
+          li <- c(li, as.numeric(temp2[j]))
+      }
+      
+      nl[[i]] <- li # append list in nested list
+    }
+    return(nl)
+  }
+
+  # mock indices
+  # indices <- "{~Potential1~:[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]],~Potentia2~:[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]],~Mead~:[[1,2,3],[4,5,6],[7,8,9]]}"
+  
+  ratingTableArrays <- unlist(strsplit(indices, "~"))
+  data <- list()
+  for(i in 2:length(ratingTableArrays)){
+    if(i %% 2 == 0){
+      key <- ratingTableArrays[i]
+      # ratingTableArrays at [i+1] = ":[[min,max,PD]...],"
+      valStr <- substr(ratingTableArrays[i+1], 3, nchar(ratingTableArrays[i+1]) - 2)
+      data[[key]] <- strNL_to_NL(valStr)
     }
   }
-  ratingTableArrays <- substr(ratingTableArrays[3],2,nchar(ratingTableArrays[3])-1)
-  ratingTableArrayMC <- 1
-  ratingTableArrayESM <- 1
-  ratingTableArrayEFM <- 1
 
   # 3. Run the main function
   srsMain(cropType,indices,rasterStackFolder,shapefileAOI)
 
 }
-
-#   {"Potential evapotranspiration in growing season (Apr)":[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]],
-#     "Potential evapotranspiration in growing season (May-Aug)":[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]],
-#     "Mean min temperature by day":[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]]}
-
