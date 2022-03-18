@@ -744,6 +744,7 @@ lsFactorFunction <- function(DEM,counter){
     for(ii in 1:length(rasterlist)){
       # Need to change this so that a raster is passed instead of just the data.
       # Use the "baseRaster" as the raster base and just apply the values.
+      print(rasterName[ii])
       writeTempData(rasterlist[ii],paste0("temp_",counter),rasterName[ii],"GTiff")
     }
   }

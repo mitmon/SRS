@@ -526,20 +526,33 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
 
       # 3b. Save the input files name for later when loading data again. The
       # column names will be used later.
-      if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))){
-        fileLocation <- FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt"))
-        file.create(fileLocation)
-        writeLines(tempListFiles[[j]],fileLocation)
+      if(index != "landscape"){
+        if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))){
+          fileLocation <- FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt"))
+          file.create(fileLocation)
+          writeLines(tempListFiles[[j]],fileLocation)
+        } else {
+          fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))
+          fileDataTemp <- readLines(fileLocation)
+          writeLines(paste0(fileDataTemp,",",tempListFiles[[j]]),fileLocation)
+        }
       } else {
-        fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))
-        fileDataTemp <- readLines(fileLocation)
-        writeLines(paste0(fileDataTemp,",",tempListFiles[[j]]),fileLocation)
+          if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))){
+            fileLocation <- FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt"))
+            file.create(fileLocation)
+            writeLines(c("slopePercent","slopeLength"),fileLocation)
+          } else {
+            fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))
+            fileDataTemp <- readLines(fileLocation)
+            writeLines(paste0(fileDataTemp,",",tempListFiles[[j]]),fileLocation)
+          }
+        }
       }
-    }
 
       # 3c. Write data table to data table processing file and copy processing
       # order text over.
       writePermData(tempRasterStack, FFP(paste0('/data/temp/dataTable/')), paste0(index,'_table_temp_',i),'GTiff')
+
       if(file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))){
         file.copy(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")),FFP(paste0('/data/temp/dataTable/')))
       }
