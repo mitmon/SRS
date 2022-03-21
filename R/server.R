@@ -42,9 +42,9 @@ serverPrep <- function(cropType,indices,rasterStackFolder,shapefileAOI){
       # convert string into number & append to list
       for(j in 1:length(temp2)){
         if (grepl( "[", temp2[j], fixed = TRUE))
-          li <- c(li, as.numeric(substr(temp2[j],2,2)))
+          li <- c(li, as.numeric(substr(temp2[j],2,nchar(temp2[j]))))
         else if (grepl( "]", temp2[j], fixed = TRUE))
-          li <- c(li, as.numeric(substr(temp2[j],1,1)))
+          li <- c(li, as.numeric(substr(temp2[j],1,nchar(temp2[j]) - 1)))
         else
           li <- c(li, as.numeric(temp2[j]))
       }
