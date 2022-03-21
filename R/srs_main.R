@@ -25,16 +25,16 @@ srsMain <- function(cropType,indices,rasterStackFolder,shapefileAOI){
   # 1b. Create data tables for each index
 
   # Prepare climate data for the climate index
-  dataPrep("climate",c("ppe_SM.tif","ppe_Apr_SM.tif","ppe_Sep_SM.tif","apr_sep_egdd_T5_2001-2020_SM.tif"),
+  dataPrep("climate",c("ppe_pei.tif","ppe_Apr_pei.tif","ppe_Sep_pei.tif","apr_sep_egdd_T5_2001-2020_pei.tif"),
            FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
   # Prepare mineral soil data for the mineral soil index
-  dataPrep("mineral",c("ppe_SM.tif","siltcontent_SM.tif","claycontent_SM.tif","organiccarbon_SM.tif","pH_SM.tif","bulkdensity_SM.tif"),
+  dataPrep("mineral",c("ppe_pei.tif","siltcontent_pei.tif","claycontent_pei.tif","organiccarbon_pei.tif","pH_pei.tif","bulkdensity_pei.tif"),
            FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
   # Prepare organic soil data for the organic soil index
-  dataPrep("organic",c("apr_sep_egdd_T5_2001-2020_SM.tif","ppe_SM.tif","bulkdensity_SM.tif","pH_SM.tif"),
+  dataPrep("organic",c("apr_sep_egdd_T5_2001-2020_pei.tif","ppe_pei.tif","bulkdensity_pei.tif","pH_pei.tif"),
            FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
   # Prepare landscape data for the landscape index
-  dataPrep("landscape",c("DEM_SM.tif"),
+  dataPrep("landscape",c("DEM_pei.tif"),
            FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
 
   # 2. Indices
