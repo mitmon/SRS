@@ -309,9 +309,9 @@ batchMaskFolder <- function(inputFolder, exportFolder){
   listFiles_data <- lapply(listFiles,
                            function(x)
                              if(str_contains(x,".tif")){
-                               loadRaster(FFP(paste0("/data/default_data/test_data/",x)))
+                               loadRaster(paste0(inputFolder,x))
                              } else if(str_contains(x,".shp")){
-                               loadShapefile(FFP(paste0("/data/default_data/test_data/",x)))
+                               loadShapefile(paste0(inputFolder,x))
                              } else {
                                pass()
                              })
@@ -323,7 +323,7 @@ batchMaskFolder <- function(inputFolder, exportFolder){
   listFiles_data <- lapply(listFiles,
                            function(x)
                              if(str_contains(x,".tif")){
-                               loadRaster(FFP(paste0("/data/default_data/test_data/",x)))
+                               loadRaster(paste0(inputFolder,x))
                              } else {
                                pass()
                              })
@@ -391,8 +391,9 @@ batchCropRaster <- function(inputFolder,inputExtent){
       if(inputExtentType == 1){
         # Load the shapefile
         inputExtentsf <- loadShapefile(inputExtent)
+        lengthinputExtentsf <- length(inputExtentsf)
         # Run function for total number of crops
-        for(j in 1:length(inputExtentsf$Id)){
+        for(j in 1:lengthinputExtentsf){
           # Crop tempFile
           tempcrop <- crop(tempFile,inputExtentsf[j,])
           # Write the file to temp location
@@ -478,8 +479,9 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
 
   # 3. Stack required files based on required data array and export the table
   # Get files in temp folder
+  tempListFilesLength <- length(list.files(FFP(paste0("/data/temp/")))) - abs(numTempFiles)
 
-  for(i in 1:(length(list.files(FFP(paste0("/data/temp/")))) - abs(numTempFiles))){
+  for(i in 1:(tempListFilesLength)){
     tempListFiles <- list.files(FFP(paste0("/data/temp/temp_",i)))
 
     for(j in 1:(length(tempListFiles))){
@@ -511,13 +513,20 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
                                      && (str_contains(tempListFiles[j], 'DEM'))){
         if(j == 1){
           lsFunction(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])),i)
-          tempRasterStack <-  loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))
+          tempRasterStack <-  loadRaster(FFP(paste0("/data/temp/temp_",i,"/slope_",i)))
+          tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/lFactor_",i))))
         } else {
           lsFunction(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])),i)
-          tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
+          tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/slope_",i))))
+          tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/lFactor_",i))))
         }
       } else {
-        if(j == 1){
+        if(index == "landscape" && str_contains(tempListFiles[j], '.grd')
+                                && str_contains(tempListFiles[j], '.gri')
+                                && (str_contains(tempListFiles[j], 'DEM'))){
+          pass()
+        }
+        else if(j == 1){
           tempRasterStack <- loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))
         } else {
           tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
@@ -530,7 +539,6 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
         if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))){
           fileLocation <- FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt"))
           file.create(fileLocation)
-          writeLines(tempListFiles[[j]],fileLocation)
         } else {
           fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))
           fileDataTemp <- readLines(fileLocation)
@@ -544,7 +552,7 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
           } else {
             fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))
             fileDataTemp <- readLines(fileLocation)
-            writeLines(paste0(fileDataTemp,",",tempListFiles[[j]]),fileLocation)
+            writeLines(c(fileDataTemp,"slopePercent","slopeLength"),fileLocation)
           }
         }
       }

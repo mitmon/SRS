@@ -34,15 +34,13 @@ lsFactorFunction <- function(DEM,counter){
 
   # Calculate the slope
   slope <- terrain(DEM, opt = "slope", neighbors = 8, unit="degrees")
+  # print(slope)
 
   # Calculate the flow direction
   flowdir <- terrain(DEM, opt = "flowdir")
   flowdir <- array(flowdir,dim=c(nRows,nCols))
 
-
-
-  rasterlist <- append(rasterlist,slope)
-  rasterName <- append(rasterName,paste0("slope_",counter))
+  writeTempData(slope,paste0("temp_",counter),paste0('slope_',counter),'raster')
 
   cellsList <- array(c(c("tCell","rCell","bCell","lCell","trCell","tlCell","brCell","blCell"),
                        c("tFD","rFD","bFD","lFD","trFD","tlFD","brFD","blFD"),
@@ -727,27 +725,31 @@ lsFactorFunction <- function(DEM,counter){
   lFactorArray[lFactorArray == Inf] <- NA
 
   values(baseRaster) <- (lFactorArray)
-  rasterlist <- append(rasterlist,baseRaster)
-  rasterName <- append(rasterName,paste0("lFactor_",counter))
+  lFactorArray <- baseRaster
+  # print(lFactorArray)
   print(paste0("Done the lFactor!"))
-
-
-
-
-  ########################
-  if(is.na(rasterlist[1])){
-    rasterlist <- rasterlist[-1]
-    rasterName <- rasterName[-1]
-  }
-
-  if(!is_empty(rasterlist)){
-    for(ii in 1:length(rasterlist)){
-      # Need to change this so that a raster is passed instead of just the data.
-      # Use the "baseRaster" as the raster base and just apply the values.
-      print(rasterName[ii])
-      writeTempData(rasterlist[ii],paste0("temp_",counter),rasterName[ii],"GTiff")
+  writeTempData(lFactorArray,paste0("temp_",counter),paste0('lFactor_',counter),'raster')
+  listFilesTemp <- list.files(FFP(paste0('/data/temp/temp_',counter,"/")))
+  for(tempcounter in 1:length(listFilesTemp)){
+    if(str_contains(listFilesTemp[tempcounter],"DEM")){
+      file.remove(FFP(paste0('/data/temp/temp_',counter,"/",listFilesTemp[tempcounter])))
     }
   }
+
+
+
+
+  # if(!is_empty(rasterlist)){
+  #   for(ii in 1:length(rasterlist)){
+  #     # Need to change this so that a raster is passed instead of just the data.
+  #     # Use the "baseRaster" as the raster base and just apply the values.
+  #     print(rasterName[ii])
+  #     print(rasterlist[ii])
+  #     writeTempData(rasterlist[ii],paste0("temp_",counter),rasterName[ii],'raster')
+  #   }
+  # }
+
+
 }
 
 
@@ -760,13 +762,10 @@ lsFunction <- function(dem,nn){
   dem <- raster(dem, layer=1)
 
   if(any(getValues(dem) > 0)){
-    print(paste0("Stating ls function for temp DEM number ", nn))
+    print(paste0("Starting LS function for temp DEM number ", nn))
     lsFactorFunction(dem,nn)
   } else {
     writeTempData(dem,paste0("/temp_",nn),paste0("lfactor"),"GTiff")
     writeTempData(dem,paste0("/temp_",nn),paste0("slope"),"GTiff")
   }
 }
-
-gc()
-

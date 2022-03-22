@@ -48,7 +48,7 @@ serverPrep <- function(cropType,indices,rasterStackFolder,shapefileAOI){
         else
           li <- c(li, as.numeric(temp2[j]))
       }
-      
+
       nl[[i]] <- li # append list in nested list
     }
     return(nl)
@@ -56,7 +56,7 @@ serverPrep <- function(cropType,indices,rasterStackFolder,shapefileAOI){
 
   # mock indices
   # indices <- "{~Potential1~:[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]],~Potentia2~:[[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]],~Mead~:[[1,2,3],[4,5,6],[7,8,9]]}"
-  
+
   ratingTableArrays <- unlist(strsplit(indices, "~"))
   data <- list()
   for(i in 2:length(ratingTableArrays)){
@@ -69,6 +69,6 @@ serverPrep <- function(cropType,indices,rasterStackFolder,shapefileAOI){
   }
 
   # 3. Run the main function
-  srsMain(cropType,indices,rasterStackFolder,shapefileAOI)
+  srsMain(cropType,data,rasterStackFolder,shapefileAOI)
 
 }

@@ -18,7 +18,7 @@
 #' Correct landscape file to be the same as organic and mineral
 #' with the "count".
 
-srsMain <- function(cropType,indices,rasterStackFolder,shapefileAOI){
+srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
 
   # 1. Data prep tools
 
@@ -83,9 +83,9 @@ srsMain <- function(cropType,indices,rasterStackFolder,shapefileAOI){
     }
 
     climateResults <- matrix(mapply(climateIndexMain,
-                                    ratingTableArrayMC,
-                                    ratingTableArrayESM,
-                                    ratingTableArrayEFM,
+                                    cropArrays[1],
+                                    cropArrays[2],
+                                    cropArrays[3],
                                     get(paste0('climateDF_3'))[3],
                                     get(paste0('climateDF_1'))[3],
                                     get(paste0('climateDF_2'))[3],
