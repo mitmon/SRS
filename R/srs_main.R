@@ -25,17 +25,31 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
   # 1b. Create data tables for each index
 
   # Prepare climate data for the climate index
+  # dataPrep("climate",c("ppe_pei.tif","ppe_Apr_pei.tif","ppe_Sep_pei.tif","apr_sep_egdd_T5_2001-2020_pei.tif"),
+  #          FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
+  # Prepare mineral soil data for the mineral soil index
+  # dataPrep("mineral",c("ppe_pei.tif","siltcontent_pei.tif","claycontent_pei.tif","organiccarbon_pei.tif","pH_pei.tif","bulkdensity_pei.tif"),
+  #          FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
+  # # Prepare organic soil data for the organic soil index
+  # dataPrep("organic",c("apr_sep_egdd_T5_2001-2020_pei.tif","ppe_pei.tif","bulkdensity_pei.tif","pH_pei.tif"),
+  #          FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
+  # # Prepare landscape data for the landscape index
+  # dataPrep("landscape",c("DEM_pei.tif"),
+  #          FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
+
+  # Prepare climate data for the climate index
   dataPrep("climate",c("ppe_pei.tif","ppe_Apr_pei.tif","ppe_Sep_pei.tif","apr_sep_egdd_T5_2001-2020_pei.tif"),
-           FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
+           rasterStackFolder,shapefileAOI)
   # Prepare mineral soil data for the mineral soil index
   dataPrep("mineral",c("ppe_pei.tif","siltcontent_pei.tif","claycontent_pei.tif","organiccarbon_pei.tif","pH_pei.tif","bulkdensity_pei.tif"),
-           FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
+           rasterStackFolder,shapefileAOI)
   # Prepare organic soil data for the organic soil index
   dataPrep("organic",c("apr_sep_egdd_T5_2001-2020_pei.tif","ppe_pei.tif","bulkdensity_pei.tif","pH_pei.tif"),
-           FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
+           rasterStackFolder,shapefileAOI)
   # Prepare landscape data for the landscape index
   dataPrep("landscape",c("DEM_pei.tif"),
-           FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
+           rasterStackFolder,shapefileAOI)
+
 
   # 2. Indices
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
@@ -97,6 +111,14 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
   }
 
   # 2b. Mineral soil index
+  totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
+  totalFiles <- 0
+  for(i in 1:length(totalFilestemp)){
+    if(str_contains(totalFilestemp[i],"mineral") && str_contains(totalFilestemp[i],".tif")){
+      totalFiles <- totalFiles + 1
+    }
+  }
+
   for(i in 1:totalFiles){
     tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/mineral_processOrder_',i,'.txt')), header = FALSE, sep = ",")
     count <- 1
@@ -175,6 +197,14 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
   }
 
   # 2c. Organic soil index
+  totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
+  totalFiles <- 0
+  for(i in 1:length(totalFilestemp)){
+    if(str_contains(totalFilestemp[i],"organic") && str_contains(totalFilestemp[i],".tif")){
+      totalFiles <- totalFiles + 1
+    }
+  }
+
   for(i in 1:totalFiles){
     tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/organic_processOrder_',i,'.txt')), header = FALSE, sep = ",")
     count <- 1
@@ -230,6 +260,14 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
   }
 
   # 2d. Landscape index
+  totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
+  totalFiles <- 0
+  for(i in 1:length(totalFilestemp)){
+    if(str_contains(totalFilestemp[i],"landscape") && str_contains(totalFilestemp[i],".tif")){
+      totalFiles <- totalFiles + 1
+    }
+  }
+
   for(i in 1:totalFiles){
     tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/landscape_processOrder_',i,'.txt')), header = FALSE, sep = ",")
     count <- 1
@@ -267,8 +305,8 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
   # 3. Final rating
 
   # Check to make sure folder exists.
-  if(!file.exists(FFP(paste0("/data/results/")))){
-    fileLocation <- FFP(paste0("/data/results/"))
+  if(!file.exists(FFP(paste0("/data/temp/results/")))){
+    fileLocation <- FFP(paste0("/data/temp/results/"))
     file.create(fileLocation)
   }
 
@@ -298,7 +336,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
                          raster(tempRasterStack, layer = 3),
                          raster(tempRasterStack, layer = 4))
 
-    writePermData(baseRaster,FFP(paste0("/data/results/")),paste0("FinalResults_",i,".tif"),"GTiff")
+    writePermData(baseRaster,FFP(paste0("/data/temp/results/")),paste0("FinalResults_",i,".tif"),"GTiff")
   }
 
 }

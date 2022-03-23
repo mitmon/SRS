@@ -3,8 +3,93 @@
 # This R file contains the default data for data tables along with default inputs.
 
 # Creation date: Mar 01, 2022
-# Last updated: Mar 01, 2022
+# Last updated: Mar 23, 2022
 
+#' Alfalfa default data table
+#'
+#' The alfalfa default data table holds pre-defined data if there is no user
+#' input data.
+#' @return Alfalfa default data
+#' @export
+alfalfaDefaultDF <- function(){
+  return(rbind(
+    list(list(-150,0,0),list(-300,-150,30),list(-400,-300,50),list(-500,-400,70),list(-550,-500,80),list(-600,-550,90),list(-650,-600,100)),  # Moisture deduction
+    list(list(1890,2200,0),list(1410,1890,20),list(930,1410,55),list(480,930,70),list(0,480,80),list(NA),list(NA)), # Effective growing degree days T5
+    list(list(-50,-40,0),list(-40,-10,2.5),list(-10,10,5),list(10,30,7.5),list(30,50,10),list(NA),list(NA)), # Excess spring moisture
+    list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
+
+}
+
+#' Canola default data table
+#'
+#' The Canola default data table holds pre-defined data if there is no user
+#' input data.
+#' @return Canola default data
+#' @export
+canolaDefaultDF <- function(){
+  return(rbind(
+    list(list(-150,0,0),list(-300,-150,30),list(-400,-300,50),list(-500,-400,70),list(-550,-500,80),list(-600,-550,90),list(-650,-600,100)), # Moisture deduction
+    list(list(1200,2000,0),list(1050,1200,40),list(900,1050,55),list(500,900,70),list(0,500,90),list(NA),list(NA)), # Effective growing degree days T5
+    list(list(-50,-40,0),list(-40,-10,2.5),list(-10,10,5),list(10,30,7.5),list(30,50,10),list(NA),list(NA)), # Excess spring moisture
+    list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
+
+}
+
+#' Corn default data table
+#'
+#' The corn default data table holds pre-defined data if there is no user
+#' input data.
+#' @return Corn default data
+#' @export
+cornDefaultDF <- function(){
+  return(rbind(
+    list(list(-50,0,0),list(-150,-50,21),list(-250,-150,41),list(-300,-250,70),list(-400,-300,80),list(-400,-550,90),list(-550,-400,100)), # Moisture deduction
+    list(list(2700,3500,0),list(2300,2700,21),list(2000,2300,55),list(1700,2000,70),list(1200,1700,80),list(800,1200,90),list(0,800,100)), # Crop heat units
+    list(list(-50,-40,0),list(-40,-10,2.5),list(-10,10,5),list(10,30,7.5),list(30,50,10),list(NA),list(NA)), # Excess spring moisture
+    list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
+}
+
+#' Potato default data table
+#'
+#' The Potato default data table holds pre-defined data if there is no user
+#' input data.
+#' @return Potato default data
+#' @export
+potatoDefaultDF <- function(){
+  return(rbind(
+    list(list(-150,0,0),list(-300,-150,30),list(-400,-300,50),list(-500,-400,70),list(-550,-500,80),list(-600,-550,90),list(-650,-600,100)), # Moisture deduction
+    list(list(2700,3500,0),list(2300,2700,40),list(2000,2300,55),list(1200,2000,70),list(0,1200,90),list(NA),list(NA)), # Crop heat units
+    list(list(-50,-40,0),list(-40,-10,2.5),list(-10,10,5),list(10,30,7.5),list(30,50,10),list(NA),list(NA)), # Excess spring moisture
+    list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
+}
+
+#' Soybean default data table
+#'
+#' The soybean default data table holds pre-defined data if there is no user
+#' input data.
+#' @return Soybean default data
+#' @export
+soybeanDefaultDF <- function(){
+  return(rbind(
+    list(list(-100,0,0),list(-200,-100,20),list(-300,-200,40),list(-450,-300,70),list(-600,-450,100),list(NA),list(NA)), # Moisture deduction
+    list(list(2700,7000,0),list(2300,2700,40),list(2000,2300,55),list(1700,2000,70),list(1200,1700,80),list(0,1200,90),list(NA)), # Crop heat units
+    list(list(-50,-40,0),list(-40,-10,2.5),list(-10,10,5),list(10,30,7.5),list(30,50,10),list(NA),list(NA)), # Excess spring moisture
+    list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
+}
+
+#' Spring seeded small grain (SSSG) default data table
+#'
+#' The spring seeded small grain default data table holds pre-defined data if there is no user
+#' input data.
+#' @return Spring seeded small grain default data
+#' @export
+SSSGDefaultDF <- function(){
+  return(rbind(
+    list(list(-150,0,0),list(-300,-150,30),list(-400,-300,50),list(-500,-400,70),list(-600,-500,80),list(-15000,-600,100),list(NA)), # Moisture deduction
+    list(list(1200,7000,0),list(1050,1200,40),list(900,1050,55),list(500,900,70),list(0,500,90),list(NA),list(NA)), # Effective growing degree days T5
+    list(list(-50,-40,0),list(-40,-10,2.5),list(-10,10,5),list(10,30,7.5),list(30,50,10),list(NA),list(NA)), # Excess spring moisture
+    list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
+}
 
 #' Surface available water holding capacity data table
 #'

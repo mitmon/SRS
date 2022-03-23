@@ -539,6 +539,7 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
         if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))){
           fileLocation <- FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt"))
           file.create(fileLocation)
+          writeLines(paste0(tempListFiles[[j]]),fileLocation)
         } else {
           fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))
           fileDataTemp <- readLines(fileLocation)
@@ -548,11 +549,11 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
           if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))){
             fileLocation <- FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt"))
             file.create(fileLocation)
-            writeLines(c("slopePercent","slopeLength"),fileLocation)
+            writeLines(paste0("slopePercent",",slopeLength"),fileLocation)
           } else {
             fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))
             fileDataTemp <- readLines(fileLocation)
-            writeLines(c(fileDataTemp,"slopePercent","slopeLength"),fileLocation)
+            writeLines(paste0(fileDataTemp,",","slopePercent",",","slopeLength"),fileLocation)
           }
         }
       }
