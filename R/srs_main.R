@@ -37,21 +37,49 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
   # dataPrep("landscape",c("DEM_pei.tif"),
   #          FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
 
-  # Prepare climate data for the climate index
-  dataPrep("climate",c("ppe_pei.tif","ppe_Apr_pei.tif","ppe_Sep_pei.tif","apr_sep_egdd_T5_2001-2020_pei.tif"),
+  # Prepare data for each index
+  climateList <- list()
+  mineralList <- list()
+  organicList <- list()
+  landscapeList <- list()
+
+  inputDataList <- list.files(rasterStackFolder)
+  if(str_contains(cropType,c("alfalfa","canola","sssg"),logic = "or")){
+    cropType <- "EGDD"
+    inputDataList <- purrr::discard(inputDataList,.p = ~stringr::str_detect(.x,"egdd"))
+  } else if(str_contains(cropType,c("corn","potato","soybean"),logic = "or")){
+    cropType <- "CHU"
+    inputDataList <- purrr::discard(inputDataList,.p = ~stringr::str_detect(.x,"chu"))
+  }
+
+  for(i in 1:length(inputDataList)){
+    if(str_contains(inputDataList[i],c("ppe_Apr","ppe_Sep","ppe_May","egdd","chu"),logic = "or")){
+      climateList <- append(climateList,inputDataList[i])}
+    if(str_contains(inputDataList[i],c("ppe_May","silt","clay","organiccarbon","pH","bulk"),logic = "or")){
+      mineralList <- append(mineralList,inputDataList[i])}
+    if(str_contains(inputDataList[i],c("egdd","chu","ppe_May","pH","bulk"),logic = "or")){
+      organicList <- append(organicList,inputDataList[i])}
+    if(str_contains(inputDataList[i],c("DEM"),logic = "or")){
+      landscapeList <- append(landscapeList,inputDataList[i])}
+  }
+
+  dataPrep("climate",climateList,
            rasterStackFolder,shapefileAOI)
   # Prepare mineral soil data for the mineral soil index
-  dataPrep("mineral",c("ppe_pei.tif","siltcontent_pei.tif","claycontent_pei.tif","organiccarbon_pei.tif","pH_pei.tif","bulkdensity_pei.tif"),
+  dataPrep("mineral",mineralList,
            rasterStackFolder,shapefileAOI)
   # Prepare organic soil data for the organic soil index
-  dataPrep("organic",c("apr_sep_egdd_T5_2001-2020_pei.tif","ppe_pei.tif","bulkdensity_pei.tif","pH_pei.tif"),
+  dataPrep("organic",organicList,
            rasterStackFolder,shapefileAOI)
   # Prepare landscape data for the landscape index
-  dataPrep("landscape",c("DEM_pei.tif"),
+  dataPrep("landscape",landscapeList,
            rasterStackFolder,shapefileAOI)
 
 
   # 2. Indices
+  # 2a. Climate index
+  print("Starting climate index calculation...")
+
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
   totalFiles <- 0
   for(i in 1:length(totalFilestemp)){
@@ -60,7 +88,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
     }
   }
 
-  # 2a. Climate index
+
   for(i in 1:totalFiles){
     tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/climate_processOrder_',i,'.txt')), header = FALSE, sep = ",")
     count <- 1
@@ -68,7 +96,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
     baseClimateRaster <- raster(tempDF)
     for(j in 1:length(tempOrder)){
       if(count <= length(tempDF[1])){
-        if(str_contains(tempOrder[j], "egdd") || str_contains(tempOrder[j], "chu")){
+        if(str_contains(tempOrder[j], c("egdd","chu"),logic = "or")){
           temp <- raster(tempDF, layer = count)
           assign(paste0("climateDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
           count <- count + 1
@@ -117,6 +145,8 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
   }
 
   # 2b. Mineral soil index
+  print("Starting mineral soil index calculation...")
+
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
   totalFiles <- 0
   for(i in 1:length(totalFilestemp)){
@@ -203,6 +233,8 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
   }
 
   # 2c. Organic soil index
+  print("Starting organic soil calculation...")
+
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
   totalFiles <- 0
   for(i in 1:length(totalFilestemp)){
@@ -218,7 +250,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
     baseOrganicRaster <- raster(tempDF)
     for(j in 1:length(tempOrder)){
       if(count <= length(tempDF[1])){
-        if(str_contains(tempOrder[j], "egdd")){
+        if(str_contains(tempOrder[j], c("egdd","chu"),logic = "or")){
           temp <- raster(tempDF, layer = count)
           assign(paste0("organicDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
           count <- count + 1
@@ -266,6 +298,8 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
   }
 
   # 2d. Landscape index
+  print("Starting landscape index calculation...")
+
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
   totalFiles <- 0
   for(i in 1:length(totalFilestemp)){

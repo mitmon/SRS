@@ -124,10 +124,16 @@ lsFactorFunction <- function(DEM,counter){
   }
 
   newElevPixelFunction <- function(x,y){
-    if(!is.null(x) || !is.null(y) || !is.na(x) || !is.na(y)){
-      return(elevArraytemp[x,y])
-    } else {
-      next }
+    if(is.null(x) || is.null(y) || is.na(x) || is.na(y)){
+      pass()
+    }
+    else if (x <= nRows && y <= nCols){
+        return(elevArraytemp[x,y])
+      }
+    else{
+      # Else clause is if it is only 1 longer than the x or y coordinates, not a catch all
+      return(elevArraytemp[x-1,y-1])
+    }
   }
 
   slopeCalcFunction <- function(x,y){
