@@ -185,6 +185,7 @@ lsFactorFunction <- function(DEM,counter){
 
       init <- mapply(slopeCalcFunction, init, elevDiff)
       # init <- unlist(init)
+      init[lengths(init) == 0] <- NA
       maxDHSArray[nRow,] <- init
 
     } else {
@@ -392,6 +393,7 @@ lsFactorFunction <- function(DEM,counter){
         return(NCSLArraytemp[,y])
       } else {return(x)}, init,sequence(nCols))
 
+      init[lengths(init) == 0] <- NA
       NCSLArray[nRow,] <- init
 
     } else {

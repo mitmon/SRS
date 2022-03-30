@@ -78,224 +78,224 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
 
   # 2. Indices
   # 2a. Climate index
-  print("Starting climate index calculation...")
-
-  totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
-  totalFiles <- 0
-  for(i in 1:length(totalFilestemp)){
-    if(str_contains(totalFilestemp[i],"climate") && str_contains(totalFilestemp[i],".tif")){
-      totalFiles <- totalFiles + 1
-    }
-  }
-
-
-  for(i in 1:totalFiles){
-    tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/climate_processOrder_',i,'.txt')), header = FALSE, sep = ",")
-    count <- 1
-    tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/climate_table_temp_',i,'.tif')))
-    baseClimateRaster <- raster(tempDF)
-    for(j in 1:length(tempOrder)){
-      if(count <= length(tempDF[1])){
-        if(str_contains(tempOrder[j], c("egdd","chu"),logic = "or")){
-          temp <- raster(tempDF, layer = count)
-          assign(paste0("climateDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
-          count <- count + 1
-        } else if(str_contains(tempOrder[j], "ppe_Apr")){
-          temp <- raster(tempDF, layer = count)
-          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
-          assign(paste0("climateDF_2"),temp)
-          count <- count + 1
-        } else if(str_contains(tempOrder[j], "ppe_Sep")){
-          temp <- raster(tempDF, layer = count)
-          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
-          assign(paste0("climateDF_3"),temp)
-          count <- count + 1
-        } else if(str_contains(tempOrder[j], "ppe")){
-          temp <- raster(tempDF, layer = count)
-          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
-          assign(paste0("climateDF_4"),temp)
-          count <- count + 1
-        }
-      } else if(j < length(tempDF[1])){
-        next
-      } else {
-        break
-      }
-      # In future versions, allow for adjustable number of input parameters.
-    }
-
-    cropArrays1 <- list(list(cropArrays[1,]))
-    cropArrays2 <- list(list(cropArrays[2,]))
-    cropArrays3 <- list(list(cropArrays[3,]))
-    cropArrays4 <- list(list(cropArrays[4,]))
-
-    climateResults <- matrix(mapply(climateIndexMain,
-                                    cropArrays1,
-                                    cropArrays2,
-                                    cropArrays3,
-                                    cropArrays4,
-                                    get(paste0('climateDF_4'))[3],
-                                    get(paste0('climateDF_1'))[3],
-                                    get(paste0('climateDF_2'))[3],
-                                    get(paste0('climateDF_3'))[3],
-                                    cropType),ncol = 1)
-    values(baseClimateRaster) <- climateResults
-    writePermData(baseClimateRaster,FFP(paste0('/data/temp/results/')),
-                  paste0('climateResults_',i),"GTiff")
-  }
-
-  # 2b. Mineral soil index
-  print("Starting mineral soil index calculation...")
-
-  totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
-  totalFiles <- 0
-  for(i in 1:length(totalFilestemp)){
-    if(str_contains(totalFilestemp[i],"mineral") && str_contains(totalFilestemp[i],".tif")){
-      totalFiles <- totalFiles + 1
-    }
-  }
-
-  for(i in 1:totalFiles){
-    tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/mineral_processOrder_',i,'.txt')), header = FALSE, sep = ",")
-    count <- 1
-    tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/mineral_table_temp_',i,'.tif')))
-    baseMineralRaster <- raster(tempDF)
-    for(j in 1:length(tempOrder)){
-      if(count <= length(tempDF[1])){
-        if(str_contains(tempOrder[j], "ppe")){
-          temp <- raster(tempDF, layer = count)
-          assign(paste0("mineralDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
-          count <- count + 1
-        } else if(str_contains(tempOrder[j], "silt")){
-          temp <- raster(tempDF, layer = count)
-          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
-          assign(paste0("mineralDF_2"),temp)
-          temp <- raster(tempDF, layer = (j+1))
-          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
-          assign(paste0("mineralDF_3"),temp)
-          count <- count + 3
-        } else if(str_contains(tempOrder[j], "clay")){
-          temp <- raster(tempDF, layer = count)
-          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
-          assign(paste0("mineralDF_4"),temp)
-          temp <- raster(tempDF, layer = (j+1))
-          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
-          assign(paste0("mineralDF_5"),temp)
-          count <- count + 3
-        } else if(str_contains(tempOrder[j], "organiccarbon")){
-          temp <- raster(tempDF, layer = count)
-          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
-          assign(paste0("mineralDF_6"),temp)
-          count <- count + 3
-        } else if(str_contains(tempOrder[j], "pH")){
-          temp <- raster(tempDF, layer = count)
-          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
-          assign(paste0("mineralDF_7"),temp)
-          temp <- raster(tempDF, layer = (count+1))
-          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
-          assign(paste0("mineralDF_8"),temp)
-          count <- count + 3
-        } else if(str_contains(tempOrder[j], "bulk")){
-          temp <- raster(tempDF, layer = (count+1))
-          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
-          assign(paste0("mineralDF_9"),temp)
-          count <- count + 3
-        }
-      } else if(j < length(tempDF[1])){
-        next
-      } else {
-        break
-      }
-      # In future versions, allow for adjustable number of input parameters.
-    }
-
-    mineralResults <- matrix(mapply(mineralSoilIndexMain,
-                                    get(paste0('mineralDF_1'))[3],
-                                    get(paste0('mineralDF_2'))[3],
-                                    get(paste0('mineralDF_4'))[3],
-                                    get(paste0('mineralDF_3'))[3],
-                                    get(paste0('mineralDF_5'))[3],
-                                    125,
-                                    get(paste0('mineralDF_6'))[3],
-                                    NA,
-                                    get(paste0('mineralDF_7'))[3],
-                                    NA,
-                                    NA,
-                                    NA,
-                                    get(paste0('mineralDF_9'))[3],
-                                    NA,
-                                    get(paste0('mineralDF_8'))[3],
-                                    NA,
-                                    NA),ncol = 1)
-    values(baseMineralRaster) <- mineralResults
-    writePermData(baseMineralRaster,FFP(paste0('/data/temp/results/')),
-                  paste0('mineralResults_',i),"GTiff")
-  }
-
-  # 2c. Organic soil index
-  print("Starting organic soil calculation...")
-
-  totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
-  totalFiles <- 0
-  for(i in 1:length(totalFilestemp)){
-    if(str_contains(totalFilestemp[i],"organic") && str_contains(totalFilestemp[i],".tif")){
-      totalFiles <- totalFiles + 1
-    }
-  }
-
-  for(i in 1:totalFiles){
-    tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/organic_processOrder_',i,'.txt')), header = FALSE, sep = ",")
-    count <- 1
-    tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/organic_table_temp_',i,'.tif')))
-    baseOrganicRaster <- raster(tempDF)
-    for(j in 1:length(tempOrder)){
-      if(count <= length(tempDF[1])){
-        if(str_contains(tempOrder[j], c("egdd","chu"),logic = "or")){
-          temp <- raster(tempDF, layer = count)
-          assign(paste0("organicDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
-          count <- count + 1
-        } else if(str_contains(tempOrder[j], "ppe")){
-          temp <- raster(tempDF, layer = count)
-          assign(paste0("organicDF_2"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
-          count <- count + 1
-        } else if(str_contains(tempOrder[j], "bulk")){
-          temp <- raster(tempDF, layer = count)
-          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
-          assign(paste0("organicDF_3"),temp)
-          temp <- raster(tempDF, layer = (count+1))
-          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
-          assign(paste0("organicDF_4"),temp)
-          count <- count + 3
-        } else if(str_contains(tempOrder[j], "pH")){
-          temp <- raster(tempDF, layer = count)
-          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
-          assign(paste0("organicDF_5"),temp)
-          temp <- raster(tempDF, layer = (count+1))
-          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
-          assign(paste0("organicDF_6"),temp)
-          count <- count + 3
-        }
-      } else if(j < length(tempDF[1])){
-        next
-      } else {
-        break
-      }
-      # In future versions, allow for adjustable number of input parameters.
-    }
-    organicResults <- matrix(mapply(organicSoilIndexMain,
-                                    get(paste0('organicDF_1'))[3],
-                                    get(paste0('organicDF_2'))[3],
-                                    get(paste0('organicDF_3'))[3],
-                                    get(paste0('organicDF_4'))[3],
-                                    125,
-                                    get(paste0('organicDF_5'))[3],
-                                    NA,
-                                    get(paste0('organicDF_6'))[3],
-                                    NA),ncol = 1)
-    values(baseOrganicRaster) <- organicResults
-    writePermData(baseOrganicRaster,FFP(paste0('/data/temp/results/')),
-                  paste0('organicResults_',i),"GTiff")
-  }
+  # print("Starting climate index calculation...")
+  #
+  # totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
+  # totalFiles <- 0
+  # for(i in 1:length(totalFilestemp)){
+  #   if(str_contains(totalFilestemp[i],"climate") && str_contains(totalFilestemp[i],".tif")){
+  #     totalFiles <- totalFiles + 1
+  #   }
+  # }
+  #
+  #
+  # for(i in 1:totalFiles){
+  #   tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/climate_processOrder_',i,'.txt')), header = FALSE, sep = ",")
+  #   count <- 1
+  #   tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/climate_table_temp_',i,'.tif')))
+  #   baseClimateRaster <- raster(tempDF)
+  #   for(j in 1:length(tempOrder)){
+  #     if(count <= length(tempDF[1])){
+  #       if(str_contains(tempOrder[j], c("egdd","chu"),logic = "or")){
+  #         temp <- raster(tempDF, layer = count)
+  #         assign(paste0("climateDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
+  #         count <- count + 1
+  #       } else if(str_contains(tempOrder[j], "ppe_Apr")){
+  #         temp <- raster(tempDF, layer = count)
+  #         temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+  #         assign(paste0("climateDF_2"),temp)
+  #         count <- count + 1
+  #       } else if(str_contains(tempOrder[j], "ppe_Sep")){
+  #         temp <- raster(tempDF, layer = count)
+  #         temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+  #         assign(paste0("climateDF_3"),temp)
+  #         count <- count + 1
+  #       } else if(str_contains(tempOrder[j], "ppe")){
+  #         temp <- raster(tempDF, layer = count)
+  #         temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+  #         assign(paste0("climateDF_4"),temp)
+  #         count <- count + 1
+  #       }
+  #     } else if(j < length(tempDF[1])){
+  #       next
+  #     } else {
+  #       break
+  #     }
+  #     # In future versions, allow for adjustable number of input parameters.
+  #   }
+  #
+  #   cropArrays1 <- list(list(cropArrays[1,]))
+  #   cropArrays2 <- list(list(cropArrays[2,]))
+  #   cropArrays3 <- list(list(cropArrays[3,]))
+  #   cropArrays4 <- list(list(cropArrays[4,]))
+  #
+  #   climateResults <- matrix(mapply(climateIndexMain,
+  #                                   cropArrays1,
+  #                                   cropArrays2,
+  #                                   cropArrays3,
+  #                                   cropArrays4,
+  #                                   get(paste0('climateDF_4'))[3],
+  #                                   get(paste0('climateDF_1'))[3],
+  #                                   get(paste0('climateDF_2'))[3],
+  #                                   get(paste0('climateDF_3'))[3],
+  #                                   cropType),ncol = 1)
+  #   values(baseClimateRaster) <- climateResults
+  #   writePermData(baseClimateRaster,FFP(paste0('/data/temp/results/')),
+  #                 paste0('climateResults_',i),"GTiff")
+  # }
+  #
+  # # 2b. Mineral soil index
+  # print("Starting mineral soil index calculation...")
+  #
+  # totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
+  # totalFiles <- 0
+  # for(i in 1:length(totalFilestemp)){
+  #   if(str_contains(totalFilestemp[i],"mineral") && str_contains(totalFilestemp[i],".tif")){
+  #     totalFiles <- totalFiles + 1
+  #   }
+  # }
+  #
+  # for(i in 1:totalFiles){
+  #   tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/mineral_processOrder_',i,'.txt')), header = FALSE, sep = ",")
+  #   count <- 1
+  #   tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/mineral_table_temp_',i,'.tif')))
+  #   baseMineralRaster <- raster(tempDF)
+  #   for(j in 1:length(tempOrder)){
+  #     if(count <= length(tempDF[1])){
+  #       if(str_contains(tempOrder[j], "ppe")){
+  #         temp <- raster(tempDF, layer = count)
+  #         assign(paste0("mineralDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
+  #         count <- count + 1
+  #       } else if(str_contains(tempOrder[j], "silt")){
+  #         temp <- raster(tempDF, layer = count)
+  #         temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+  #         assign(paste0("mineralDF_2"),temp)
+  #         temp <- raster(tempDF, layer = (j+1))
+  #         temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+  #         assign(paste0("mineralDF_3"),temp)
+  #         count <- count + 3
+  #       } else if(str_contains(tempOrder[j], "clay")){
+  #         temp <- raster(tempDF, layer = count)
+  #         temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+  #         assign(paste0("mineralDF_4"),temp)
+  #         temp <- raster(tempDF, layer = (j+1))
+  #         temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+  #         assign(paste0("mineralDF_5"),temp)
+  #         count <- count + 3
+  #       } else if(str_contains(tempOrder[j], "organiccarbon")){
+  #         temp <- raster(tempDF, layer = count)
+  #         temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+  #         assign(paste0("mineralDF_6"),temp)
+  #         count <- count + 3
+  #       } else if(str_contains(tempOrder[j], "pH")){
+  #         temp <- raster(tempDF, layer = count)
+  #         temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+  #         assign(paste0("mineralDF_7"),temp)
+  #         temp <- raster(tempDF, layer = (count+1))
+  #         temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+  #         assign(paste0("mineralDF_8"),temp)
+  #         count <- count + 3
+  #       } else if(str_contains(tempOrder[j], "bulk")){
+  #         temp <- raster(tempDF, layer = (count+1))
+  #         temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+  #         assign(paste0("mineralDF_9"),temp)
+  #         count <- count + 3
+  #       }
+  #     } else if(j < length(tempDF[1])){
+  #       next
+  #     } else {
+  #       break
+  #     }
+  #     # In future versions, allow for adjustable number of input parameters.
+  #   }
+  #
+  #   mineralResults <- matrix(mapply(mineralSoilIndexMain,
+  #                                   get(paste0('mineralDF_1'))[3],
+  #                                   get(paste0('mineralDF_2'))[3],
+  #                                   get(paste0('mineralDF_4'))[3],
+  #                                   get(paste0('mineralDF_3'))[3],
+  #                                   get(paste0('mineralDF_5'))[3],
+  #                                   125,
+  #                                   get(paste0('mineralDF_6'))[3],
+  #                                   NA,
+  #                                   get(paste0('mineralDF_7'))[3],
+  #                                   NA,
+  #                                   NA,
+  #                                   NA,
+  #                                   get(paste0('mineralDF_9'))[3],
+  #                                   NA,
+  #                                   get(paste0('mineralDF_8'))[3],
+  #                                   NA,
+  #                                   NA),ncol = 1)
+  #   values(baseMineralRaster) <- mineralResults
+  #   writePermData(baseMineralRaster,FFP(paste0('/data/temp/results/')),
+  #                 paste0('mineralResults_',i),"GTiff")
+  # }
+  #
+  # # 2c. Organic soil index
+  # print("Starting organic soil calculation...")
+  #
+  # totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
+  # totalFiles <- 0
+  # for(i in 1:length(totalFilestemp)){
+  #   if(str_contains(totalFilestemp[i],"organic") && str_contains(totalFilestemp[i],".tif")){
+  #     totalFiles <- totalFiles + 1
+  #   }
+  # }
+  #
+  # for(i in 1:totalFiles){
+  #   tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/organic_processOrder_',i,'.txt')), header = FALSE, sep = ",")
+  #   count <- 1
+  #   tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/organic_table_temp_',i,'.tif')))
+  #   baseOrganicRaster <- raster(tempDF)
+  #   for(j in 1:length(tempOrder)){
+  #     if(count <= length(tempDF[1])){
+  #       if(str_contains(tempOrder[j], c("egdd","chu"),logic = "or")){
+  #         temp <- raster(tempDF, layer = count)
+  #         assign(paste0("organicDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
+  #         count <- count + 1
+  #       } else if(str_contains(tempOrder[j], "ppe")){
+  #         temp <- raster(tempDF, layer = count)
+  #         assign(paste0("organicDF_2"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
+  #         count <- count + 1
+  #       } else if(str_contains(tempOrder[j], "bulk")){
+  #         temp <- raster(tempDF, layer = count)
+  #         temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+  #         assign(paste0("organicDF_3"),temp)
+  #         temp <- raster(tempDF, layer = (count+1))
+  #         temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+  #         assign(paste0("organicDF_4"),temp)
+  #         count <- count + 3
+  #       } else if(str_contains(tempOrder[j], "pH")){
+  #         temp <- raster(tempDF, layer = count)
+  #         temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+  #         assign(paste0("organicDF_5"),temp)
+  #         temp <- raster(tempDF, layer = (count+1))
+  #         temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+  #         assign(paste0("organicDF_6"),temp)
+  #         count <- count + 3
+  #       }
+  #     } else if(j < length(tempDF[1])){
+  #       next
+  #     } else {
+  #       break
+  #     }
+  #     # In future versions, allow for adjustable number of input parameters.
+  #   }
+  #   organicResults <- matrix(mapply(organicSoilIndexMain,
+  #                                   get(paste0('organicDF_1'))[3],
+  #                                   get(paste0('organicDF_2'))[3],
+  #                                   get(paste0('organicDF_3'))[3],
+  #                                   get(paste0('organicDF_4'))[3],
+  #                                   125,
+  #                                   get(paste0('organicDF_5'))[3],
+  #                                   NA,
+  #                                   get(paste0('organicDF_6'))[3],
+  #                                   NA),ncol = 1)
+  #   values(baseOrganicRaster) <- organicResults
+  #   writePermData(baseOrganicRaster,FFP(paste0('/data/temp/results/')),
+  #                 paste0('organicResults_',i),"GTiff")
+  # }
 
   # 2d. Landscape index
   print("Starting landscape index calculation...")
