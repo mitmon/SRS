@@ -17,11 +17,14 @@
 #' @export
 moistureComponent <- function(inputArray,ppe){
   for(i in 1:length(inputArray)){
-    if(is.na(ppe)){
+    if(is.na(ppe) || is.na(inputArray[[i]])){
       return(0)
     } else if(ppe >= inputArray[[i]][1] && ppe < inputArray[[i]][2]){
       # The deduction is limited to 100 points
-      ifelse(inputArray[[i]][3] > 100, return(100),return(100-inputArray[[i]][3]))
+      if(inputArray[[i]][3] > 100){
+        return(100)
+      } else {
+        return((100- as.numeric(inputArray[[i]][3])))}
     } else if(i == length(inputArray)){
       return(0)
     } else {
@@ -40,11 +43,14 @@ moistureComponent <- function(inputArray,ppe){
 #' @export
 egddComponent <- function(inputArray,egdd){
   for(i in 1:length(inputArray)){
-    if(is.na(egdd)){
+    if(is.na(egdd) || is.na(inputArray[[i]])){
       return(0)
     } else if(egdd >= inputArray[[i]][1] && egdd < inputArray[[i]][2]){
       # The deduction is limited to 100 points
-      ifelse(inputArray[[i]][3] > 100, return(100),return(100-inputArray[[i]][3]))
+      if(inputArray[[i]][3] > 100){
+        return(100)
+      } else {
+        return((100- as.numeric(inputArray[[i]][3])))}
     } else if(i == length(inputArray)){
       return(0)
     } else {
@@ -63,11 +69,14 @@ egddComponent <- function(inputArray,egdd){
 #' @export
 chuComponent <- function(inputArray,chu){
   for(i in 1:length(inputArray)){
-    if(is.na(chu)){
+    if(is.na(chu) || is.na(inputArray[[i]])){
       return(0)
     } else if(chu >= inputArray[[i]][1] && chu < inputArray[[i]][2]){
       # The deduction is limited to 100 points
-      ifelse(inputArray[[i]][3] > 100, return(100),return(100-inputArray[[i]][3]))
+      if(inputArray[[i]][3] > 100){
+        return(100)
+      } else {
+        return((100- as.numeric(inputArray[[i]][3])))}
     } else if(i == length(inputArray)){
       return(0)
     } else {
@@ -86,11 +95,14 @@ chuComponent <- function(inputArray,chu){
 #' @export
 esmComponent <- function(inputArray,ppe){
   for(i in 1:length(inputArray)){
-    if(is.na(ppe)){
+    if(is.na(ppe) || is.na(inputArray[[i]])){
       return(0)
     } else if(ppe >= inputArray[[i]][1] && ppe < inputArray[[i]][2]){
       # The early spring moisture is limited to 10% decrease in productivity
-      ifelse(inputArray[[i]][3] > 10, return(10),return(inputArray[[i]][3]))
+      if(inputArray[[i]][3] > 10){
+        return(10)
+      } else {
+        return((10- as.numeric(inputArray[[i]][3])))}
     } else if(i == length(inputArray)){
       return(0)
     } else {
@@ -109,11 +121,14 @@ esmComponent <- function(inputArray,ppe){
 #' @export
 efmComponent <- function(inputArray,ppe){
   for(i in 1:length(inputArray)){
-    if(is.na(ppe)){
+    if(is.na(ppe) || is.na(inputArray[[i]])){
       return(0)
     } else if(ppe >= inputArray[[i]][1] && ppe < inputArray[[i]][2]){
       # The excess fall moisture is limited to 10% decrease in productivity
-      ifelse(inputArray[[i]][3] > 10, return(10),return(inputArray[[i]][3]))
+      if(inputArray[[i]][3] > 10){
+        return(10)
+      } else {
+        return((10- as.numeric(inputArray[[i]][3])))}
     } else if(i == length(inputArray)){
       return(0)
     } else {
@@ -132,11 +147,14 @@ efmComponent <- function(inputArray,ppe){
 #' @export
 effComponent <- function(inputArray,daysBeforeFrost){
   for(i in 1:length(inputArray)){
-    if(is.na(daysBeforeFrost)){
+    if(is.na(daysBeforeFrost) || is.na(inputArray[[i]])){
       return(0)
     } else if(daysBeforeFrost >= inputArray[[i]][1] && daysBeforeFrost < inputArray[[i]][2]){
       # The early fall frost is limited to 10% decrease in productivity
-      ifelse(inputArray[[i]][3] > 10, return(10),return(inputArray[[i]][3]))
+      if(inputArray[[i]][3] > 10){
+        return(10)
+      } else {
+        return((10- as.numeric(inputArray[[i]][3])))}
     } else if(i == length(inputArray)){
       return(0)
     } else {
@@ -155,11 +173,14 @@ effComponent <- function(inputArray,daysBeforeFrost){
 #' @export
 surfaceSalinityComponent <- function(inputArray,ec){
   for(i in 1:length(inputArray)){
-    if(is.na(ec)){
+    if(is.na(ec) || is.na(inputArray[[i]])){
       return(0)
     } else if(ec >= inputArray[[i]][1] && ec < inputArray[[i]][2]){
       # The deduction is limited to 100 points
-      ifelse(inputArray[[i]][3] > 100, return(100),return(100-inputArray[[i]][3]))
+      if(inputArray[[i]][3] > 100){
+        return(100)
+      } else {
+        return((100- as.numeric(inputArray[[i]][3])))}
     } else if(i == length(inputArray)){
       return(0)
     } else {
@@ -178,11 +199,14 @@ surfaceSalinityComponent <- function(inputArray,ec){
 #' @export
 subsurfaceSalinityComponent <- function(inputArray,ec){
   for(i in 1:length(inputArray)){
-    if(is.na(ec)){
+    if(is.na(ec) || is.na(inputArray[[i]])){
       return(0)
     } else if(ec >= inputArray[[i]][1] && ec < inputArray[[i]][2]){
       # The subsurface salinity component is limited to 70% decrease in productivity
-      ifelse(inputArray[[i]][3] > 70, return(70),return(inputArray[[i]][3]))
+      if(inputArray[[i]][3] > 70){
+        return(70)
+      } else {
+        return((70- as.numeric(inputArray[[i]][3])))}
     } else if(i == length(inputArray)){
       return(0)
     } else {
@@ -202,11 +226,14 @@ subsurfaceSalinityComponent <- function(inputArray,ec){
 #' @export
 numberCutsComponent <- function(inputArray,egdd){
   for(i in 1:length(inputArray)){
-    if(is.na(egdd)){
+    if(is.na(egdd) || is.na(inputArray[[i]])){
       return(0)
     } else if(egdd >= inputArray[[i]][1] && egdd < inputArray[[i]][2]){
       # The deduction is limited to 100 points
-      ifelse(inputArray[[i]][3] > 100, return(100),return(100-inputArray[[i]][3]))
+      if(inputArray[[i]][3] > 100){
+        return(100)
+      } else {
+        return((100- as.numeric(inputArray[[i]][3])))}
     } else if(i == length(inputArray)){
       return(0)
     } else {

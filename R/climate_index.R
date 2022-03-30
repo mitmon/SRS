@@ -19,9 +19,9 @@
 #' if the crop uses crop heat units (CHU) use CHU.
 #' @return Deduction points for the basic climate rating.
 #' @export
-climateIndexMain <- function(ratingTableArrayMC,ratingTableArrayESM,ratingTableArrayEFM, ppe, temperatureFactor, ppeSpring, ppeFall, type){
+climateIndexMain <- function(ratingTableArrayMC,ratingTableArrayTF,ratingTableArrayESM,ratingTableArrayEFM, ppe, temperatureFactor, ppeSpring, ppeFall, type){
 
-  one <- mapply(basicClimateRating,ratingTableArrayMC,ppe,temperatureFactor,type)
+  one <- mapply(basicClimateRating,ratingTableArrayMC,ratingTableArrayTF,ppe,temperatureFactor,type)
   two <- mapply(climateModifyingFactors,ratingTableArrayESM,ratingTableArrayEFM, ppeSpring, ppeFall)
   results <- mapply(climateRating, one, two)
   return(results)
@@ -41,15 +41,15 @@ climateIndexMain <- function(ratingTableArrayMC,ratingTableArrayESM,ratingTableA
 #' if the crop uses crop heat units (CHU) use CHU.
 #' @return Deduction points for the basic climate rating.
 #' @export
-basicClimateRating <- function(ratingTableArrayMC,ppe,temperatureFactor,type){
+basicClimateRating <- function(ratingTableArrayMC,ratingTableArrayTF,ppe,temperatureFactor,type){
 
-  moistureFactor <- moistureComponent(ratingTableArrayMC[1], ppe)
+  moistureFactor <- moistureComponent(ratingTableArrayMC, ppe)
 
   # Need to determine if it's EGDD or CHU
   if(type == "EGDD"){
-    temperatureFactor <- egddComponent(ratingTableArrayMC[2], temperatureFactor)
+    temperatureFactor <- egddComponent(ratingTableArrayTF, temperatureFactor)
   } else if(type == "CHU"){
-    temperatureFactor <- chuComponent(ratingTableArrayMC[2],temperatureFactor)
+    temperatureFactor <- chuComponent(ratingTableArrayTF,temperatureFactor)
   } else {
     stop("Error determining if the crop uses effective growing degree days or
          crop heat units. Please specify EGDD or CHU")
@@ -73,9 +73,9 @@ basicClimateRating <- function(ratingTableArrayMC,ppe,temperatureFactor,type){
 climateModifyingFactors <- function(ratingTableArrayESM,ratingTableArrayEFM, ppeSpring, ppeFall){
 
   # Early spring moisture
-  esm <- esmComponent(ratingTableArray, ppeSpring)
+  esm <- esmComponent(ratingTableArrayESM, ppeSpring)
   # Excess fall moisture
-  efm <- efmComponent(ratingTableArray, ppeFall)
+  efm <- efmComponent(ratingTableArrayEFM, ppeFall)
   # Early fall frost
   # Not being used right now. Adding in future versions.
   # eff <- effComponent(inputArray, temperatureFall)

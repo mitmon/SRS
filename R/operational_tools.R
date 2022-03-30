@@ -157,7 +157,7 @@ surfaceAndSubsurface <- function(divideDepth,inputRaster){
     }
   }
 
-  inputRaster <- as.data.frame(inputRaster, xy = TRUE, na.rm = FALSE)
+  inputRaster <- as.data.frame(inputRaster, xy = TRUE, na.rm = FALSE,optional=TRUE)
 
   inputRaster$surface <- rowMeans(inputRaster[,c(3:divide)])
   inputRaster$subsurface <- rowMeans(inputRaster[,c(divide:(ncol(inputRaster)-2))])
@@ -430,6 +430,48 @@ batchCropRaster <- function(inputFolder,inputExtent){
   }
 
   print(paste0("Cropped ", length(listFiles)," files."))
+}
+
+#' Rating table function
+#'
+#' This tools converts the values from each indices into a rating.
+#' @param inputValue The input values to be converted to a rating
+#' @return Returns a rating from 1 to 7 with 1 being the best
+#' @export
+ratingTable <- function(x){
+  if(is.na(x)){
+    x <- NA
+  } else if(x < 10){
+    x <- 7
+  } else if(x < 20){
+    x <- 6
+  } else if(x < 30){
+    x <- 5
+  } else if(x < 45){
+    x <- 4
+  } else if(x < 60){
+    x <- 3
+  } else if(x < 80){
+    x <- 2
+  } else if(x <= 100){
+    x <- 1
+  }
+  return(x)
+}
+
+#' Final table function
+#'
+#' This tools converts the values from each indices into a rating.
+#' @param w,x,y,z The input climate, mineral soil, organic soil, and landscape
+#' calculated values from each index.
+#' @return Returns a final rating from 1 to 7 with 1 being the best. Also returns
+#' the index values for each respectable index. Climate, mineral soil, organic soil,
+#' and landscape are the 2 to n values on each rating
+#' @export
+maxFunction <- function(w,x,y,z){
+  tempMax <- max(w,x,y,z)
+  tempMax <- as.integer((tempMax*10000)) + as.integer((w*1000)) + as.integer((x*100)) + as.integer((y*10)) + as.integer((z*1))
+  return(tempMax)
 }
 
 ####################### SRS Specific Tools #######################

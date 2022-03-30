@@ -96,14 +96,20 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
       # In future versions, allow for adjustable number of input parameters.
     }
 
+    cropArrays1 <- list(list(cropArrays[1,]))
+    cropArrays2 <- list(list(cropArrays[2,]))
+    cropArrays3 <- list(list(cropArrays[3,]))
+    cropArrays4 <- list(list(cropArrays[4,]))
+
     climateResults <- matrix(mapply(climateIndexMain,
-                                    cropArrays[1],
-                                    cropArrays[2],
-                                    cropArrays[3],
-                                    get(paste0('climateDF_3'))[3],
+                                    cropArrays1,
+                                    cropArrays2,
+                                    cropArrays3,
+                                    cropArrays4,
+                                    get(paste0('climateDF_4'))[3],
                                     get(paste0('climateDF_1'))[3],
                                     get(paste0('climateDF_2'))[3],
-                                    get(paste0('climateDF_4'))[3],
+                                    get(paste0('climateDF_3'))[3],
                                     cropType),ncol = 1)
     values(baseClimateRaster) <- climateResults
     writePermData(baseClimateRaster,FFP(paste0('/data/temp/results/')),
@@ -315,27 +321,31 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
   baseRaster <- NULL
 
   for(i in 1:(length(totalFiles)/4)){
-    while(i <= length(totalFiles)){
-      if(str_contains(paste0("climateResults_",i)) ||
-         str_contains(paste0("mineralResults_",i)) ||
-         str_contains(paste0("organicResults_",i)) ||
-         str_contains(paste0("landscapeResults_",i))){
+    tempRasterStack <- NULL
+    for(j in 1:length(totalFiles)){
+      if(str_contains(paste0("climateResults_",i,".tif"),totalFiles[j]) ||
+         str_contains(paste0("mineralResults_",i,".tif"),totalFiles[j]) ||
+         str_contains(paste0("organicResults_",i,".tif"),totalFiles[j]) ||
+         str_contains(paste0("landscapeResults_",i,".tif"),totalFiles[j])){
 
-        if(i == 1){
-          tempRasterStack <- loadRaster(FFP(paste0("/data/temp/results/")))
+        if(is_empty(tempRasterStack)){
+          tempRasterStack <- loadRaster(FFP(paste0("/data/temp/results/",totalFiles[j])))
           baseRaster <- raster(tempRasterStack)
         } else {
-          tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/results/"))))
+          tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/results/",totalFiles[j]))))
         }
       }
-      i <- i + 1
     }
+    temp1 <- sapply(raster(tempRasterStack, layer = 1),ratingTable)
+    temp2 <- sapply(raster(tempRasterStack, layer = 2),ratingTable)
+    temp3 <- sapply(raster(tempRasterStack, layer = 3),ratingTable)
+    temp4 <- sapply(raster(tempRasterStack, layer = 4),ratingTable)
 
-    value(baseRaster) <- mapply(function(w,x,y,z) return(max(w,x,y,z)),raster(tempRasterStack, layer = 1),
-                         raster(tempRasterStack, layer = 2),
-                         raster(tempRasterStack, layer = 3),
-                         raster(tempRasterStack, layer = 4))
-
+    temp <- mapply(maxFunction,temp1,
+                         temp2,
+                         temp3,
+                         temp4)
+    values(baseRaster) <- temp
     writePermData(baseRaster,FFP(paste0("/data/temp/results/")),paste0("FinalResults_",i,".tif"),"GTiff")
   }
 
