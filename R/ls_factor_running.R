@@ -108,7 +108,7 @@ lsFactorFunction <- function(DEM,counter){
   values(baseRaster) <- array(flowdir, dim = c(nRows, nCols))
   fDircArray <- baseRaster
   elevArray <- DEM
-  maxDHSArray <- array(c(NA), dim = c(nRows, nCols))
+  maxDHSArray <- as.data.frame(matrix(rep(NA), nrow = nRows, ncol = nCols))
   pb <- txtProgressBar(title = "Progress bar",min = 0, max = nRows, style = 3)
 
   errorFunction <- function(x){
@@ -125,9 +125,12 @@ lsFactorFunction <- function(DEM,counter){
 
   newElevPixelFunction <- function(x,y){
     if(is.null(x) || is.null(y) || is.na(x) || is.na(y)){
-      pass()
+      return(NA)
     }
-    else if (x <= nRows && y <= nCols){
+    else if(lengths(x) == 0 || lengths(y) == 0){
+      return(NA)
+    }
+    else if(x <= nRows && y <= nCols){
         return(elevArraytemp[x,y])
       }
     else{
@@ -186,6 +189,7 @@ lsFactorFunction <- function(DEM,counter){
       init <- mapply(slopeCalcFunction, init, elevDiff)
       # init <- unlist(init)
       init[lengths(init) == 0] <- NA
+      # init <- matrix(init,nrow=1)
       maxDHSArray[nRow,] <- init
 
     } else {
@@ -292,15 +296,24 @@ lsFactorFunction <- function(DEM,counter){
 
       initdia <- as.integer(fDircPixel %in% diagDirc)
       initroo <- as.integer(fDircPixel %in% rookDirc)
-      initHighPoint <- mapply(function(s,t,u,v,w,x,y,z) if(is.na(s)||
+      initHighPoint <- mapply(function(s,t,u,v,w,x,y,z) if(length(s) == 0||
+                                                           length(t) == 0||
+                                                           length(u) == 0||
+                                                           length(v) == 0||
+                                                           length(w) == 0||
+                                                           length(x) == 0||
+                                                           length(y) == 0||
+                                                           length(z) == 0||
+                                                           is.na(s)||
                                                            is.na(t)||
                                                            is.na(u)||
                                                            is.na(v)||
                                                            is.na(w)||
                                                            is.na(x)||
                                                            is.na(y)||
-                                                           is.na(z)) {return(-999)}
-                              else if(s != 1 &&
+                                                           is.na(z)){
+                                              return(-999)
+                            } else if(s != 1 &&
                                       t != 1 &&
                                       u != 1 &&
                                       v != 1 &&
@@ -339,7 +352,7 @@ lsFactorFunction <- function(DEM,counter){
   print(paste0("Done the NCSLArray!"))
 
   ElevFunction <- function(x,y,z){
-    if(!is.na(y) && !is.na(z) && y == z){
+    if(!is.na(y) && !is.na(z) && length(y) != 0 && length(z) != 0 && y == z){
       if(x == 1){
         return(1.4142 * cSize * 0.5)
       } else if(x == 2){
@@ -393,7 +406,8 @@ lsFactorFunction <- function(DEM,counter){
         return(NCSLArraytemp[,y])
       } else {return(x)}, init,sequence(nCols))
 
-      init[lengths(init) == 0] <- NA
+      # init[lengths(init) == 0] <- NA
+      # init <- matrix(init,nrow=1)
       NCSLArray[nRow,] <- init
 
     } else {
@@ -479,11 +493,11 @@ lsFactorFunction <- function(DEM,counter){
       # Get location of the comparing cell (the cell in the flow direction)
       temp <- fdRow[i]
       newRow <- mapply(function(x,y) x + y,nRow, temp)
-      newRow[newRow == nRows] <- -999
+      newRow[newRow >= nRows] <- -999
       newRow[is.na(newRow)] <- -999
       temp <- fdCol[i]
       newCol <- mapply(function(x,y,z) x + y,sequence(nCols),temp)
-      newCol[newCol == nCols] <- -999
+      newCol[newCol >= nCols] <- -999
       newCol[is.na(newCol)] <- -999
 
       NCSLPixel <- NCSLArray[nRow,1:ncol(NCSLArray)]
