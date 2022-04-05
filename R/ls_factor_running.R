@@ -506,7 +506,7 @@ lsFactorFunction <- function(DEM,counter){
       newSlope <- mapply(function(x,y) if(is.na(x) || is.na(y)){
         return(-999)
       } else if(x != -999 && y != -999){
-        if(is.na(maxDHSArray[x,y])|| maxDHSArray[x,y] == -999){
+        if(is.na(maxDHSArray[x,y]) || maxDHSArray[x,y] == -999 || x < 1 || y < 1){
           return(-999)
         } else (return(tan(deg2rad(maxDHSArray[x,y]))*100))}
       else{return(-999)}, newRow,newCol)
@@ -668,10 +668,12 @@ lsFactorFunction <- function(DEM,counter){
         ## Get forward and backwards cells
         int <- 1
         while(x == y){
-          if(lengths(CDHSLArraytemp[nRow+u,nCol+v]) >= 3){
-            tempcell <- array(unlist(CDHSLArraytemp[nRow+u,nCol+v]),c(3,lengths(CDHSLArraytemp[nRow+u,nCol+v])/3))
+          if(length(CDHSLArraytemp[nRow+u,nCol+v]) < 3){
+            y <- 0
           }
-          else if(lengths(CDHSLArraytemp[nRow+u,nCol+v]) < 3){
+          else if(lengths(CDHSLArraytemp[nRow+u,nCol+v]) >= 3){
+            tempcell <- array(unlist(CDHSLArraytemp[nRow+u,nCol+v]),c(3,lengths(CDHSLArraytemp[nRow+u,nCol+v])/3))
+          } else {
             y <- 0
           }
           if(y != 0){

@@ -613,3 +613,22 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
       unlink(FFP(paste0('/data/temp/input_data')), recursive = TRUE)
 }
 
+####################### Dev Tools #######################
+
+#' Batch run SRS main
+#'
+#' This tools is a development tool used to run the SRS main function with entered
+#' crop types.
+#' @param cropTypeList The crop type.
+#' @param cropArrays The arrays used for each specific crop variable.
+#' @param inputFolderLocation Input folder location.
+#' @param inputShapefile Input shapefile with folder location.
+#' @returns Results of the SRS main.
+batchRunSRSMain <- function(cropTypeList, cropArrays, inputFolderLocation, inputShapefile){
+  for(i in 1:length(cropTypeList)){
+    print(paste0("Starting ", i, " of ", length(cropTypeList),"!"))
+    srsMain(cropTypeList[i],cropArrays[[i]],inputFolderLocation,inputShapefile)
+    print(paste0("Finished ", i, " of ", length(cropTypeList),"!"))
+  }
+  print("Finished SRS main function.")
+}
