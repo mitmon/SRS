@@ -462,6 +462,7 @@ ratingTable <- function(x){
 #' Final table function
 #'
 #' This tools converts the values from each indices into a rating.
+#' @param v V is the number of indices that will be used for the results calculation
 #' @param w,x,y,z The input climate, mineral soil, organic soil, and landscape
 #' calculated values from each index.
 #' @return Returns a final rating from 1 to 7 with 1 being the best. Also returns

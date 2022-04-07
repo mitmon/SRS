@@ -378,17 +378,51 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
       }
     }
 
-    temp1 <- sapply(get('temp1'),ratingTable)
-    temp2 <- sapply(get('temp2'),ratingTable)
-    temp3 <- sapply(get('temp3'),ratingTable)
-    temp4 <- sapply(get('temp4'),ratingTable)
+    # Check to see which files exist and calculate rating for each cell if they do
+    if(exists("temp1")){
+      temp1 <- sapply(get('temp1'),ratingTable)
+      tempLength <- length(temp1)
+    } else {
+      temp1 <- NA
+    }
+    if(exists("temp2")){
+      temp2 <- sapply(get('temp2'),ratingTable)
+      tempLength <- length(temp2)
+    } else {
+      temp2 <- NA
+    }
+    if(exists("temp3")){
+      temp3 <- sapply(get('temp3'),ratingTable)
+      tempLength <- length(temp3)
+    } else {
+      temp3 <- NA
+    }
+    if(exists("temp4")){
+      temp4 <- sapply(get('temp4'),ratingTable)
+      tempLength <- length(temp4)
+    } else {
+      temp4 <- NA
+    }
+
+    if(is.na(temp1)){
+      temp1 <- rep(0, tempLength)
+    }
+    if(is.na(temp2)){
+      temp2 <- rep(0, tempLength)
+    }
+    if(is.na(temp3)){
+      temp3 <- rep(0, tempLength)
+    }
+    if(is.na(temp4)){
+      temp4 <- rep(0, tempLength)
+    }
 
     tempResults <- mapply(maxFunction,temp1,
                           temp2,
                           temp3,
                           temp4)
     values(baseRaster) <- tempResults
-    writePermData(baseRaster,FFP(paste0("/data/temp/results/")),paste0("FinalResults_",i,"_",cropType,".tif"),"GTiff")
+    writePermData(baseRaster,FFP(paste0("/data/temp/results/")),paste0("FinalResults_",i,"_",cropName,".tif"),"GTiff")
   }
 
 }
