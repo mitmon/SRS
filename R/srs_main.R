@@ -18,27 +18,19 @@
 #' Correct landscape file to be the same as organic and mineral
 #' with the "count".
 
-srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
-
-  # '~/Library/Mobile Documents/com~apple~CloudDocs/Desktop - iCloud/AAFC/SRS_V6_3/SRS.6.3.0/data/default_data/test_data_ab/'
+srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCalc,saveLocation){
 
   # 1. Data prep tools
+  # 1a. Clear temp for future processing
+  if(dir.exists(FFP(paste0("/data/temp/")))){
+    deleteFolder(paste0("/data/temp/"))
+    dir.create(FFP(paste0("/data/temp/")))
+  } else {
+    dir.create(FFP(paste0("/data/temp/")))
+  }
+
 
   # 1b. Create data tables for each index
-
-  # Prepare climate data for the climate index
-  # dataPrep("climate",c("ppe_pei.tif","ppe_Apr_pei.tif","ppe_Sep_pei.tif","apr_sep_egdd_T5_2001-2020_pei.tif"),
-  #          FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
-  # Prepare mineral soil data for the mineral soil index
-  # dataPrep("mineral",c("ppe_pei.tif","siltcontent_pei.tif","claycontent_pei.tif","organiccarbon_pei.tif","pH_pei.tif","bulkdensity_pei.tif"),
-  #          FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
-  # # Prepare organic soil data for the organic soil index
-  # dataPrep("organic",c("apr_sep_egdd_T5_2001-2020_pei.tif","ppe_pei.tif","bulkdensity_pei.tif","pH_pei.tif"),
-  #          FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
-  # # Prepare landscape data for the landscape index
-  # dataPrep("landscape",c("DEM_pei.tif"),
-  #          FFP(paste0(rasterStackFolder)),FFP(paste0("/data/temp/shapefileAOI.geoJSON")))
-
   # Prepare data for each index
   climateList <- list()
   mineralList <- list()
@@ -67,21 +59,29 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
       landscapeList <- append(landscapeList,inputDataList[i])}
   }
 
+  if("climate" %in% indicesCalc){
   dataPrep("climate",climateList,
            rasterStackFolder,shapefileAOI)
+  }
   # Prepare mineral soil data for the mineral soil index
+  if("mineral" %in% indicesCalc){
   dataPrep("mineral",mineralList,
            rasterStackFolder,shapefileAOI)
+  }
   # Prepare organic soil data for the organic soil index
+  if("organic" %in% indicesCalc){
   dataPrep("organic",organicList,
            rasterStackFolder,shapefileAOI)
+  }
   # Prepare landscape data for the landscape index
+  if("landscape" %in% indicesCalc){
   dataPrep("landscape",landscapeList,
            rasterStackFolder,shapefileAOI)
-
+  }
 
   # 2. Indices
   # 2a. Climate index
+  if("climate" %in% indicesCalc){
   print("Starting climate index calculation...")
 
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
@@ -143,12 +143,14 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
                                     get(paste0('climateDF_2'))[3],
                                     get(paste0('climateDF_3'))[3],
                                     cropType),ncol = 1)
+
     values(baseClimateRaster) <- climateResults
     writePermData(baseClimateRaster,FFP(paste0('/data/temp/results/')),
                   paste0('climateResults_',i),"GTiff")
-  }
+  }}
 
   # 2b. Mineral soil index
+  if("mineral" %in% indicesCalc){
   print("Starting mineral soil index calculation...")
 
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
@@ -234,9 +236,10 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
     values(baseMineralRaster) <- mineralResults
     writePermData(baseMineralRaster,FFP(paste0('/data/temp/results/')),
                   paste0('mineralResults_',i),"GTiff")
-  }
+  }}
 
   # 2c. Organic soil index
+  if("organic" %in% indicesCalc){
   print("Starting organic soil calculation...")
 
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
@@ -299,9 +302,10 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
     values(baseOrganicRaster) <- organicResults
     writePermData(baseOrganicRaster,FFP(paste0('/data/temp/results/')),
                   paste0('organicResults_',i),"GTiff")
-  }
+  }}
 
   # 2d. Landscape index
+  if("landscape" %in% indicesCalc){
   print("Starting landscape index calculation...")
 
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
@@ -345,7 +349,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
     values(baseLandscapeRaster) <- landscapeResults
     writePermData(baseLandscapeRaster,FFP(paste0('/data/temp/results/')),
                   paste0('landscapeResults_',i),"GTiff")
-  }
+  }}
   # 3. Final rating
 
   # Check to make sure folder exists.
@@ -383,37 +387,24 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
       temp1 <- sapply(get('temp1'),ratingTable)
       tempLength <- length(temp1)
     } else {
-      temp1 <- NA
+      temp1 <- rep(0, tempLength)
     }
     if(exists("temp2")){
       temp2 <- sapply(get('temp2'),ratingTable)
       tempLength <- length(temp2)
     } else {
-      temp2 <- NA
+      temp2 <- rep(0, tempLength)
     }
     if(exists("temp3")){
       temp3 <- sapply(get('temp3'),ratingTable)
       tempLength <- length(temp3)
     } else {
-      temp3 <- NA
+      temp3 <- rep(0, tempLength)
     }
     if(exists("temp4")){
       temp4 <- sapply(get('temp4'),ratingTable)
       tempLength <- length(temp4)
     } else {
-      temp4 <- NA
-    }
-
-    if(is.na(temp1)){
-      temp1 <- rep(0, tempLength)
-    }
-    if(is.na(temp2)){
-      temp2 <- rep(0, tempLength)
-    }
-    if(is.na(temp3)){
-      temp3 <- rep(0, tempLength)
-    }
-    if(is.na(temp4)){
       temp4 <- rep(0, tempLength)
     }
 
@@ -422,7 +413,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI){
                           temp3,
                           temp4)
     values(baseRaster) <- tempResults
-    writePermData(baseRaster,FFP(paste0("/data/temp/results/")),paste0("FinalResults_",i,"_",cropName,".tif"),"GTiff")
+    writePermData(baseRaster,saveLocation,paste0("FinalResults_",i,"_",cropName,".tif"),"GTiff")
+    # writePermData(baseRaster,saveLocation,paste0(saveName,".tif"),"GTiff")
   }
-
 }

@@ -24,6 +24,17 @@ FFP <- function(inputFile){
   return(paste0(getwd(),inputFile))
 }
 
+#' Delete folder
+#'
+#' Delete the folder in the file path
+#' @param inputFolder Input folder that will be deleted
+#' @export
+deleteFolder <- function(inputFile){
+  unlink(FFP(inputFile), recursive = TRUE)
+}
+
+
+
 #' Load Raster
 #'
 #' Load raster into work space
