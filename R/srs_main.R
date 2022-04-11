@@ -21,6 +21,7 @@
 srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCalc,saveLocation){
 
   # 1. Data prep tools
+  print("Starting data prep tools...")
   # 1a. Clear temp for future processing
   if(dir.exists(FFP(paste0("/data/temp/")))){
     deleteFolder(paste0("/data/temp/"))
@@ -49,16 +50,17 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   }
 
   for(i in 1:length(inputDataList)){
-    if(str_contains(inputDataList[i],c("ppe_Apr","ppe_Sep","ppe_May","egdd","chu"),logic = "or")){
+    if(str_contains(inputDataList[i],c("ppe_spr","ppe_fall","ppe_grow","egdd","chu"),logic = "or")){
       climateList <- append(climateList,inputDataList[i])}
-    if(str_contains(inputDataList[i],c("ppe_May","silt","clay","organiccarbon","pH","bulk"),logic = "or")){
+    if(str_contains(inputDataList[i],c("ppe_grow","silt","clay","organiccarbon","pH","bulk"),logic = "or")){
       mineralList <- append(mineralList,inputDataList[i])}
-    if(str_contains(inputDataList[i],c("egdd","chu","ppe_May","pH","bulk"),logic = "or")){
+    if(str_contains(inputDataList[i],c("egdd","chu","ppe_grow","pH","bulk"),logic = "or")){
       organicList <- append(organicList,inputDataList[i])}
     if(str_contains(inputDataList[i],c("DEM"),logic = "or")){
       landscapeList <- append(landscapeList,inputDataList[i])}
   }
 
+  # Prepare climate data for the climate index
   if("climate" %in% indicesCalc){
   dataPrep("climate",climateList,
            rasterStackFolder,shapefileAOI)
@@ -104,12 +106,12 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
           temp <- raster(tempDF, layer = count)
           assign(paste0("climateDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
           count <- count + 1
-        } else if(str_contains(tempOrder[j], "ppe_Apr")){
+        } else if(str_contains(tempOrder[j], "ppe_spr")){
           temp <- raster(tempDF, layer = count)
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("climateDF_2"),temp)
           count <- count + 1
-        } else if(str_contains(tempOrder[j], "ppe_Sep")){
+        } else if(str_contains(tempOrder[j], "ppe_fall")){
           temp <- raster(tempDF, layer = count)
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("climateDF_3"),temp)

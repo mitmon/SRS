@@ -10,7 +10,7 @@
 library(shiny)
 library(shinyFiles)
 library(leaflet)
-print(getwd())
+library(shinythemes)
 
 source('./app/R/ui_default.R',local = TRUE)
 
@@ -18,7 +18,7 @@ source('./app/R/ui_default.R',local = TRUE)
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
 
-  theme = bslib::bs_theme(bootswatch = "sandstone"),
+  theme = shinytheme("sandstone"),
 
   # Application Title
   titlePanel(title = "AAFC Land Suitability Rating System V6",
@@ -39,13 +39,15 @@ shinyUI(fluidPage(
   fluidRow(
     column(4,
            h4("1. Select the input data folder and the area of interest as a .shp file"),
-           # Input folder location
-           # fileInput(inputId = "inputFolder", label = "Select input data folder"),
 
-           shinyDirButton('inputFolder',label = 'Select the input data folder','Select a directory', FALSE),
+           ## Change this once pathing is sorted out
+
+           # Input folder location
+           # shinyDirButton('inputFolder',label = 'Select the input data folder','Select a directory', FALSE),
            # Input area of interest
-           hr(),
-           shinyFilesButton("inputAOI",label = "Select area of interest file", "Select a input shapefile", FALSE),
+           # hr(),
+           fileInput(inputId = "shp", label = "Select input data area of interest. (.shp)", multiple = TRUE),
+           # shinyFilesButton("inputAOI",label = "Select area of interest file", "Select a input shapefile", FALSE),
            hr(),
            shinyDirButton('saveLocation',label = 'Select location to save results',' Save location', FALSE)),
     column(4,

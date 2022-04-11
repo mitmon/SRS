@@ -377,7 +377,9 @@ batchCropRaster <- function(inputFolder,inputExtent){
 
   # Get input extent type
   inputExtentType <- 0
-  if(str_contains(inputExtent,".shp")){
+  if(typeof(inputExtent) == "S4"){
+    inputExtentType <- 4
+  } else if(str_contains(inputExtent,".shp")){
     inputExtentType <- 1
   }
   else if(str_contains(inputExtent,".tif")){
@@ -431,6 +433,19 @@ batchCropRaster <- function(inputFolder,inputExtent){
       #   # Write the file to temp location
       #   writeTempData(tempFile,tempName = (paste0("temp_",j,"/",listFiles[i])))
       # }
+      else if(inputExtentType == 4){
+        # Load the shapefile
+        inputExtentsf <- inputExtent
+        lengthinputExtentsf <- length(inputExtentsf)
+        # Run function for total number of crops
+        for(j in 1:lengthinputExtentsf){
+          # Crop tempFile
+          tempcrop <- crop(tempFile,inputExtentsf[j,])
+          # Write the file to temp location
+          writeTempData(tempcrop,paste0("temp_",j,"/"),tempName = (paste0(listFiles[i])))
+        }
+      }
+
       else {
         stop("Error in batch crop. Input data is not a raster stack, raster
                    layer, or shapefile.")
@@ -504,14 +519,14 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
   # Determine files to import for the raster stack
   listFiles <- list.files(rasterStackFolder)
   sfname <- c()
+  if(typeof(shapefileAOI) != "S4"){
   for(i in 1:length(listFiles)){
     if(str_contains(listFiles[i],".shp")){
       sfname <- listFiles[i]
-    }
-    else if (i == length(listFiles) && is_empty(sfname)){
+    } else if (i == length(listFiles) && is_empty(sfname)){
       stop("Error loading shapefile. Please enter a valid .shp file.")
     }
-  }
+  }}
   # Get only required .tif files
   listFiles <- listFiles[listFiles %in% requiredDataArray]
   # Load the rasters
@@ -524,10 +539,13 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
   } else {
     numTempFiles <- length(list.files(FFP(paste0("/data/temp/")))) + 1
   }
-
   # 2. Align and crop raster files for further processing
   # Mask files so they are all the same extent
-  batchMaskRaster(append(requiredDataArray,sfname[1]),rasterStackFolder,FFP("/data/temp/input_data/"))
+  if(typeof(shapefileAOI) != "S4"){
+    batchMaskRaster(append(requiredDataArray,sfname[1]),rasterStackFolder,FFP("/data/temp/input_data/"))
+  } else {
+    batchMaskRaster(requiredDataArray,rasterStackFolder,FFP("/data/temp/input_data/"))
+  }
   # Crop files into tiles for quicker processing
   batchCropRaster(FFP(paste0("/data/temp/input_data/")),shapefileAOI)
 

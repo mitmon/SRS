@@ -28,8 +28,8 @@ shinyServer(function(input, output, session) {
   })
 
   volume = getVolumes()
-  shinyDirChoose(input,'inputFolder',roots=c(wd=getwd()),filetypes=c('','tif'))
-  shinyFileChoose(input,'inputAOI',roots=c(wd=getwd()),filetypes=c('','shp'))
+  # shinyDirChoose(input,'inputFolder',roots=c(wd=getwd()),filetypes=c('','tif'))
+  # shinyFileChoose(input,'inputAOI',roots=c(wd=getwd()),filetypes=c('','shp'))
   shinyDirChoose(input,'saveLocation',roots=c(wd=getwd()))
 
 
@@ -77,13 +77,49 @@ shinyServer(function(input, output, session) {
       })}
   })
 
+  # Read-in shapefile function
+  Read_Shapefile <- function(shp_path) {
+    infiles <- shp_path$datapath # get the location of files
+    dir <- unique(dirname(infiles)) # get the directory
+    outfiles <- file.path(dir, shp_path$name) # create new path name
+    name <- strsplit(shp_path$name[1], "\\.")[[1]][1] # strip name
+    purrr::walk2(infiles, outfiles, ~file.rename(.x, .y)) # rename files
+    x <- readOGR(file.path(dir, paste0(name, ".shp"))) # read-in shapefile
+    return(x)
+  }
+
+  # # Read-shapefile once user submits files
+  # observeEvent(input$shp, {
+  #   user_shp <- Read_Shapefile(input$shp)
+  #   plot(user_shp) # plot to R console
+  #
+  #
+  #   # Print original file path location and file name to UI
+  #   output$shp_location <- renderPrint({
+  #     full_path <- strsplit(input$shp$datapath," ")
+  #     purrr::walk(full_path, ~cat(.x, "\n"))
+  #   })
+  #
+  #   output$shp_name <- renderPrint({
+  #     name_split <- strsplit(input$shp$name," ")
+  #     purrr::walk(name_split, ~cat(.x, "\n"))
+  #   })
+  # })
+
+
   observeEvent(input$go,{
     origcropTypes <- cropTypes
     cropTypes <- input$cropType
     indicesCalc <- input$indices
-    inputFolderLocation <- paste0(parseDirPath(roots=c(wd=getwd()), input$inputFolder),"/")
-    AOIFileLocation <- parseFilePaths(roots=c(wd=getwd()), input$inputAOI)$datapath
+    # inputFolderLocation <- paste0(parseDirPath(roots=c(wd=getwd()), input$inputFolder),"/")
+    # inputFolderLocation <- paste0("~",getwd(),"/data/default_data/",input$province,"/")
+    inputFolderLocation <- paste0("~",getwd(),"/data/default_data/pe/")
+    # print(inputFolderLocation)
+    # AOIFileLocation <- parseFilePaths(roots=c(wd=getwd()), input$inputAOI)$datapath
     saveLocation <- paste0(parseDirPath(roots=c(wd=getwd()), input$saveLocation),"/")
+
+    AOIFileLocation <- Read_Shapefile(input$shp)
+    # print(typeof(AOIFileLocation))
 
     for(i in 1:length(origcropTypes)){
       for(j in 1:length(cropTypes)){
