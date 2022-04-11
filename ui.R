@@ -12,7 +12,7 @@ library(shinyFiles)
 library(leaflet)
 print(getwd())
 
-source('./ui_default.R',local = TRUE)
+source('./app/R/ui_default.R',local = TRUE)
 
 
 # Define UI for application that draws a histogram

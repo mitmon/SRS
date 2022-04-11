@@ -28,7 +28,7 @@ shinyServer(function(input, output, session) {
   })
 
   volume = getVolumes()
-  shinyDirChoose(input,'inputFolder',roots=volume,filetypes=c('','tif'))
+  shinyDirChoose(input,'inputFolder',roots=c(wd=getwd()),filetypes=c('','tif'))
   shinyFileChoose(input,'inputAOI',roots=c(wd=getwd()),filetypes=c('','shp'))
   shinyDirChoose(input,'saveLocation',roots=c(wd=getwd()))
 
