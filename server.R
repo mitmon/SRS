@@ -125,6 +125,7 @@ shinyServer(function(input, output, session) {
     # inputFolderLocation <- paste0(parseDirPath(roots=c(wd=getwd()), input$inputFolder),"/")
     # inputFolderLocation <- paste0(getwd(),"/data/default_data/pe/")
     saveLocation <- paste0(parseDirPath(roots=c(wd=getwd()), input$saveLocation),"/")
+    print(saveLocation)
 
     AOIFileLocation <- Read_Shapefile(input$shp, ".shp")
     inputFolderLocation <- paste0(LoadFilePath(input$folder),"/")

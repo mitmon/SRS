@@ -20,8 +20,6 @@
 
 srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCalc,saveLocation){
 
-  print(rasterStackFolder)
-
   # 1. Data prep tools
   print("Starting data prep tools...")
   # 1a. Clear temp for future processing
@@ -367,7 +365,13 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   baseRaster <- NULL
   tempResults <- NULL
 
-  for(i in 1:(length(totalFiles)/4)){
+  if(typeof(shapefileAOI) == "S4"){
+    Indices <- length(shapefileAOI)
+  } else {
+    Indices <- length(loadShapefile(shapefileAOI))
+  }
+
+  for(i in 1:Indices){
     baseRaster <- raster(loadRaster(FFP(paste0("/data/temp/results/",totalFiles[i]))))
     for(j in 1:length(totalFiles)){
       if(str_contains(paste0("climateResults_",i,".tif"),totalFiles[j])){
@@ -387,25 +391,25 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     }
 
     # Check to see which files exist and calculate rating for each cell if they do
-    if(exists("temp1")){
+    if(exists("temp1") && !is.null(temp1)){
       temp1 <- sapply(get('temp1'),ratingTable)
       tempLength <- length(temp1)
     } else {
       temp1 <- rep(0, tempLength)
     }
-    if(exists("temp2")){
+    if(exists("temp2") && !is.null(temp2)){
       temp2 <- sapply(get('temp2'),ratingTable)
       tempLength <- length(temp2)
     } else {
       temp2 <- rep(0, tempLength)
     }
-    if(exists("temp3")){
+    if(exists("temp3") && !is.null(temp3)){
       temp3 <- sapply(get('temp3'),ratingTable)
       tempLength <- length(temp3)
     } else {
       temp3 <- rep(0, tempLength)
     }
-    if(exists("temp4")){
+    if(exists("temp4") && !is.null(temp4)){
       temp4 <- sapply(get('temp4'),ratingTable)
       tempLength <- length(temp4)
     } else {
@@ -419,6 +423,18 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     values(baseRaster) <- tempResults
     writePermData(baseRaster,saveLocation,paste0("FinalResults_",i,"_",cropName,".tif"),"GTiff")
     # writePermData(baseRaster,saveLocation,paste0(saveName,".tif"),"GTiff")
-    re
+
+    # return(baseRaster)
+
+    temp1 <- NULL
+    temp2 <- NULL
+    temp3 <- NULL
+    temp4 <- NULL
   }
+
+  # 4. Clear temp for future processing
+  if(dir.exists(FFP(paste0("/data/temp/")))){
+    deleteFolder(paste0("/data/temp/"))
+  }
+
 }

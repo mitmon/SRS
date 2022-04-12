@@ -12,6 +12,8 @@ library(shinyFiles)
 library(leaflet)
 library(shinythemes)
 library(SRS.6.3.0)
+options(warn = -1)
+options(shiny.maxRequestSize = 50 * 1024^2)
 
 source('./app/R/ui_default.R',local = TRUE)
 
@@ -51,6 +53,7 @@ shinyUI(fluidPage(
            fileInput(inputId = "shp", label = "Select input data area of interest. (.shp)", multiple = TRUE),
            # shinyFilesButton("inputAOI",label = "Select area of interest file", "Select a input shapefile", FALSE),
            hr(),
+           # downloadLink("downloadData","Download"),
            shinyDirButton('saveLocation',label = 'Select location to save results',' Save location', FALSE)),
     column(4,
            h4("2. Crop types to calculate: "),
