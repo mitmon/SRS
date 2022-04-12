@@ -546,6 +546,7 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
   } else {
     batchMaskRaster(requiredDataArray,rasterStackFolder,FFP("/data/temp/input_data/"))
   }
+
   # Crop files into tiles for quicker processing
   batchCropRaster(FFP(paste0("/data/temp/input_data/")),shapefileAOI)
 

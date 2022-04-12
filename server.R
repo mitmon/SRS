@@ -11,6 +11,7 @@ library(shiny)
 library(shinyFiles)
 library(leaflet)
 
+
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
 
@@ -77,14 +78,23 @@ shinyServer(function(input, output, session) {
       })}
   })
 
+  LoadFilePath <- function(file){
+    infiles <- file$datapath # get the location of files
+    dir <- unique(dirname(infiles)) # get the directory
+    outfiles <- file.path(dir, file$name) # create new path name
+    name <- strsplit(file$name[1], "\\.")[[1]][1] # strip name
+    purrr::walk2(infiles, outfiles, ~file.rename(.x, .y)) # rename files
+    return(dir)
+  }
+
   # Read-in shapefile function
-  Read_Shapefile <- function(shp_path) {
+  Read_Shapefile <- function(shp_path,fileType) {
     infiles <- shp_path$datapath # get the location of files
     dir <- unique(dirname(infiles)) # get the directory
     outfiles <- file.path(dir, shp_path$name) # create new path name
     name <- strsplit(shp_path$name[1], "\\.")[[1]][1] # strip name
     purrr::walk2(infiles, outfiles, ~file.rename(.x, .y)) # rename files
-    x <- readOGR(file.path(dir, paste0(name, ".shp"))) # read-in shapefile
+    x <- readOGR(file.path(dir, paste0(name, fileType))) # read-in file
     return(x)
   }
 
@@ -107,19 +117,17 @@ shinyServer(function(input, output, session) {
   # })
 
 
+  # Wait for user to press go button and run the system
   observeEvent(input$go,{
     origcropTypes <- cropTypes
     cropTypes <- input$cropType
     indicesCalc <- input$indices
     # inputFolderLocation <- paste0(parseDirPath(roots=c(wd=getwd()), input$inputFolder),"/")
-    # inputFolderLocation <- paste0("~",getwd(),"/data/default_data/",input$province,"/")
-    inputFolderLocation <- paste0("~",getwd(),"/data/default_data/pe/")
-    # print(inputFolderLocation)
-    # AOIFileLocation <- parseFilePaths(roots=c(wd=getwd()), input$inputAOI)$datapath
+    # inputFolderLocation <- paste0(getwd(),"/data/default_data/pe/")
     saveLocation <- paste0(parseDirPath(roots=c(wd=getwd()), input$saveLocation),"/")
 
-    AOIFileLocation <- Read_Shapefile(input$shp)
-    # print(typeof(AOIFileLocation))
+    AOIFileLocation <- Read_Shapefile(input$shp, ".shp")
+    inputFolderLocation <- paste0(LoadFilePath(input$folder),"/")
 
     for(i in 1:length(origcropTypes)){
       for(j in 1:length(cropTypes)){

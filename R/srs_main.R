@@ -20,6 +20,8 @@
 
 srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCalc,saveLocation){
 
+  print(rasterStackFolder)
+
   # 1. Data prep tools
   print("Starting data prep tools...")
   # 1a. Clear temp for future processing
@@ -30,7 +32,6 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     dir.create(FFP(paste0("/data/temp/")))
   }
 
-
   # 1b. Create data tables for each index
   # Prepare data for each index
   climateList <- list()
@@ -39,6 +40,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   landscapeList <- list()
 
   inputDataList <- list.files(rasterStackFolder)
+
   if(str_contains(cropType,c("alfalfa","canola","sssg"),logic = "or")){
     cropName <- cropType
     cropType <- "EGDD"
@@ -417,5 +419,6 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     values(baseRaster) <- tempResults
     writePermData(baseRaster,saveLocation,paste0("FinalResults_",i,"_",cropName,".tif"),"GTiff")
     # writePermData(baseRaster,saveLocation,paste0(saveName,".tif"),"GTiff")
+    re
   }
 }

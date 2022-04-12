@@ -11,6 +11,7 @@ library(shiny)
 library(shinyFiles)
 library(leaflet)
 library(shinythemes)
+library(SRS.6.3.0)
 
 source('./app/R/ui_default.R',local = TRUE)
 
@@ -43,9 +44,10 @@ shinyUI(fluidPage(
            ## Change this once pathing is sorted out
 
            # Input folder location
+           fileInput(inputId = "folder", label = "Select input data.", multiple = TRUE),
            # shinyDirButton('inputFolder',label = 'Select the input data folder','Select a directory', FALSE),
            # Input area of interest
-           # hr(),
+           hr(),
            fileInput(inputId = "shp", label = "Select input data area of interest. (.shp)", multiple = TRUE),
            # shinyFilesButton("inputAOI",label = "Select area of interest file", "Select a input shapefile", FALSE),
            hr(),
