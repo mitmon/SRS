@@ -13,20 +13,33 @@
 #' potatoes, SSSG (spring seeded small grain), soybeans and one more.
 #' @return Tiff file with the final results.
 #'
+library(SRS.6.3.0)
+
+# Set params
+args = commandArgs(trailingOnly=TRUE)
+cropType <- args[1] #cropType
+rasterStackFolder <- args[2] #rasterStackFolder
+indices <- args[3] #indices
+shapefileAOI <- args[4] #shapefileAOI
 
 serverPrep <- function(cropType,indices,rasterStackFolder,shapefileAOI){
 
-  # 1. Convert geoJSON string to shapefile.
-  if(!file.exists(FFP(paste0("/data/temp/shapefileAOI.geoJSON")))){
-    fileLocation <- FFP(paste0("/data/temp/shapefileAOI.geoJSON"))
-    file.create(fileLocation)
-    writeLines(shapefileAOI,fileLocation)
-  } else {
-    fileLocation <- FFP(paste0("/data/temp/shapefileAOI.geoJSON"))
+  # 1. Convert geoJSON string to geoJSON.
+  if(file.exists(FFP(paste0("/data/shapefileAOI.geoJSON")))){
+    fileLocation <- FFP(paste0("/data/shapefileAOI.geoJSON"))
     file.remove(fileLocation)
-    file.create(fileLocation)
-    writeLines(shapefileAOI,fileLocation)
   }
+  fileLocation <- FFP(paste0("/data/shapefileAOI.geoJSON"))
+  file.create(fileLocation)
+  writeLines(shapefileAOI,fileLocation)
+
+  # Convert from geoJSON to shapefile
+  shapefileAOI <- geojson_sf(fileLocation)
+  st_write(shapefileAOI,dsn = FFP(paste0('/data/shapefile.shp')), driver = 'ESRI Shapefile', delete_layer = TRUE, crs = 3395)
+  shapefileAOI <- st_read(FFP(paste0('/data/shapefile.shp')), crs = 3395)
+  shapefileAOI <- st_transform(shapefileAOI, "+proj=longlat +datum=WGS84 +no_defs")
+  st_write(shapefileAOI,dsn = FFP(paste0('/data/shapefile.shp')), driver = 'ESRI Shapefile', delete_layer = TRUE)
+  shapefileAOI <- FFP(paste0('/data/shapefile.shp'))
 
   # 2. Convert the indices array string into an array to be used later
   # function to convert nested list string into nested list
@@ -68,10 +81,14 @@ serverPrep <- function(cropType,indices,rasterStackFolder,shapefileAOI){
   }
 
   data <- matrix(data,ncol = 7)
-  indicesCalc <- list("climate","mineral","organic","landscape")
-  saveLocation <- '~/Library/Mobile Documents/com~apple~CloudDocs/Desktop - iCloud/AAFC/SRS_V6_3/SRS.6.3.0/data/'
+  indicesCalc <- list("climate","landscape")
+  # saveLocation <- paste0(unlist(strsplit(getwd(), "backend_stuff"))[1], 'backend_stuff/temp')
+  saveLocation <- '~/Library/Mobile Documents/com~apple~CloudDocs/Desktop - iCloud/AAFC/SRS_V6_3/SRS.6.3.0/data/results/'
+  # print(data)
 
-  # 3. Run the main function
+  # # 3. Run the main function
   srsMain(cropType,data,rasterStackFolder,shapefileAOI,indicesCalc,saveLocation)
 
 }
+
+serverPrep(cropType,indices,rasterStackFolder,shapefileAOI)

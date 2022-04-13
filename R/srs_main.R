@@ -13,11 +13,6 @@
 #' @param
 #' @return
 #' @export
-#'
-#' Corrections:
-#' Correct landscape file to be the same as organic and mineral
-#' with the "count".
-
 srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCalc,saveLocation){
 
   # 1. Data prep tools

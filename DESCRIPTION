@@ -24,6 +24,7 @@ LazyData: true
 Depends: 
     dplyr,
     future,
+    geojsonsf,
     parallel,
     plyr,
     raster,

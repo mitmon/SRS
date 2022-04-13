@@ -9,7 +9,7 @@
 #'
 #' The mineral soil index main calls all required function and produces the rating
 #' for mineral soil over the study site.
-#' @return
+#' @return test
 #' @export
 mineralSoilIndexMain <- function(ppe,surfaceSiltPercent,surfaceClayPercent,subsurfaceSiltPercent,subsurfaceClayPercent,waterTableDepth,
                                  surfaceOC,depthOfTopSoil,surfacepH,surfaceSalinity,surfaceSodicity,depthOfPeat,subsurfaceBulkDensity,
@@ -486,32 +486,33 @@ basicSoilRating <- function(subsurfaceSiltPercent,subsurfaceClayPercent,subsurfa
 
 }
 
-#' #' Drainage Deduction
-#' #'
-#' #' The drainage deduction is used to evaluate the soil properties which include
-#' #' the water table and hydraulic conductivity.The rating is based principally on
-#' #' management or traffic ability considerations. Three is one parameter for
-#' #' drainage. This parameter determines the percentage deduction for the soil
-#' #' regime. Currently this parameter is not used in the calculations with potential
-#' #' for future version to include the drainage.
-#' #' @param depthToWaterTable Depth to water table in cm (Highest 20-day average in
-#' #' growing season).
-#' #' @param ppe Precipitation minus potential evapotranspiration.
-#' #' @param hydraulicCond Hydraulic conductivity (cm/h)
-#' #' @return Percentage deduction for drainage.
-#' #' @export
-#' drainageDeduction <- function(depthToWaterTable,ppe,hydraulicCond){
-#'   # 2. Return the deduction percentage for the drainage deduction
-#'   return()
+#' Drainage Deduction
 #'
-#' }
+#' The drainage deduction is used to evaluate the soil properties which include
+#' the water table and hydraulic conductivity.The rating is based principally on
+#' management or traffic ability considerations. Three is one parameter for
+#' drainage. This parameter determines the percentage deduction for the soil
+#' regime. Currently this parameter is not used in the calculations with potential
+#' for future version to include the drainage.
+#' @param depthToWaterTable Depth to water table in cm (Highest 20-day average in
+#' growing season).
+#' @param ppe Precipitation minus potential evapotranspiration.
+#' @param hydraulicCond Hydraulic conductivity (cm/h)
+#' @return Percentage deduction for drainage.
+#' @export
+drainageDeduction <- function(depthToWaterTable,ppe,hydraulicCond){
+  # 2. Return the deduction percentage for the drainage deduction
+  return()
 
-#' Mineral Soil rating
+}
+
+#' @title Mineral Soil rating
 #'
 #' The mineral soil rating calculates the rating class for the mineral soil index.
-#' @param basicClimate Basic climate rating calculated
-#' @param modifiers Modifying factors.
-#' @param ppeFall Precipitation minus potential evapotranspiration for fall
+#' @param moistureDeduct Basic climate rating calculated
+#' @param surfaceFactors Modifying factors.
+#' @param subsurfaceFactors Precipitation minus potential evapotranspiration for fall
+#' @param drainage
 #' @return The climate rating.
 #' @export
 mineralSoilRating <- function(moistureDeduct,surfaceFactors,subsurfaceFactors,drainage){

@@ -373,7 +373,7 @@ basicOrganicRating <- function(subsurfaceBD,subsurfacepH,subsurfaceSalinity){
 #'
 #' }
 
-#' Organic Soil rating
+#' @title Organic Soil rating
 #'
 #' The organic soil rating calculates the rating class for the organic soil index.
 #' @param basicClimate Basic climate rating calculated
