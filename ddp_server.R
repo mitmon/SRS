@@ -35,8 +35,8 @@ serverPrep <- function(cropType,indices,rasterStackFolder,shapefileAOI){
 
   # Convert from geoJSON to shapefile
   shapefileAOI <- geojson_sf(fileLocation)
-  st_write(shapefileAOI,dsn = FFP(paste0('/data/shapefile.shp')), driver = 'ESRI Shapefile', delete_layer = TRUE, crs = 3395)
-  shapefileAOI <- st_read(FFP(paste0('/data/shapefile.shp')), crs = 3395)
+  st_write(shapefileAOI,dsn = FFP(paste0('/data/shapefile.shp')), driver = 'ESRI Shapefile', delete_layer = TRUE)
+  shapefileAOI <- st_read(FFP(paste0('/data/shapefile.shp')))
   shapefileAOI <- st_transform(shapefileAOI, "+proj=longlat +datum=WGS84 +no_defs")
   st_write(shapefileAOI,dsn = FFP(paste0('/data/shapefile.shp')), driver = 'ESRI Shapefile', delete_layer = TRUE)
   shapefileAOI <- FFP(paste0('/data/shapefile.shp'))
@@ -81,7 +81,7 @@ serverPrep <- function(cropType,indices,rasterStackFolder,shapefileAOI){
   }
 
   data <- matrix(data,ncol = 7)
-  indicesCalc <- list("climate","landscape")
+  indicesCalc <- list("climate","mineral","organic","landscape")
   # saveLocation <- paste0(unlist(strsplit(getwd(), "backend_stuff"))[1], 'backend_stuff/temp')
   saveLocation <- '~/Library/Mobile Documents/com~apple~CloudDocs/Desktop - iCloud/AAFC/SRS_V6_3/SRS.6.3.0/data/results/'
   # print(data)

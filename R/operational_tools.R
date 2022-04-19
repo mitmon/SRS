@@ -168,6 +168,7 @@ surfaceAndSubsurface <- function(divideDepth,inputRaster){
     }
   }
 
+  inputRaster <- cbind(xyFromCell(inputRaster, 1:ncell(inputRaster)), values(inputRaster))
   inputRaster <- as.data.frame(inputRaster, xy = TRUE, na.rm = FALSE,optional=TRUE)
 
   inputRaster$surface <- rowMeans(inputRaster[,c(3:divide)])

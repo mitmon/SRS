@@ -782,8 +782,11 @@ lsFactorFunction <- function(DEM,counter){
 lsFunction <- function(dem,nn){
 
   dem <- loadRaster(dem)
+  print(dem)
   dem[is.na(dem[[1]])] <- 0
+  print(dem)
   dem <- raster(dem, layer=1)
+  print(dem)
 
   if(any(getValues(dem) > 0)){
     print(paste0("Starting LS function for temp DEM number ", nn))

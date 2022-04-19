@@ -31,7 +31,7 @@ shinyServer(function(input, output, session) {
   volume = getVolumes()
   # shinyDirChoose(input,'inputFolder',roots=c(wd=getwd()),filetypes=c('','tif'))
   # shinyFileChoose(input,'inputAOI',roots=c(wd=getwd()),filetypes=c('','shp'))
-  shinyDirChoose(input,'saveLocation',roots=c(wd=getwd()))
+  # shinyDirChoose(input,'saveLocation',roots=c(wd=getwd()))
 
 
   output$map <- renderLeaflet({
@@ -124,8 +124,8 @@ shinyServer(function(input, output, session) {
     indicesCalc <- input$indices
     # inputFolderLocation <- paste0(parseDirPath(roots=c(wd=getwd()), input$inputFolder),"/")
     # inputFolderLocation <- paste0(getwd(),"/data/default_data/pe/")
-    saveLocation <- paste0(parseDirPath(roots=c(wd=getwd()), input$saveLocation),"/")
-    print(saveLocation)
+    # saveLocation <- paste0(parseDirPath(roots=c(wd=getwd()), input$saveLocation),"/")
+    # print(saveLocation)
 
     AOIFileLocation <- Read_Shapefile(input$shp, ".shp")
     inputFolderLocation <- paste0(LoadFilePath(input$folder),"/")

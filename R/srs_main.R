@@ -99,20 +99,29 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
       if(count <= length(tempDF[1])){
         if(str_contains(tempOrder[j], c("egdd","chu"),logic = "or")){
           temp <- raster(tempDF, layer = count)
-          assign(paste0("climateDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("climateDF_1"),temp)
           count <- count + 1
         } else if(str_contains(tempOrder[j], "ppe_spr")){
           temp <- raster(tempDF, layer = count)
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("climateDF_2"),temp)
           count <- count + 1
         } else if(str_contains(tempOrder[j], "ppe_fall")){
           temp <- raster(tempDF, layer = count)
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("climateDF_3"),temp)
           count <- count + 1
         } else if(str_contains(tempOrder[j], "ppe")){
           temp <- raster(tempDF, layer = count)
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("climateDF_4"),temp)
           count <- count + 1
@@ -167,39 +176,58 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
       if(count <= length(tempDF[1])){
         if(str_contains(tempOrder[j], "ppe")){
           temp <- raster(tempDF, layer = count)
-          assign(paste0("mineralDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("mineralDF_1"),temp)
           count <- count + 1
         } else if(str_contains(tempOrder[j], "silt")){
           temp <- raster(tempDF, layer = count)
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_2"),temp)
           temp <- raster(tempDF, layer = (j+1))
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_3"),temp)
           count <- count + 3
         } else if(str_contains(tempOrder[j], "clay")){
           temp <- raster(tempDF, layer = count)
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_4"),temp)
           temp <- raster(tempDF, layer = (j+1))
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_5"),temp)
           count <- count + 3
         } else if(str_contains(tempOrder[j], "organiccarbon")){
           temp <- raster(tempDF, layer = count)
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_6"),temp)
           count <- count + 3
         } else if(str_contains(tempOrder[j], "pH")){
           temp <- raster(tempDF, layer = count)
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_7"),temp)
           temp <- raster(tempDF, layer = (count+1))
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_8"),temp)
           count <- count + 3
         } else if(str_contains(tempOrder[j], "bulk")){
           temp <- raster(tempDF, layer = (count+1))
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_9"),temp)
           count <- count + 3
@@ -256,25 +284,39 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
       if(count <= length(tempDF[1])){
         if(str_contains(tempOrder[j], c("egdd","chu"),logic = "or")){
           temp <- raster(tempDF, layer = count)
-          assign(paste0("organicDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("organicDF_1"),temp)
           count <- count + 1
         } else if(str_contains(tempOrder[j], "ppe")){
           temp <- raster(tempDF, layer = count)
-          assign(paste0("organicDF_2"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("organicDF_2"),temp)
           count <- count + 1
         } else if(str_contains(tempOrder[j], "bulk")){
           temp <- raster(tempDF, layer = count)
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("organicDF_3"),temp)
           temp <- raster(tempDF, layer = (count+1))
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("organicDF_4"),temp)
           count <- count + 3
         } else if(str_contains(tempOrder[j], "pH")){
           temp <- raster(tempDF, layer = count)
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("organicDF_5"),temp)
           temp <- raster(tempDF, layer = (count+1))
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("organicDF_6"),temp)
           count <- count + 3
@@ -322,10 +364,15 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
       if(count <= length(tempDF[1])){
         if(str_contains(tempOrder[j], "slopePercent")){
           temp <- raster(tempDF, layer = count)
-          assign(paste0("landscapeDF_1"),as.data.frame(temp, xy = TRUE, rm.na = FALSE))
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
+          assign(paste0("landscapeDF_1"),temp)
           count <- count + 1
         } else if(str_contains(tempOrder[j], "slopeLength") || str_contains(tempOrder[j], "lFactor")){
           temp <- raster(tempDF, layer = count)
+          # temp <- rasterToPoints(temp, xy = TRUE)
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("landscapeDF_2"),temp)
           count <- count + 1
@@ -368,6 +415,12 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
 
   for(i in 1:Indices){
     baseRaster <- raster(loadRaster(FFP(paste0("/data/temp/results/",totalFiles[i]))))
+
+    temp1 <- NULL
+    temp2 <- NULL
+    temp3 <- NULL
+    temp4 <- NULL
+
     for(j in 1:length(totalFiles)){
       if(str_contains(paste0("climateResults_",i,".tif"),totalFiles[j])){
         tempRaster <- loadRaster(FFP(paste0("/data/temp/results/",totalFiles[j])))
@@ -389,27 +442,28 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     if(exists("temp1") && !is.null(temp1)){
       temp1 <- sapply(get('temp1'),ratingTable)
       tempLength <- length(temp1)
-    } else {
-      temp1 <- rep(0, tempLength)
     }
     if(exists("temp2") && !is.null(temp2)){
       temp2 <- sapply(get('temp2'),ratingTable)
       tempLength <- length(temp2)
-    } else {
-      temp2 <- rep(0, tempLength)
     }
     if(exists("temp3") && !is.null(temp3)){
       temp3 <- sapply(get('temp3'),ratingTable)
       tempLength <- length(temp3)
-    } else {
-      temp3 <- rep(0, tempLength)
     }
     if(exists("temp4") && !is.null(temp4)){
       temp4 <- sapply(get('temp4'),ratingTable)
       tempLength <- length(temp4)
-    } else {
-      temp4 <- rep(0, tempLength)
     }
+
+    if(is.null(temp1)){
+      temp1 <- rep(0, tempLength)}
+    if(is.null(temp2)){
+      temp2 <- rep(0, tempLength)}
+    if(is.null(temp3)){
+      temp3 <- rep(0, tempLength)}
+    if(is.null(temp4)){
+      temp4 <- rep(0, tempLength)}
 
     tempResults <- mapply(maxFunction,temp1,
                           temp2,
@@ -420,11 +474,6 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     # writePermData(baseRaster,saveLocation,paste0(saveName,".tif"),"GTiff")
 
     # return(baseRaster)
-
-    temp1 <- NULL
-    temp2 <- NULL
-    temp3 <- NULL
-    temp4 <- NULL
   }
 
   # 4. Clear temp for future processing
