@@ -10,8 +10,14 @@
 #'
 #' This function calls the data preparation tools and climate, mineral soil,
 #' organic soil, and landscape indices.
-#' @param
-#' @return
+#' @param cropType The crop type that will be used for the calculations
+#' @param cropArrays The input default data or custom data for each crop type
+#' @param rasterStackFolder The input folder location containing the required data
+#' @param shapefileAOI The input shapefile to be used for the area of interest
+#' @param indicesCalc A list of the input indices that will be calculated
+#' (options are climate, mineral, organic, and landscape)
+#' @param saveLocation The folder location where the data will be saved
+#' @return The return is a grid data (.tiff) file containing the resulting calculations of SRS
 #' @export
 srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCalc,saveLocation){
 
@@ -21,22 +27,20 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   print("Starting data prep tools...")
 
   # 1a. Clear temp for future processing
-  if(dir.exists("/data/temp/")){
-    deleteFolder(paste0("/data/temp/"))
-    dir.create("/data/temp/")
-  } else {
-    dir.create("/data/temp/")
-  }
-
-  print(getwd())
+  # if(!dir.exists("/data/temp/")){
+  #   dir.create("/data/temp/")
+  # } else {
+  #   deleteFolder(paste0("/data/temp/"))
+  #   dir.create("/data/temp/")
+  # }
 
   #
-  # if(dir.exists(FFP(paste0("/data/temp/")))){
-  #   deleteFolder(paste0("/data/temp/"))
-  #   dir.create(FFP(paste0("/data/temp/")))
-  # } else {
-  #   dir.create(FFP(paste0("/data/temp/")))
-  # }
+  if(dir.exists(FFP(paste0("/data/temp/")))){
+    deleteFolder(paste0("/data/temp/"))
+    dir.create(FFP(paste0("/data/temp/")))
+  } else {
+    dir.create(FFP(paste0("/data/temp/")))
+  }
 
   # 1b. Create data tables for each index
   # Prepare data for each index
@@ -85,8 +89,8 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   }
   # Prepare landscape data for the landscape index
   if("landscape" %in% indicesCalc){
-  dataPrep("landscape",landscapeList,
-           rasterStackFolder,shapefileAOI)
+    dataPrep("landscape",landscapeList,
+            rasterStackFolder,shapefileAOI)
   }
 
   # 2. Indices
