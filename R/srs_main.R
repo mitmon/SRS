@@ -18,6 +18,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
 
   # 1. Data prep tools
   print("Starting data prep tools...")
+  print(getwd())
 
   # 1a. Clear temp for future processing
   if(dir.exists(FFP(paste0("/data/temp/")))){
