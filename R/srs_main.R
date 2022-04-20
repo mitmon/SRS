@@ -15,18 +15,21 @@
 #' @export
 srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCalc,saveLocation){
 
+  setwd("../SRS/")
 
   # 1. Data prep tools
   print("Starting data prep tools...")
-  print(getwd())
 
   # 1a. Clear temp for future processing
-  if(dir.exists("../data/temp/")){
-    deleteFolder(paste0("../data/temp/"))
-    dir.create("../data/temp/")
+  if(dir.exists("/data/temp/")){
+    deleteFolder(paste0("/data/temp/"))
+    dir.create("/data/temp/")
   } else {
-    dir.create("../data/temp/")
+    dir.create("/data/temp/")
   }
+
+  print(getwd())
+
   #
   # if(dir.exists(FFP(paste0("/data/temp/")))){
   #   deleteFolder(paste0("/data/temp/"))
