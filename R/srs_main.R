@@ -21,12 +21,19 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   print(getwd())
 
   # 1a. Clear temp for future processing
-  if(dir.exists(FFP(paste0("/data/temp/")))){
-    deleteFolder(paste0("/data/temp/"))
-    dir.create(FFP(paste0("/data/temp/")))
+  if(dir.exists("../data/temp/")){
+    deleteFolder(paste0("../data/temp/"))
+    dir.create("../data/temp/")
   } else {
-    dir.create(FFP(paste0("/data/temp/")))
+    dir.create("../data/temp/")
   }
+  #
+  # if(dir.exists(FFP(paste0("/data/temp/")))){
+  #   deleteFolder(paste0("/data/temp/"))
+  #   dir.create(FFP(paste0("/data/temp/")))
+  # } else {
+  #   dir.create(FFP(paste0("/data/temp/")))
+  # }
 
   # 1b. Create data tables for each index
   # Prepare data for each index
