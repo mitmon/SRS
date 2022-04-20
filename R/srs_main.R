@@ -15,8 +15,10 @@
 #' @export
 srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCalc,saveLocation){
 
+
   # 1. Data prep tools
   print("Starting data prep tools...")
+
   # 1a. Clear temp for future processing
   if(dir.exists(FFP(paste0("/data/temp/")))){
     deleteFolder(paste0("/data/temp/"))
