@@ -27,20 +27,20 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   print("Starting data prep tools...")
 
   # 1a. Clear temp for future processing
-  # if(!dir.exists("/data/temp/")){
-  #   dir.create("/data/temp/")
-  # } else {
-  #   deleteFolder(paste0("/data/temp/"))
-  #   dir.create("/data/temp/")
-  # }
+  if(!dir.exists("/data/temp/")){
+    dir.create("./data/temp/")
+  } else {
+    deleteFolder("/data/temp/")
+    dir.create("./data/temp/")
+  }
 
   #
-  if(dir.exists(FFP(paste0("/data/temp/")))){
-    deleteFolder(paste0("/data/temp/"))
-    dir.create(FFP(paste0("/data/temp/")))
-  } else {
-    dir.create(FFP(paste0("/data/temp/")))
-  }
+  # if(dir.exists(FFP(paste0("/data/temp/")))){
+  #   deleteFolder(paste0("/data/temp/"))
+  #   dir.create(FFP(paste0("/data/temp/")))
+  # } else {
+  #   dir.create(FFP(paste0("/data/temp/")))
+  # }
 
   # 1b. Create data tables for each index
   # Prepare data for each index
@@ -68,7 +68,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
       mineralList <- append(mineralList,inputDataList[i])}
     if(str_contains(inputDataList[i],c("egdd","chu","ppe_grow","pH","bulk"),logic = "or")){
       organicList <- append(organicList,inputDataList[i])}
-    if(str_contains(inputDataList[i],c("DEM"),logic = "or")){
+    if(str_contains(inputDataList[i],c("DEM","slopePercent","slopeLength","lFactor"),logic = "or")){
       landscapeList <- append(landscapeList,inputDataList[i])}
   }
 
@@ -89,8 +89,13 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   }
   # Prepare landscape data for the landscape index
   if("landscape" %in% indicesCalc){
-    dataPrep("landscape",landscapeList,
-            rasterStackFolder,shapefileAOI)
+    if(!str_contains(landscapeList,c("slopePercent","slopeLength","lFactor"),logic = "or")){
+      dataPrep("landscape",landscapeList,
+               rasterStackFolder,shapefileAOI)
+    } else {
+      dataPrep("landscape",landscapeList,
+               rasterStackFolder, shapefileAOI)
+    }
   }
 
   # 2. Indices

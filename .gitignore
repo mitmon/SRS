@@ -6,3 +6,10 @@
 .DS_Store
 .Rdata
 .httr-oauth
+.DS_Store
+data/shapefile.dbf
+data/shapefile.prj
+data/shapefile.shp
+data/shapefile.shx
+data/shapefileAOI.geoJSON
+ddp_server.R

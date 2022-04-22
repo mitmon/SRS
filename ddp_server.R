@@ -13,7 +13,7 @@
 #' potatoes, SSSG (spring seeded small grain), soybeans and one more.
 #' @return Tiff file with the final results.
 #'
-library(SRS.6.3.0)
+library(SRS)
 
 # Set params
 args = commandArgs(trailingOnly=TRUE)
@@ -83,7 +83,7 @@ serverPrep <- function(cropType,indices,rasterStackFolder,shapefileAOI){
   data <- matrix(data,ncol = 7)
   indicesCalc <- list("climate","mineral","organic","landscape")
   # saveLocation <- paste0(unlist(strsplit(getwd(), "backend_stuff"))[1], 'backend_stuff/temp')
-  saveLocation <- '~/Library/Mobile Documents/com~apple~CloudDocs/Desktop - iCloud/AAFC/SRS_V6_3/SRS.6.3.0/data/results/'
+  saveLocation <- '~/Library/Mobile Documents/com~apple~CloudDocs/Desktop - iCloud/AAFC/SRS_V6_3/SRS/data/results/'
   # print(data)
 
   # # 3. Run the main function

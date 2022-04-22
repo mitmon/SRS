@@ -13,8 +13,22 @@ srsMain(
   saveLocation
 )
 }
-\value{
+\arguments{
+\item{cropType}{The crop type that will be used for the calculations}
 
+\item{cropArrays}{The input default data or custom data for each crop type}
+
+\item{rasterStackFolder}{The input folder location containing the required data}
+
+\item{shapefileAOI}{The input shapefile to be used for the area of interest}
+
+\item{indicesCalc}{A list of the input indices that will be calculated
+(options are climate, mineral, organic, and landscape)}
+
+\item{saveLocation}{The folder location where the data will be saved}
+}
+\value{
+The return is a grid data (.tiff) file containing the resulting calculations of SRS
 }
 \description{
 This function calls the data preparation tools and climate, mineral soil,

@@ -242,7 +242,9 @@ batchMaskRaster <- function(requiredDataArray, inputFolder, exportFolder){
                              })
   # Get largest extent
   listFiles_extents <- lapply(listFiles_data, raster::extent)
-  do.call(raster::merge, listFiles_extents)
+  if(length(listFiles_extents) > 1){
+    do.call(raster::merge, listFiles_extents)
+  }
 
   # Get extents of the files
   listFiles_data <- lapply(listFiles,
@@ -514,6 +516,7 @@ maxFunction <- function(w,x,y,z){
 #' @param requiredDataArray
 #' @param rasterStackFolder
 #' @param shapefileAOI Area of interest for the SRS calculation. Shapefile format.
+#' @export
 dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
 
   # 1. Get required files
@@ -583,17 +586,27 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
         } else {
           tempRasterStack <- stack(tempRasterStack,surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))))
         }
-      } else if(index == "landscape" && str_contains(tempListFiles[j], '.grd')
-                                     && (str_contains(tempListFiles[j], 'DEM'))){
-        if(j == 1){
-          lsFunction(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])),i)
-          tempRasterStack <-  loadRaster(FFP(paste0("/data/temp/temp_",i,"/slope_",i)))
-          tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/lFactor_",i))))
-        } else {
-          lsFunction(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])),i)
-          tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/slope_",i))))
-          tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/lFactor_",i))))
+      } else if(index == "landscape"){
+        if(str_contains(tempListFiles[j], '.grd') && (str_contains(tempListFiles[j], 'slopePercent') ||
+                                                      str_contains(tempListFiles[j], 'slopeLength') ||
+                                                      str_contains(tempListFiles[j], 'lFactor'))){
+          if(j == 1){
+            tempRasterStack <- loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))
+          } else {
+            tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
+          }
+        } else if (str_contains(tempListFiles[j], '.grd') && (str_contains(tempListFiles[j], 'DEM'))){
+          if(j == 1){
+            lsFunction(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])),i)
+            tempRasterStack <-  loadRaster(FFP(paste0("/data/temp/temp_",i,"/slope_",i)))
+            tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/lFactor_",i))))
+          } else {
+            lsFunction(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])),i)
+            tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/slope_",i))))
+            tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/lFactor_",i))))
+          }
         }
+
       } else {
         if(index == "landscape" && str_contains(tempListFiles[j], '.grd')
                                 && str_contains(tempListFiles[j], '.gri')
@@ -609,7 +622,9 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
 
       # 3b. Save the input files name for later when loading data again. The
       # column names will be used later.
-      if(index != "landscape"){
+      if(index != "landscape" || (str_contains(tempListFiles[j], 'slopePercent') ||
+                                  str_contains(tempListFiles[j], 'slopeLength') ||
+                                  str_contains(tempListFiles[j], 'lFactor'))){
         if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))){
           fileLocation <- FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt"))
           file.create(fileLocation)
