@@ -30,7 +30,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   if(!dir.exists("/data/temp/")){
     dir.create("./data/temp/")
   } else {
-    deleteFolder("/data/temp/")
+    deleteFolder(paste0("/data/temp/"))
     dir.create("./data/temp/")
   }
 

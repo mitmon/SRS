@@ -230,6 +230,7 @@ batchMaskRaster <- function(requiredDataArray, inputFolder, exportFolder){
   listFiles <- list.files(inputFolder)
   # Get only required .tif files
   listFiles <- listFiles[listFiles %in% requiredDataArray]
+
   # Get extents of the files
   listFiles_data <- lapply(listFiles,
                            function(x)
@@ -240,8 +241,10 @@ batchMaskRaster <- function(requiredDataArray, inputFolder, exportFolder){
                              } else {
                                pass()
                              })
+
   # Get largest extent
   listFiles_extents <- lapply(listFiles_data, raster::extent)
+
   if(length(listFiles_extents) > 1){
     do.call(raster::merge, listFiles_extents)
   }
@@ -254,6 +257,7 @@ batchMaskRaster <- function(requiredDataArray, inputFolder, exportFolder){
                              } else {
                                pass()
                              })
+
   listFiles_data <- compact(listFiles_data)
 
   # Reproject files so they are all the same extent
@@ -285,8 +289,17 @@ batchMaskRaster <- function(requiredDataArray, inputFolder, exportFolder){
 
   listFiles <- listFilesNew
 
+  # raster(vals=values(r2),ext=extent(r1),crs=crs(r1),
+  #        nrows=dim(r1)[1],ncols=dim(r1)[2])
+
   # Mask files that are not part of the largest extent
   for(i in 1:length(listFiles_data)){
+    # tempmask <- crop(listFiles_data[[i]],extent(listFiles_raster))
+    # tempmask <- raster(vals=values(tempmask),
+    #                    ext=extent(listFiles_raster),
+    #                    crs=crs(listFiles_raster),
+    #                    nrows=dim(listFiles_raster)[1],
+    #                    ncols=dim(listFiles_raster)[2])
     tempmask <- extend(brick(listFiles_data[[i]]),listFiles_raster)
     tempname <- listFiles[i]
     writePermData(tempmask,paste0(exportFolder),paste0("masked_",tempname),'raster')
@@ -295,7 +308,7 @@ batchMaskRaster <- function(requiredDataArray, inputFolder, exportFolder){
   print(paste0("Masked ", length(listFiles_data)," files."))
 }
 
-#' Batch Mask Folder
+#' Batch Mask Folder (Not in use)
 #'
 #' Batch mask a folder of files.
 #' ** This tool is meant to be used to mask dead space around two images. This
