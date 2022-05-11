@@ -2,7 +2,7 @@
 % Please edit documentation in R/operational_tools.R
 \name{batchMaskFolder}
 \alias{batchMaskFolder}
-\title{Batch Mask Folder}
+\title{Batch Mask Folder (Not in use)}
 \usage{
 batchMaskFolder(inputFolder, exportFolder)
 }

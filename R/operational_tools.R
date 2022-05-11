@@ -266,10 +266,10 @@ batchMaskRaster <- function(requiredDataArray, inputFolder, exportFolder){
   }
 
   # Create temporary Shape file with the bounding box of the largest file
-  xMax <- max(sapply(listFiles_extents, function(x) (xmax(x))))
-  yMax <- max(sapply(listFiles_extents, function(x) (ymax(x))))
-  xMin <- min(sapply(listFiles_extents, function(x) (xmin(x))))
-  yMin <- min(sapply(listFiles_extents, function(x) (ymin(x))))
+  xMax <- max(sapply(listFiles_extents, function(x) (xmax(x)))) + 1
+  yMax <- max(sapply(listFiles_extents, function(x) (ymax(x)))) + 1
+  xMin <- min(sapply(listFiles_extents, function(x) (xmin(x)))) - 1
+  yMin <- min(sapply(listFiles_extents, function(x) (ymin(x)))) - 1
 
   # Create a raster with the coordinate for the largest extent
   listFiles_raster <- raster()
