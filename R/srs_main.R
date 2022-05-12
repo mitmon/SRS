@@ -54,7 +54,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   }
 
   for(i in 1:length(inputDataList)){
-    if(str_contains(inputDataList[i],c("ppe_spr","ppe_fall","ppe_grow","egdd","chu"),logic = "or")){
+    if(str_contains(inputDataList[i],c("ppe_spr","ppe_fall","ppe_grow","ppeSpr","ppeFall","ppeGrow","egdd","chu"),logic = "or")){
       climateList <- append(climateList,inputDataList[i])}
     if(str_contains(inputDataList[i],c("ppe_grow","silt","clay","organiccarbon","pH","bulk"),logic = "or")){
       mineralList <- append(mineralList,inputDataList[i])}
@@ -118,21 +118,21 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("climateDF_1"),temp)
           count <- count + 1
-        } else if(str_contains(tempOrder[j], "ppe_spr")){
+        } else if(str_contains(tempOrder[j], c("ppe_spr","ppeSpr"),logic = "or")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
           temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("climateDF_2"),temp)
           count <- count + 1
-        } else if(str_contains(tempOrder[j], "ppe_fall")){
+        } else if(str_contains(tempOrder[j], c("ppe_fall","ppeFall"),logic = "or")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
           temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("climateDF_3"),temp)
           count <- count + 1
-        } else if(str_contains(tempOrder[j], "ppe")){
+        } else if(str_contains(tempOrder[j],  c("ppe_grow","ppeGrow"),logic = "or")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
           temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
@@ -188,7 +188,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     baseMineralRaster <- raster(tempDF)
     for(j in 1:length(tempOrder)){
       if(count <= length(tempDF[1])){
-        if(str_contains(tempOrder[j], "ppe")){
+        if(str_contains(tempOrder[j], c("ppe_grow","ppeGrow"),logic = "or")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
           temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
