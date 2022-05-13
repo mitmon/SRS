@@ -162,9 +162,16 @@ surfaceAndSubsurface <- function(divideDepth,inputRaster){
   baseRaster <- raster(inputRaster[[1]])
 
   for(i in 3:length(tempname)){
-    if(as.numeric(tempname[[i]][2]) < divideDepth){
-      divide <- i + 2
-      break
+    if(!is.na(as.numeric(tempname[[i]][2]))){
+      if(as.numeric(tempname[[i]][2]) > divideDepth){
+        divide <- i + 1
+        break
+      }
+    } else {
+      if(as.numeric(tempname[[i]][3]) > divideDepth){
+        divide <- i + 1
+        break
+      }
     }
   }
 
@@ -573,97 +580,165 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
 
   for(i in 1:(tempListFilesLength)){
     tempListFiles <- list.files(FFP(paste0("/data/temp/temp_",i)))
+    j <- 1
+    while(j <= length(tempListFiles)){
+        if(str_contains(tempListFiles[j], '.gri')){
+          j <- j + 1
+          next
+        }
+        # 3a. Determine if surface and subsurface averages are required based on the
+        # user request. Call the surface and subsurface function and appending
+        # results to the input raster.
+        else if(index == "mineral" && str_contains(tempListFiles[j], '.grd')
+                  && (str_contains(tempListFiles[j], c('bulk','clay','silt','organic','pH'), logic = 'or'))){
+          # Determine if each input file is stacked in one file or separate files
+          # If separate files, stack first then run.
+          if(str_contains(tempListFiles[j], '.grd')
+             && (str_contains(tempListFiles[j], c('b0','b10','b30','b60','b100','b200'), logic = 'or'))){
 
-    for(j in 1:(length(tempListFiles))){
-      if(str_contains(tempListFiles[j], '.gri')){
-        next
-      # 3a. Determine if surface and subsurface averages are required based on the
-      # user request. Call the surface and subsurface function and appending
-      # results to the input raster.
-      } else if(index == "mineral" && str_contains(tempListFiles[j], '.grd')
-                            && (str_contains(tempListFiles[j], 'bulk') ||
-                                str_contains(tempListFiles[j], 'clay') ||
-                                str_contains(tempListFiles[j], 'silt') ||
-                                str_contains(tempListFiles[j], 'organic') ||
-                                str_contains(tempListFiles[j], 'pH'))){
-        if(j == 1){
-          tempRasterStack <- surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
-        } else {
-          tempRasterStack <- stack(tempRasterStack,surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))))
+            # Split the first string to get the file name.
+            tempString <- str_split(tempListFiles[j],"[.]")[1]
+            # Filter the temp list files to get only the files that are part of the stack
+            tempStackListFiles <- str_sort(compact(lapply(tempListFiles, function(x) if(str_contains(x,c(tempString,".grd"), logic = "and")){
+                                                                                            return(x)
+                                                                                        })),numeric = TRUE)
+
+            tempStackListFiles <- lapply(tempStackListFiles, function(x) return(x))
+            for(k in 1:length(tempStackListFiles)){
+              if(k == 1){
+                # Start stacking the file.
+                tempStackFiles <- loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempStackListFiles[[k]])))
+              } else {
+                tempStackFiles <- stack(tempStackFiles,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempStackListFiles[[k]]))))
+              }
+            }
+
+            if(j == 1){
+              tempRasterStack <- surfaceAndSubsurface(60,tempStackFiles)
+            } else {
+              tempRasterStack <- stack(tempRasterStack,surfaceAndSubsurface(60,tempStackFiles))
+            }
+            j <- j + (length(tempStackListFiles)*2) - 1
+          } else {
+          # If full files, run stack.
+            if(j == 1){
+              tempRasterStack <- surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
+            } else {
+              tempRasterStack <- stack(tempRasterStack,surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))))
+            }
         }
-      } else if(index == "organic" && str_contains(tempListFiles[j], '.grd')
-                                   && (str_contains(tempListFiles[j], 'bulk') ||
-                                  str_contains(tempListFiles[j], 'pH'))){
-        if(j == 1){
-          tempRasterStack <- surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
-        } else {
-          tempRasterStack <- stack(tempRasterStack,surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))))
-        }
-      } else if(index == "landscape"){
-        if(str_contains(tempListFiles[j], '.grd') && (str_contains(tempListFiles[j], 'slopePercent') ||
-                                                      str_contains(tempListFiles[j], 'slopeLength') ||
-                                                      str_contains(tempListFiles[j], 'lFactor'))){
-          if(j == 1){
+      }
+        else if(index == "organic" && str_contains(tempListFiles[j], '.grd')
+                 && (str_contains(tempListFiles[j], c('bulk','pH'), logic = 'or'))){
+          # Determine if each input file is stacked in one file or separate files
+          # If separate files, stack first then run.
+          if(str_contains(tempListFiles[j], '.grd')
+             && (str_contains(tempListFiles[j], c('b0','b10','b30','b60','b100','b200'), logic = 'or'))){
+
+            # Split the first string to get the file name.
+            tempString <- str_split(tempListFiles[j],"[.]")[1]
+
+            # Filter the temp list files to get only the files that are part of the stack
+            tempStackListFiles <- str_sort(compact(lapply(tempListFiles, function(x) if(str_contains(x,c(tempString,".grd"), logic = "and")){
+              return(x)
+            })),numeric = TRUE)
+
+            tempStackListFiles <- lapply(tempStackListFiles, function(x) return(x))
+            for(k in 1:length(tempStackListFiles)){
+              if(k == 1){
+                # Start stacking the file.
+                tempStackFiles <- loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempStackListFiles[[k]])))
+              } else {
+                tempStackFiles <- stack(tempStackFiles,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempStackListFiles[[k]]))))
+              }
+            }
+
+            if(j == 1){
+              tempRasterStack <- surfaceAndSubsurface(60,tempStackFiles)
+            } else {
+              tempRasterStack <- stack(tempRasterStack,surfaceAndSubsurface(60,tempStackFiles))
+            }
+
+            # # Remove the files from the list to remove duplication issues
+            # tempListFiles <- compact(lapply(tempListFiles, function(x) if(!str_contains(x,tempString)){return(x)}))
+            j <- j + (length(tempStackListFiles)*2) - 1
+          } else {
+            # If full files, run stack.
+            if(j == 1){
+              tempRasterStack <- surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
+            } else {
+              tempRasterStack <- stack(tempRasterStack,surfaceAndSubsurface(60,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))))
+            }
+          }
+      }
+        else if(index == "landscape"){
+          if(str_contains(tempListFiles[j], '.grd') && (str_contains(tempListFiles[j], 'slopePercent') ||
+                                                        str_contains(tempListFiles[j], 'slopeLength') ||
+                                                        str_contains(tempListFiles[j], 'lFactor'))){
+            if(j == 1){
+              tempRasterStack <- loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))
+            } else {
+              tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
+            }
+          } else if (str_contains(tempListFiles[j], '.grd') && (str_contains(tempListFiles[j], 'DEM'))){
+            if(j == 1){
+              lsFunction(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])),i)
+              tempRasterStack <-  loadRaster(FFP(paste0("/data/temp/temp_",i,"/slope_",i)))
+              tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/lFactor_",i))))
+            } else {
+              lsFunction(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])),i)
+              tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/slope_",i))))
+              tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/lFactor_",i))))
+            }
+          }
+
+      }
+        else {
+          if(index == "landscape" && str_contains(tempListFiles[j], '.grd')
+                                  && str_contains(tempListFiles[j], '.gri')
+                                  && (str_contains(tempListFiles[j], 'DEM'))){
+            pass()
+          }
+          else if(j == 1){
             tempRasterStack <- loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))
           } else {
             tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
           }
-        } else if (str_contains(tempListFiles[j], '.grd') && (str_contains(tempListFiles[j], 'DEM'))){
-          if(j == 1){
-            lsFunction(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])),i)
-            tempRasterStack <-  loadRaster(FFP(paste0("/data/temp/temp_",i,"/slope_",i)))
-            tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/lFactor_",i))))
-          } else {
-            lsFunction(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])),i)
-            tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/slope_",i))))
-            tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/lFactor_",i))))
-          }
         }
 
-      } else {
-        if(index == "landscape" && str_contains(tempListFiles[j], '.grd')
-                                && str_contains(tempListFiles[j], '.gri')
-                                && (str_contains(tempListFiles[j], 'DEM'))){
-          pass()
-        }
-        else if(j == 1){
-          tempRasterStack <- loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])))
-        } else {
-          tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
-        }
-      }
-
-      # 3b. Save the input files name for later when loading data again. The
-      # column names will be used later.
-      if(index != "landscape" || (str_contains(tempListFiles[j], 'slopePercent') ||
-                                  str_contains(tempListFiles[j], 'slopeLength') ||
-                                  str_contains(tempListFiles[j], 'lFactor'))){
-        if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))){
-          fileLocation <- FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt"))
-          file.create(fileLocation)
-          writeLines(paste0(tempListFiles[[j]]),fileLocation)
-        } else {
-          fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))
-          fileDataTemp <- readLines(fileLocation)
-          writeLines(paste0(fileDataTemp,",",tempListFiles[[j]]),fileLocation)
-        }
-      } else {
+        # 3b. Save the input files name for later when loading data again. The
+        # column names will be used later.
+        if(index != "landscape" || (str_contains(tempListFiles[j], 'slopePercent') ||
+                                    str_contains(tempListFiles[j], 'slopeLength') ||
+                                    str_contains(tempListFiles[j], 'lFactor'))){
           if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))){
             fileLocation <- FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt"))
             file.create(fileLocation)
-            writeLines(paste0("slopePercent",",slopeLength"),fileLocation)
-          } else {
+            writeLines(paste0(tempListFiles[[j]]),fileLocation)
+          }
+          else {
             fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))
             fileDataTemp <- readLines(fileLocation)
-            writeLines(paste0(fileDataTemp,",","slopePercent",",","slopeLength"),fileLocation)
+            writeLines(paste0(fileDataTemp,",",tempListFiles[j]),fileLocation)
           }
         }
+        else {
+            if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))){
+              fileLocation <- FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt"))
+              file.create(fileLocation)
+              writeLines(paste0("slopePercent",",slopeLength"),fileLocation)
+            } else {
+              fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))
+              fileDataTemp <- readLines(fileLocation)
+              writeLines(paste0(fileDataTemp,",","slopePercent",",","slopeLength"),fileLocation)
+            }
+        }
+        j <- j + 1
       }
 
       # 3c. Write data table to data table processing file and copy processing
       # order text over.
       writePermData(tempRasterStack, FFP(paste0('/data/temp/dataTable/')), paste0(index,'_table_temp_',i),'GTiff')
-
       if(file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))){
         file.copy(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")),FFP(paste0('/data/temp/dataTable/')))
       }
