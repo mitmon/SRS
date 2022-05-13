@@ -46,22 +46,33 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   if(str_contains(cropType,c("alfalfa","canola","sssg"),logic = "or")){
     cropName <- cropType
     cropType <- "EGDD"
-    inputDataList <- purrr::discard(inputDataList,.p = ~stringr::str_detect(.x,"egdd"))
+    inputDataList <- purrr::discard(inputDataList,.p = ~stringr::str_detect(.x,"chu"))
   } else if(str_contains(cropType,c("corn","potato","soybean"),logic = "or")){
     cropName <- cropType
     cropType <- "CHU"
-    inputDataList <- purrr::discard(inputDataList,.p = ~stringr::str_detect(.x,"chu"))
+    inputDataList <- purrr::discard(inputDataList,.p = ~stringr::str_detect(.x,"egdd"))
   }
 
   for(i in 1:length(inputDataList)){
-    if(str_contains(inputDataList[i],c("ppe_spr","ppe_fall","ppe_grow","ppeSpr","ppeFall","ppeGrow","egdd","chu"),logic = "or")){
-      climateList <- append(climateList,inputDataList[i])}
-    if(str_contains(inputDataList[i],c("ppe_grow","silt","clay","organiccarbon","pH","bulk"),logic = "or")){
-      mineralList <- append(mineralList,inputDataList[i])}
-    if(str_contains(inputDataList[i],c("egdd","chu","ppe_grow","pH","bulk"),logic = "or")){
-      organicList <- append(organicList,inputDataList[i])}
-    if(str_contains(inputDataList[i],c("DEM","slopePercent","slopeLength","lFactor"),logic = "or")){
-      landscapeList <- append(landscapeList,inputDataList[i])}
+    if(cropType == "EGDD"){
+      if(str_contains(inputDataList[i],c("ppe_spr","ppe_fall","ppe_grow","ppeSpr","ppeFall","ppeGrow","egdd"),logic = "or")){
+        climateList <- append(climateList,inputDataList[i])}
+      if(str_contains(inputDataList[i],c("ppe_grow","ppeGrow","silt","clay","organiccarbon","pH","bulk"),logic = "or")){
+        mineralList <- append(mineralList,inputDataList[i])}
+      if(str_contains(inputDataList[i],c("egdd","ppe_grow","ppeGrow","pH","bulk"),logic = "or")){
+        organicList <- append(organicList,inputDataList[i])}
+      if(str_contains(inputDataList[i],c("DEM","slopePercent","slopeLength","lFactor"),logic = "or")){
+        landscapeList <- append(landscapeList,inputDataList[i])}
+    } else if(cropType == "CHU"){
+      if(str_contains(inputDataList[i],c("ppe_spr","ppe_fall","ppe_grow","ppeSpr","ppeFall","ppeGrow","chu"),logic = "or")){
+        climateList <- append(climateList,inputDataList[i])}
+      if(str_contains(inputDataList[i],c("ppe_grow","ppeGrow","silt","clay","organiccarbon","pH","bulk"),logic = "or")){
+        mineralList <- append(mineralList,inputDataList[i])}
+      if(str_contains(inputDataList[i],c("chu","ppe_grow","ppeGrow","pH","bulk"),logic = "or")){
+        organicList <- append(organicList,inputDataList[i])}
+      if(str_contains(inputDataList[i],c("DEM","slopePercent","slopeLength","lFactor"),logic = "or")){
+        landscapeList <- append(landscapeList,inputDataList[i])}
+    }
   }
 
   # Prepare climate data for the climate index
@@ -94,7 +105,8 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   # 2a. Climate index
   if("climate" %in% indicesCalc){
   print("Starting climate index calculation...")
-
+    # Obtain the total number of temp folder that were made.
+    # Use this number for the number of times the system has to process the data
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
   totalFiles <- 0
   for(i in 1:length(totalFilestemp)){
@@ -102,13 +114,16 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
       totalFiles <- totalFiles + 1
     }
   }
-
-
+  # Split the layers of the input data to the appropriate variable
   for(i in 1:totalFiles){
+    # Load the process order file and count number of data files used to create input data.
     tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/climate_processOrder_',i,'.txt')), header = FALSE, sep = ",")
     count <- 1
+    # Load the input raster
     tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/climate_table_temp_',i,'.tif')))
+    # Set the input raster as the base file for which more data will be written to.
     baseClimateRaster <- raster(tempDF)
+    # Body of climate processing function
     for(j in 1:length(tempOrder)){
       if(count <= length(tempDF[1])){
         if(str_contains(tempOrder[j], c("egdd","chu"),logic = "or")){
