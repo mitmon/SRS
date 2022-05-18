@@ -1,5 +1,5 @@
-Package: SRS
-Type: Package
+Package:SRS
+Type:Package
 Title: Suitability Rating System Version 6
 Version: 6.3.0
 Author: Mitch Krafczek (AAFC)
