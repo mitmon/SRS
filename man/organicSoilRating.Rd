@@ -15,18 +15,21 @@ organicSoilRating(
 )
 }
 \arguments{
-\item{basicClimate}{Basic climate rating calculated}
+\item{soilTemp}{The results from the climate factors.}
 
-\item{modifiers}{Modifying factors.}
+\item{moistureDeduct}{The results from the moistureDeduct factor.}
 
-\item{ppeFall}{Precipitation minus potential evapotranspiration for fall}
+\item{surfaceFactors}{The results from the surfaceFactors.}
+
+\item{subsurfaceFactors}{The results from the subsurfaceFactor.}
+
+\item{drainage}{The results from the drainage factor.}
 }
 \value{
 The climate rating.
 }
 \description{
+Organic Soil rating
 
-}
-\details{
-
+The organic soil rating calculates the rating class for the organic soil index.
 }

@@ -10,8 +10,6 @@ climateRating(basicClimate, modifiers)
 \item{basicClimate}{Basic climate rating calculated}
 
 \item{modifiers}{Modifying factors.}
-
-\item{ppeFall}{Precipitation minus potential evapotranspiration for fall}
 }
 \value{
 The climate rating.

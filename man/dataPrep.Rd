@@ -10,6 +10,10 @@ dataPrep(index, requiredDataArray, rasterStackFolder, shapefileAOI)
 \item{index}{The index is the type of index the user is requesting. Options
 are climate, soil, or landscape. Future versions will expand the indices.}
 
+\item{requiredDataArray}{The required data for each index, pre-determined in the SRS_main.R file.}
+
+\item{rasterStackFolder}{The location of the input data required to run the process.}
+
 \item{shapefileAOI}{Area of interest for the SRS calculation. Shapefile format.}
 }
 \description{

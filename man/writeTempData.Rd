@@ -9,9 +9,11 @@ writeTempData(inputData, tempFolder, tempName, exportType)
 \arguments{
 \item{inputData}{Input temp data that needs to be save temporarily}
 
+\item{tempFolder}{Location where temp data will be saved}
+
 \item{tempName}{Temp name for the files}
 
-\item{tempLocation}{Location where temp data will be saved}
+\item{exportType}{Export type of the file. Options are .shp or .grd/.gri}
 }
 \value{
 Saves the input data to a temporary location

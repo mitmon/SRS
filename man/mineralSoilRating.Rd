@@ -14,6 +14,8 @@ mineralSoilRating(moistureDeduct, surfaceFactors, subsurfaceFactors, drainage)
 \item{surfaceFactors}{Modifying factors.}
 
 \item{subsurfaceFactors}{Precipitation minus potential evapotranspiration for fall}
+
+\item{drainage}{The drainage deduction factor.}
 }
 \value{
 The climate rating.

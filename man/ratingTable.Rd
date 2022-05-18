@@ -4,7 +4,7 @@
 \alias{ratingTable}
 \title{Rating table function}
 \usage{
-ratingTable(x)
+ratingTable(inputValue)
 }
 \arguments{
 \item{inputValue}{The input values to be converted to a rating}

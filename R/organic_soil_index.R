@@ -9,6 +9,15 @@
 #'
 #' The organic soil index main calls all required function and produces the rating
 #' for organic soil over the study site.
+#' @param egdd Effective growing degree days either T5 or T10.
+#' @param ppe Precipitation minus potential evapotranspiration
+#' @param surfaceBD Surface bulk density Mg/m^3
+#' @param subsurfaceBD The subsurface bulk density Mg/m^3. Default is at 60cm depth.
+#' @param depthToWaterTable Depth to water table in cm
+#' @param surfacepH Surface pH measured in saturated paste
+#' @param surfaceSalinity Surface salinity measured in saturated paste (dS/m)
+#' @param subsurfacepH The subsurface pH measured in saturated paste (dS/m). Default is at 60cm depth.
+#' @param subsurfaceSalinity The subsurface salinity measured in saturated paste (dS/m). Default is at 60cm depth.
 #' @return
 #' @export
 organicSoilIndexMain <- function(egdd,
@@ -290,8 +299,9 @@ interimOrganicRating <- function(surfaceBD, ppe, surfacepH,surfaceSalinity){
 #' are recognized in this category, structure (degree of decomposition) (B), depth of
 #' deposit and kind of substrate (G), reaction (V) and salinity (N). Depth of
 #' deposit and kind of substrate are currently not being used.
-#' @param
-#' @param
+#' @param subsurfaceBD The subsurface bulk density Mg/m^3. Default is at 60cm depth.
+#' @param subsurfacepH The subsurface pH measured in saturated paste (dS/m). Default is at 60cm depth.
+#' @param subsurfaceSalinity The subsurface salinity measured in saturated paste (dS/m). Default is at 60cm depth.
 #' @return
 #' @export
 basicOrganicRating <- function(subsurfaceBD,subsurfacepH,subsurfaceSalinity){
@@ -353,32 +363,34 @@ basicOrganicRating <- function(subsurfaceBD,subsurfacepH,subsurfaceSalinity){
 
 }
 
-#' #' Drainage Deduction
-#' #'
-#' #' The drainage deduction is used to evaluate the soil properties which include
-#' #' the water table and hydraulic conductivity.The rating is based principally on
-#' #' management or traffic ability considerations. Three is one parameter for
-#' #' drainage. This parameter determines the percentage deduction for the soil
-#' #' regime. Currently this parameter is not used in the calculations with potential
-#' #' for future version to include the drainage.
-#' #' @param depthToWaterTable Depth to water table in cm (Highest 20-day average in
-#' #' growing season).
-#' #' @param ppe Precipitation minus potential evapotranspiration.
-#' #' @param hydraulicCond Hydraulic conductivity (cm/h)
-#' #' @return Percentage deduction for drainage.
-#' #' @export
-#' drainageDeduction <- function(depthToWaterTable,ppe,hydraulicCond){
-#'   # 2. Return the deduction percentage for the drainage deduction
-#'   return()
-#'
-#' }
+# #' Drainage Deduction
+# #'
+# #' The drainage deduction is used to evaluate the soil properties which include
+# #' the water table and hydraulic conductivity.The rating is based principally on
+# #' management or traffic ability considerations. Three is one parameter for
+# #' drainage. This parameter determines the percentage deduction for the soil
+# #' regime. Currently this parameter is not used in the calculations with potential
+# #' for future version to include the drainage.
+# #' @param depthToWaterTable Depth to water table in cm (Highest 20-day average in
+# #' growing season).
+# #' @param ppe Precipitation minus potential evapotranspiration.
+# #' @param hydraulicCond Hydraulic conductivity (cm/h)
+# #' @return Percentage deduction for drainage.
+# #' @export
+# drainageDeduction <- function(depthToWaterTable,ppe,hydraulicCond){
+#   # 2. Return the deduction percentage for the drainage deduction
+#   return()
+#
+# }
 
 #' @title Organic Soil rating
 #'
 #' The organic soil rating calculates the rating class for the organic soil index.
-#' @param basicClimate Basic climate rating calculated
-#' @param modifiers Modifying factors.
-#' @param ppeFall Precipitation minus potential evapotranspiration for fall
+#' @param soilTemp The results from the climate factors.
+#' @param moistureDeduct The results from the moistureDeduct factor.
+#' @param surfaceFactors The results from the surfaceFactors.
+#' @param subsurfaceFactors The results from the subsurfaceFactor.
+#' @param drainage The results from the drainage factor.
 #' @return The climate rating.
 #' @export
 organicSoilRating <- function(soilTemp,moistureDeduct,surfaceFactors,subsurfaceFactors,drainage){

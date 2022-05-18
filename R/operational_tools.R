@@ -27,7 +27,7 @@ FFP <- function(inputFile){
 #' Delete folder
 #'
 #' Delete the folder in the file path
-#' @param inputFolder Input folder that will be deleted
+#' @param inputFile Input folder that will be deleted
 #' @export
 deleteFolder <- function(inputFile){
   unlink(FFP(inputFile), recursive = TRUE)
@@ -60,6 +60,9 @@ loadShapefile <-function(shapefile){
 #' Write permanent data. This tool will write any data that is currently in
 #' the same folder as the input data.
 #' @param inputData Input data that needs to be saved
+#' @param exportLocation The output folder location.
+#' @param exportName Name of the exported file.
+#' @param exportType Export type of the file. Options are .shp or .grd/.gri
 #' @return Saves the input data to a folder location
 #' @export
 writePermData <- function(inputData, exportLocation, exportName, exportType){
@@ -88,8 +91,9 @@ writePermData <- function(inputData, exportLocation, exportName, exportType){
 #'
 #' Write temporary data to temp folder for further processing
 #' @param inputData Input temp data that needs to be save temporarily
-#' @param tempLocation Location where temp data will be saved
+#' @param tempFolder Location where temp data will be saved
 #' @param tempName Temp name for the files
+#' @param exportType Export type of the file. Options are .shp or .grd/.gri
 #' @return Saves the input data to a temporary location
 #' @export
 writeTempData <- function(inputData, tempFolder, tempName, exportType){
@@ -123,7 +127,7 @@ writeTempData <- function(inputData, tempFolder, tempName, exportType){
 #' Erase temp data
 #'
 #' Erase temporary data
-#' @param file
+#' @param file The file to be deleted.
 #' @return Confirmation of deletion
 #' @export
 eraseTempData <- function(file){
@@ -226,7 +230,7 @@ reprojectFile <- function(inputFile,projection){
 #' ** This tool is meant to be used to mask dead space around two images. This
 #' tool helps with issues of miss-aligned input files by filling the extra space
 #' in the larger of the two input files with with NA data.**
-#' @param requiredDataArray
+#' @param requiredDataArray The required data for each index, pre-determined in the SRS_main.R file.
 #' @param inputFolder Input file array.
 #' @param exportFolder Export folder. Location where data is saved.
 #' @return Masked input file
@@ -487,31 +491,30 @@ batchCropRaster <- function(inputFolder,inputExtent){
 #' @param inputValue The input values to be converted to a rating
 #' @return Returns a rating from 1 to 7 with 1 being the best
 #' @export
-ratingTable <- function(x){
-  if(is.na(x)){
-    x <- NA
-  } else if(x < 10){
-    x <- 7
-  } else if(x < 20){
-    x <- 6
-  } else if(x < 30){
-    x <- 5
-  } else if(x < 45){
-    x <- 4
-  } else if(x < 60){
-    x <- 3
-  } else if(x < 80){
-    x <- 2
-  } else if(x <= 100){
-    x <- 1
+ratingTable <- function(inputValue){
+  if(is.na(inputValue)){
+    inputValue <- NA
+  } else if(inputValue < 10){
+    inputValue <- 7
+  } else if(inputValue < 20){
+    inputValue <- 6
+  } else if(inputValue < 30){
+    inputValue <- 5
+  } else if(inputValue < 45){
+    inputValue <- 4
+  } else if(inputValue < 60){
+    inputValue <- 3
+  } else if(inputValue < 80){
+    inputValue <- 2
+  } else if(inputValue <= 100){
+    inputValue <- 1
   }
-  return(x)
+  return(inputValue)
 }
 
 #' Final table function
 #'
 #' This tools converts the values from each indices into a rating.
-#' @param v V is the number of indices that will be used for the results calculation
 #' @param w,x,y,z The input climate, mineral soil, organic soil, and landscape
 #' calculated values from each index.
 #' @return Returns a final rating from 1 to 7 with 1 being the best. Also returns
@@ -533,8 +536,8 @@ maxFunction <- function(w,x,y,z){
 #' for climate, mineral, organic, and landscape indices.
 #' @param index The index is the type of index the user is requesting. Options
 #' are climate, soil, or landscape. Future versions will expand the indices.
-#' @param requiredDataArray
-#' @param rasterStackFolder
+#' @param requiredDataArray The required data for each index, pre-determined in the SRS_main.R file.
+#' @param rasterStackFolder The location of the input data required to run the process.
 #' @param shapefileAOI Area of interest for the SRS calculation. Shapefile format.
 #' @export
 dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){

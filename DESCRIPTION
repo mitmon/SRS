@@ -1,5 +1,5 @@
-Package:SRS
-Type:Package
+Package: SRS
+Type: Package
 Title: Suitability Rating System Version 6
 Version: 6.3.0
 Author: Mitch Krafczek (AAFC)
@@ -18,19 +18,21 @@ Description: The suitability rating system is the 6th iteration of the Agricultu
     The 6th version looks to expand on the previous versions, introducting raster 
     data processing, open source based calculations, front facing client systems,
     and back-end 'on-the-fly' data processing for user specific requirements.
-License: Open Government License - Canada, Her Majesty the Queen in right of Canada.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Depends: 
+Imports:
     dplyr,
     future,
     geojsonsf,
     parallel,
     plyr,
+    purrr,
     raster,
     rgdal,
     sjmisc,
     sf,
     sp,
+    stringr,
     tidyverse
 RoxygenNote: 7.1.2

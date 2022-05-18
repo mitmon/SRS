@@ -7,6 +7,8 @@
 batchMaskRaster(requiredDataArray, inputFolder, exportFolder)
 }
 \arguments{
+\item{requiredDataArray}{The required data for each index, pre-determined in the SRS_main.R file.}
+
 \item{inputFolder}{Input file array.}
 
 \item{exportFolder}{Export folder. Location where data is saved.}

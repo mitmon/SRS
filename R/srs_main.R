@@ -46,11 +46,11 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   if(str_contains(cropType,c("alfalfa","canola","sssg"),logic = "or")){
     cropName <- cropType
     cropType <- "EGDD"
-    inputDataList <- purrr::discard(inputDataList,.p = ~stringr::str_detect(.x,"chu"))
+    inputDataList <- discard(inputDataList,.p = str_detect(.x,"chu"))
   } else if(str_contains(cropType,c("corn","potato","soybean"),logic = "or")){
     cropName <- cropType
     cropType <- "CHU"
-    inputDataList <- purrr::discard(inputDataList,.p = ~stringr::str_detect(.x,"egdd"))
+    inputDataList <- discard(inputDataList,.p = str_detect(.x,"egdd"))
   }
 
   for(i in 1:length(inputDataList)){

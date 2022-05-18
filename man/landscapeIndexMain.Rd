@@ -12,6 +12,17 @@ landscapeIndexMain(
   woodContent
 )
 }
+\arguments{
+\item{slopePercent}{Slope percentage.}
+
+\item{slopeLength}{Slope length based on LS calculation.}
+
+\item{surfaceStoniness}{Surface stoniness in annual removal (cubic m/ha)}
+
+\item{coarseFragment}{Coarse fragment content as a percentage of volume.}
+
+\item{woodContent}{Wood content as a percentage of volume.}
+}
 \value{
 Landscape rating
 }

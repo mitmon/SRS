@@ -7,7 +7,7 @@
 deleteFolder(inputFile)
 }
 \arguments{
-\item{inputFolder}{Input folder that will be deleted}
+\item{inputFile}{Input folder that will be deleted}
 }
 \description{
 Delete the folder in the file path

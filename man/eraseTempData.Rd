@@ -6,6 +6,9 @@
 \usage{
 eraseTempData(file)
 }
+\arguments{
+\item{file}{The file to be deleted.}
+}
 \value{
 Confirmation of deletion
 }

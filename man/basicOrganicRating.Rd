@@ -6,6 +6,13 @@
 \usage{
 basicOrganicRating(subsurfaceBD, subsurfacepH, subsurfaceSalinity)
 }
+\arguments{
+\item{subsurfaceBD}{The subsurface bulk density Mg/m^3. Default is at 60cm depth.}
+
+\item{subsurfacepH}{The subsurface pH measured in saturated paste (dS/m). Default is at 60cm depth.}
+
+\item{subsurfaceSalinity}{The subsurface salinity measured in saturated paste (dS/m). Default is at 60cm depth.}
+}
 \value{
 
 }

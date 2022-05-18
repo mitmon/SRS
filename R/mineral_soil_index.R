@@ -9,7 +9,24 @@
 #'
 #' The mineral soil index main calls all required function and produces the rating
 #' for mineral soil over the study site.
-#' @return test
+#' @param ppe Precipitation minus potential evapotranspiration
+#' @param surfaceSiltPercent Percentage of surface (depths 0-60cm) silt
+#' @param surfaceClayPercent Percentage of surface (depths 0-60cm) clay
+#' @param subsurfaceSiltPercent Percentage of subsurface (depths 61-200cm) silt
+#' @param subsurfaceClayPercent Percentage of subsurface (depths 61-200cm) clay
+#' @param waterTableDepth Water table depth (in cm)
+#' @param surfaceOC Percentage of surface (depths 0-60cm) organic carbon
+#' @param depthOfTopSoil Depth of top soil up to a max of 20cm
+#' @param surfacepH Surface pH measured in saturated paste (depths 0-60cm)
+#' @param surfaceSalinity Surface salinity (depths 0-60cm)
+#' @param surfaceSodicity Surface sodicity (depths 0-60cm)
+#' @param depthOfPeat Depth of organic (peaty) surface
+#' @param subsurfaceBulkDensity Subsurface bulk density
+#' @param impedingLayerDepth Subsurface impeding layers depth (cm)
+#' @param subsurfacepH Subsurface pH measured in substrate paste (depths 60-200cm)
+#' @param subsurfaceSalinity Subsurface salinity (depths 60-200cm)
+#' @param subsurfaceSodicity Subsurface sodicity (depths 60-200cm)
+#' @return
 #' @export
 mineralSoilIndexMain <- function(ppe,surfaceSiltPercent,surfaceClayPercent,subsurfaceSiltPercent,subsurfaceClayPercent,waterTableDepth,
                                  surfaceOC,depthOfTopSoil,surfacepH,surfaceSalinity,surfaceSodicity,depthOfPeat,subsurfaceBulkDensity,
@@ -339,6 +356,8 @@ interimSoilRating <- function(surfaceSiltPercent,surfaceClayPercent,surfaceOC,de
 #' @param subsurfaceClayPercent Percentage of subsurface (depths 60-200cm) clay
 #' @param subsurfaceBulkDensity Subsurface bulk density
 #' @param impedingLayerDepth Subsurface impeding layers depth (cm)
+#' @param ppe Precipitation minus potential evapotranspiration
+#' @param subsurfacepH Subsurface pH measured in substrate paste (depths 60-200cm)
 #' @param subsurfaceSalinity Subsurface salinity (depths 60-200cm)
 #' @param subsurfaceSodicity Subsurface sodicity (depths 60-200cm)
 #' @return Percentage deduction for basic soil rating.
@@ -512,7 +531,7 @@ drainageDeduction <- function(depthToWaterTable,ppe,hydraulicCond){
 #' @param moistureDeduct Basic climate rating calculated
 #' @param surfaceFactors Modifying factors.
 #' @param subsurfaceFactors Precipitation minus potential evapotranspiration for fall
-#' @param drainage
+#' @param drainage The drainage deduction factor.
 #' @return The climate rating.
 #' @export
 mineralSoilRating <- function(moistureDeduct,surfaceFactors,subsurfaceFactors,drainage){

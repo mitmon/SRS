@@ -10,6 +10,9 @@
 #' The climate index main calls all required function and produces the rating
 #' for climate over the study site.
 #' @param ratingTableArrayMC Rating table lower and upper bounds for deduction for the moisture component.
+#' @param ratingTableArrayTF Rating table lower and upper bounds for deduction for temperature factors.
+#' @param ratingTableArrayESM Rating table lower and upper bounds for deduction for early spring moisture.
+#' @param ratingTableArrayEFM Rating table lower and upper bounds for deduction for excess fall moisture.
 #' @param ppe Precipitation minus potential evapotranspiration
 #' @param temperatureFactor Input effective growing degree days or crop heat
 #' units for the study site.
@@ -34,6 +37,7 @@ climateIndexMain <- function(ratingTableArrayMC,ratingTableArrayTF,ratingTableAr
 #' for the moisture component and temperature factors. The max deduction is
 #' taken for between the moisture factor and the temperature factor.
 #' @param ratingTableArrayMC Rating table lower and upper bounds for deduction for the moisture component.
+#' @param ratingTableArrayTF Rating table lower and upper bounds for deduction for temperature factors.
 #' @param ppe Precipitation minus potential evapotranspiration
 #' @param temperatureFactor Input effective growing degree days or crop heat units for
 #' the study site.
@@ -91,7 +95,6 @@ climateModifyingFactors <- function(ratingTableArrayESM,ratingTableArrayEFM, ppe
 #' The climate rating calculates the rating class for the climate index.
 #' @param basicClimate Basic climate rating calculated
 #' @param modifiers Modifying factors.
-#' @param ppeFall Precipitation minus potential evapotranspiration for fall
 #' @return The climate rating.
 #' @export
 climateRating <- function(basicClimate,modifiers){

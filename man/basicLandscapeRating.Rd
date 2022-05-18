@@ -10,9 +10,6 @@ basicLandscapeRating(slopePercent, slopeLength)
 \item{slopePercent}{Slope percentage.}
 
 \item{slopeLength}{Slope length based on LS calculation.}
-
-\item{temperatureFactor}{Input effective growing degree days or crop heat units for
-the study site.}
 }
 \value{
 Deduction points for the basic landscape rating.

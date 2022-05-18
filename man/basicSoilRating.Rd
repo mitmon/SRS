@@ -24,6 +24,10 @@ basicSoilRating(
 
 \item{impedingLayerDepth}{Subsurface impeding layers depth (cm)}
 
+\item{ppe}{Precipitation minus potential evapotranspiration}
+
+\item{subsurfacepH}{Subsurface pH measured in substrate paste (depths 60-200cm)}
+
 \item{subsurfaceSalinity}{Subsurface salinity (depths 60-200cm)}
 
 \item{subsurfaceSodicity}{Subsurface sodicity (depths 60-200cm)}

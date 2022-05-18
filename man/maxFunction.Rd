@@ -9,8 +9,6 @@ maxFunction(w, x, y, z)
 \arguments{
 \item{w, x, y, z}{The input climate, mineral soil, organic soil, and landscape
 calculated values from each index.}
-
-\item{v}{V is the number of indices that will be used for the results calculation}
 }
 \value{
 Returns a final rating from 1 to 7 with 1 being the best. Also returns

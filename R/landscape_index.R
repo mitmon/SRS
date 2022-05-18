@@ -9,6 +9,11 @@
 #'
 #' The landscape index main calls all required function and produces the rating
 #' for landscape over the study site.
+#' @param slopePercent Slope percentage.
+#' @param slopeLength Slope length based on LS calculation.
+#' @param surfaceStoniness Surface stoniness in annual removal (cubic m/ha)
+#' @param coarseFragment Coarse fragment content as a percentage of volume.
+#' @param woodContent Wood content as a percentage of volume.
 #' @return Landscape rating
 #' @export
 landscapeIndexMain <- function(slopePercent,slopeLength,surfaceStoniness, coarseFragment, woodContent){
@@ -27,8 +32,6 @@ landscapeIndexMain <- function(slopePercent,slopeLength,surfaceStoniness, coarse
 #' slope and landscape type.
 #' @param slopePercent Slope percentage.
 #' @param slopeLength Slope length based on LS calculation.
-#' @param temperatureFactor Input effective growing degree days or crop heat units for
-#' the study site.
 #' @return Deduction points for the basic landscape rating.
 #' @export
 basicLandscapeRating <- function(slopePercent,slopeLength){

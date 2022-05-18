@@ -19,6 +19,12 @@ climateIndexMain(
 \arguments{
 \item{ratingTableArrayMC}{Rating table lower and upper bounds for deduction for the moisture component.}
 
+\item{ratingTableArrayTF}{Rating table lower and upper bounds for deduction for temperature factors.}
+
+\item{ratingTableArrayESM}{Rating table lower and upper bounds for deduction for early spring moisture.}
+
+\item{ratingTableArrayEFM}{Rating table lower and upper bounds for deduction for excess fall moisture.}
+
 \item{ppe}{Precipitation minus potential evapotranspiration}
 
 \item{temperatureFactor}{Input effective growing degree days or crop heat

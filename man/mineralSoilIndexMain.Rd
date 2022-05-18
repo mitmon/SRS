@@ -24,8 +24,43 @@ mineralSoilIndexMain(
   subsurfaceSodicity
 )
 }
+\arguments{
+\item{ppe}{Precipitation minus potential evapotranspiration}
+
+\item{surfaceSiltPercent}{Percentage of surface (depths 0-60cm) silt}
+
+\item{surfaceClayPercent}{Percentage of surface (depths 0-60cm) clay}
+
+\item{subsurfaceSiltPercent}{Percentage of subsurface (depths 61-200cm) silt}
+
+\item{subsurfaceClayPercent}{Percentage of subsurface (depths 61-200cm) clay}
+
+\item{waterTableDepth}{Water table depth (in cm)}
+
+\item{surfaceOC}{Percentage of surface (depths 0-60cm) organic carbon}
+
+\item{depthOfTopSoil}{Depth of top soil up to a max of 20cm}
+
+\item{surfacepH}{Surface pH measured in saturated paste (depths 0-60cm)}
+
+\item{surfaceSalinity}{Surface salinity (depths 0-60cm)}
+
+\item{surfaceSodicity}{Surface sodicity (depths 0-60cm)}
+
+\item{depthOfPeat}{Depth of organic (peaty) surface}
+
+\item{subsurfaceBulkDensity}{Subsurface bulk density}
+
+\item{impedingLayerDepth}{Subsurface impeding layers depth (cm)}
+
+\item{subsurfacepH}{Subsurface pH measured in substrate paste (depths 60-200cm)}
+
+\item{subsurfaceSalinity}{Subsurface salinity (depths 60-200cm)}
+
+\item{subsurfaceSodicity}{Subsurface sodicity (depths 60-200cm)}
+}
 \value{
-test
+
 }
 \description{
 The mineral soil index main calls all required function and produces the rating

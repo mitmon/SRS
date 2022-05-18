@@ -8,6 +8,12 @@ writePermData(inputData, exportLocation, exportName, exportType)
 }
 \arguments{
 \item{inputData}{Input data that needs to be saved}
+
+\item{exportLocation}{The output folder location.}
+
+\item{exportName}{Name of the exported file.}
+
+\item{exportType}{Export type of the file. Options are .shp or .grd/.gri}
 }
 \value{
 Saves the input data to a folder location
