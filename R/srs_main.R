@@ -120,7 +120,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     tempOrder <- read.delim(FFP(paste0('~/data/temp/dataTable/climate_processOrder_',i,'.txt')), header = FALSE, sep = ",")
     count <- 1
     # Load the input raster
-    tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/climate_table_temp_',i,'.tif')))
+    tempDF <- loadRaster(FFP(paste0('~/data/temp/dataTable/climate_table_temp_',i,'.tif')))
     # Set the input raster as the base file for which more data will be written to.
     baseClimateRaster <- raster(tempDF)
     # Body of climate processing function
@@ -180,7 +180,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
                                     cropType),ncol = 1)
 
     values(baseClimateRaster) <- climateResults
-    writePermData(baseClimateRaster,FFP(paste0('/data/temp/results/')),
+    writePermData(baseClimateRaster,FFP(paste0('~/data/temp/results/')),
                   paste0('climateResults_',i),"GTiff")
   }}
 
@@ -188,7 +188,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   if("mineral" %in% indicesCalc){
   print("Starting mineral soil index calculation...")
 
-  totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
+  totalFilestemp <- list.files(FFP(paste0("~/data/temp/dataTable/")))
   totalFiles <- 0
   for(i in 1:length(totalFilestemp)){
     if(str_contains(totalFilestemp[i],"mineral") && str_contains(totalFilestemp[i],".tif")){
@@ -197,9 +197,9 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   }
 
   for(i in 1:totalFiles){
-    tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/mineral_processOrder_',i,'.txt')), header = FALSE, sep = ",")
+    tempOrder <- read.delim(FFP(paste0('~/data/temp/dataTable/mineral_processOrder_',i,'.txt')), header = FALSE, sep = ",")
     count <- 1
-    tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/mineral_table_temp_',i,'.tif')))
+    tempDF <- loadRaster(FFP(paste0('~/data/temp/dataTable/mineral_table_temp_',i,'.tif')))
     baseMineralRaster <- raster(tempDF)
     for(j in 1:length(tempOrder)){
       if(count <= length(tempDF[1])){
@@ -288,7 +288,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
                                     NA,
                                     NA),ncol = 1)
     values(baseMineralRaster) <- mineralResults
-    writePermData(baseMineralRaster,FFP(paste0('/data/temp/results/')),
+    writePermData(baseMineralRaster,FFP(paste0('~/data/temp/results/')),
                   paste0('mineralResults_',i),"GTiff")
   }}
 
