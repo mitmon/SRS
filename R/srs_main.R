@@ -27,11 +27,13 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   print("Starting data prep tools...")
 
   # 1a. Clear temp for future processing
-  if(!dir.exists("~/data/temp/")){
-    dir.create("~/data/temp/")
+  if(!dir.exists(paste0(tempdir(),"/data/temp/"))){
+    dir.create(paste0(tempdir(),"/data/"))
+    dir.create(paste0(tempdir(),"/data/temp/"))
   } else {
-    deleteFolder(paste0("~/data/temp/"))
-    dir.create("~/data/temp/")
+    deleteFolder(paste0(tempdir(),"/data/"))
+    dir.create(paste0(tempdir(),"/data/"))
+    dir.create(paste0(tempdir(),"/data/temp/"))
   }
 
   # 1b. Create data tables for each index
@@ -46,11 +48,11 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   if(str_contains(cropType,c("alfalfa","canola","sssg"),logic = "or")){
     cropName <- cropType
     cropType <- "EGDD"
-    inputDataList <- discard(inputDataList,.p = str_detect(.x,"chu"))
+    inputDataList <- purrr::discard(inputDataList,.p = ~str_detect(.x,"chu"))
   } else if(str_contains(cropType,c("corn","potato","soybean"),logic = "or")){
     cropName <- cropType
     cropType <- "CHU"
-    inputDataList <- discard(inputDataList,.p = str_detect(.x,"egdd"))
+    inputDataList <- discard(inputDataList,.p = ~str_detect(.x,"egdd"))
   }
 
   for(i in 1:length(inputDataList)){
@@ -107,7 +109,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   print("Starting climate index calculation...")
     # Obtain the total number of temp folder that were made.
     # Use this number for the number of times the system has to process the data
-  totalFilestemp <- list.files(FFP(paste0("~/data/temp/dataTable/")))
+  totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
   totalFiles <- 0
   for(i in 1:length(totalFilestemp)){
     if(str_contains(totalFilestemp[i],"climate") && str_contains(totalFilestemp[i],".tif")){
@@ -117,10 +119,10 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   # Split the layers of the input data to the appropriate variable
   for(i in 1:totalFiles){
     # Load the process order file and count number of data files used to create input data.
-    tempOrder <- read.delim(FFP(paste0('~/data/temp/dataTable/climate_processOrder_',i,'.txt')), header = FALSE, sep = ",")
+    tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/climate_processOrder_',i,'.txt')), header = FALSE, sep = ",")
     count <- 1
     # Load the input raster
-    tempDF <- loadRaster(FFP(paste0('~/data/temp/dataTable/climate_table_temp_',i,'.tif')))
+    tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/climate_table_temp_',i,'.tif')))
     # Set the input raster as the base file for which more data will be written to.
     baseClimateRaster <- raster(tempDF)
     # Body of climate processing function
@@ -180,7 +182,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
                                     cropType),ncol = 1)
 
     values(baseClimateRaster) <- climateResults
-    writePermData(baseClimateRaster,FFP(paste0('~/data/temp/results/')),
+    writePermData(baseClimateRaster,FFP(paste0('/data/temp/results/')),
                   paste0('climateResults_',i),"GTiff")
   }}
 
@@ -188,7 +190,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   if("mineral" %in% indicesCalc){
   print("Starting mineral soil index calculation...")
 
-  totalFilestemp <- list.files(FFP(paste0("~/data/temp/dataTable/")))
+  totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
   totalFiles <- 0
   for(i in 1:length(totalFilestemp)){
     if(str_contains(totalFilestemp[i],"mineral") && str_contains(totalFilestemp[i],".tif")){
@@ -197,9 +199,9 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   }
 
   for(i in 1:totalFiles){
-    tempOrder <- read.delim(FFP(paste0('~/data/temp/dataTable/mineral_processOrder_',i,'.txt')), header = FALSE, sep = ",")
+    tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/mineral_processOrder_',i,'.txt')), header = FALSE, sep = ",")
     count <- 1
-    tempDF <- loadRaster(FFP(paste0('~/data/temp/dataTable/mineral_table_temp_',i,'.tif')))
+    tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/mineral_table_temp_',i,'.tif')))
     baseMineralRaster <- raster(tempDF)
     for(j in 1:length(tempOrder)){
       if(count <= length(tempDF[1])){
@@ -288,7 +290,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
                                     NA,
                                     NA),ncol = 1)
     values(baseMineralRaster) <- mineralResults
-    writePermData(baseMineralRaster,FFP(paste0('~/data/temp/results/')),
+    writePermData(baseMineralRaster,FFP(paste0('/data/temp/results/')),
                   paste0('mineralResults_',i),"GTiff")
   }}
 
@@ -296,7 +298,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   if("organic" %in% indicesCalc){
   print("Starting organic soil calculation...")
 
-  totalFilestemp <- list.files(FFP(paste0("~/data/temp/dataTable/")))
+  totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
   totalFiles <- 0
   for(i in 1:length(totalFilestemp)){
     if(str_contains(totalFilestemp[i],"organic") && str_contains(totalFilestemp[i],".tif")){
@@ -305,9 +307,9 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   }
 
   for(i in 1:totalFiles){
-    tempOrder <- read.delim(FFP(paste0('~/data/temp/dataTable/organic_processOrder_',i,'.txt')), header = FALSE, sep = ",")
+    tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/organic_processOrder_',i,'.txt')), header = FALSE, sep = ",")
     count <- 1
-    tempDF <- loadRaster(FFP(paste0('~/data/temp/dataTable/organic_table_temp_',i,'.tif')))
+    tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/organic_table_temp_',i,'.tif')))
     baseOrganicRaster <- raster(tempDF)
     for(j in 1:length(tempOrder)){
       if(count <= length(tempDF[1])){
@@ -368,7 +370,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
                                     get(paste0('organicDF_6'))[3],
                                     NA),ncol = 1)
     values(baseOrganicRaster) <- organicResults
-    writePermData(baseOrganicRaster,FFP(paste0('~/data/temp/results/')),
+    writePermData(baseOrganicRaster,FFP(paste0('/data/temp/results/')),
                   paste0('organicResults_',i),"GTiff")
   }}
 
@@ -376,7 +378,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   if("landscape" %in% indicesCalc){
   print("Starting landscape index calculation...")
 
-  totalFilestemp <- list.files(FFP(paste0("~/data/temp/dataTable/")))
+  totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
   totalFiles <- 0
   for(i in 1:length(totalFilestemp)){
     if(str_contains(totalFilestemp[i],"landscape") && str_contains(totalFilestemp[i],".tif")){
@@ -385,9 +387,9 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   }
 
   for(i in 1:totalFiles){
-    tempOrder <- read.delim(FFP(paste0('~/data/temp/dataTable/landscape_processOrder_',i,'.txt')), header = FALSE, sep = ",")
+    tempOrder <- read.delim(FFP(paste0('/data/temp/dataTable/landscape_processOrder_',i,'.txt')), header = FALSE, sep = ",")
     count <- 1
-    tempDF <- loadRaster(FFP(paste0('~/data/temp/dataTable/landscape_table_temp_',i,'.tif')))
+    tempDF <- loadRaster(FFP(paste0('/data/temp/dataTable/landscape_table_temp_',i,'.tif')))
     baseLandscapeRaster <- raster(tempDF)
     for(j in 1:length(tempOrder)){
       if(count <= length(tempDF[1])){
@@ -420,19 +422,19 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
                                       NA,
                                       NA),ncol = 1)
     values(baseLandscapeRaster) <- landscapeResults
-    writePermData(baseLandscapeRaster,FFP(paste0('~/data/temp/results/')),
+    writePermData(baseLandscapeRaster,FFP(paste0('/data/temp/results/')),
                   paste0('landscapeResults_',i),"GTiff")
   }}
   # 3. Final rating
 
   # Check to make sure folder exists.
-  if(!file.exists(FFP(paste0("~/data/temp/results/")))){
-    fileLocation <- FFP(paste0("~/data/temp/results/"))
+  if(!file.exists(FFP(paste0("/data/temp/results/")))){
+    fileLocation <- FFP(paste0("/data/temp/results/"))
     file.create(fileLocation)
   }
 
   # Stack all the data layers and select the worst result from all the indices
-  totalFiles <- list.files(FFP(paste0("~/data/temp/results/")))
+  totalFiles <- list.files(FFP(paste0("/data/temp/results/")))
   baseRaster <- NULL
   tempResults <- NULL
 
@@ -443,7 +445,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   }
 
   for(i in 1:Indices){
-    baseRaster <- raster(loadRaster(FFP(paste0("~/data/temp/results/",totalFiles[i]))))
+    baseRaster <- raster(loadRaster(FFP(paste0("/data/temp/results/",totalFiles[i]))))
 
     temp1 <- NULL
     temp2 <- NULL
@@ -452,16 +454,16 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
 
     for(j in 1:length(totalFiles)){
       if(str_contains(paste0("climateResults_",i,".tif"),totalFiles[j])){
-        tempRaster <- loadRaster(FFP(paste0("~/data/temp/results/",totalFiles[j])))
+        tempRaster <- loadRaster(FFP(paste0("/data/temp/results/",totalFiles[j])))
         assign("temp1",tempRaster)
       } else if(str_contains(paste0("mineralResults_",i,".tif"),totalFiles[j])){
-        tempRaster <- loadRaster(FFP(paste0("~/data/temp/results/",totalFiles[j])))
+        tempRaster <- loadRaster(FFP(paste0("/data/temp/results/",totalFiles[j])))
         assign("temp2",tempRaster)
       } else if (str_contains(paste0("organicResults_",i,".tif"),totalFiles[j])){
-        tempRaster <- loadRaster(FFP(paste0("~/data/temp/results/",totalFiles[j])))
+        tempRaster <- loadRaster(FFP(paste0("/data/temp/results/",totalFiles[j])))
         assign("temp3",tempRaster)
       } else if(str_contains(paste0("landscapeResults_",i,".tif"),totalFiles[j])){
-        tempRaster <- loadRaster(FFP(paste0("~/data/temp/results/",totalFiles[j])))
+        tempRaster <- loadRaster(FFP(paste0("/data/temp/results/",totalFiles[j])))
         assign("temp4",tempRaster)
         # assign("temp4",sapply(raster(tempRaster),ratingTable))
       }
@@ -506,8 +508,8 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   }
 
   # 4. Clear temp for future processing
-  if(dir.exists(FFP(paste0("~/data/temp/")))){
-    deleteFolder(paste0("~/data/temp/"))
+  if(dir.exists(FFP(paste0("/data/temp/")))){
+    deleteFolder(paste0("/data/temp/"))
   }
 
   print(paste0("Completed ", cropName, " calculation."))

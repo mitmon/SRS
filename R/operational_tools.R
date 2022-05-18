@@ -21,7 +21,8 @@ pass = function(){
 #' @return String of full path of the file
 #' @export
 FFP <- function(inputFile){
-  return(paste0(getwd(),inputFile))
+  return(paste0(tempdir(),inputFile))
+  # return(paste0(getwd(),inputFile))
 }
 
 #' Delete folder
@@ -30,7 +31,7 @@ FFP <- function(inputFile){
 #' @param inputFile Input folder that will be deleted
 #' @export
 deleteFolder <- function(inputFile){
-  unlink(FFP(inputFile), recursive = TRUE)
+  unlink(inputFile, recursive = TRUE)
 }
 
 
@@ -313,7 +314,13 @@ batchMaskRaster <- function(requiredDataArray, inputFolder, exportFolder){
     #                    ncols=dim(listFiles_raster)[2])
     tempmask <- extend(brick(listFiles_data[[i]]),listFiles_raster)
     tempname <- listFiles[i]
-    writePermData(tempmask,paste0(exportFolder),paste0("masked_",tempname),'raster')
+
+    if(!dir.exists(exportFolder)){
+      dir.create(paste0(tempdir(),exportFolder))
+      writePermData(tempmask,paste0(exportFolder),paste0("masked_",tempname),'raster')
+    } else {
+      writePermData(tempmask,paste0(exportFolder),paste0("masked_",tempname),'raster')
+    }
   }
 
   print(paste0("Masked ", length(listFiles_data)," files."))
@@ -387,7 +394,7 @@ batchMaskFolder <- function(inputFolder, exportFolder){
   # Mask files that are not part of the largest extent
   for(i in 1:length(listFiles_data)){
     tempmask <- extend(listFiles_data[[i]],listFiles_raster)
-    writePermData(tempmask,FFP(paste0(exportFolder)),paste0("masked_",names(tempmask)), 'raster')
+    writePermData(tempmask,paste0(exportFolder),paste0("masked_",names(tempmask)), 'raster')
   }
 
   print(paste0("Masked ", length(listFiles_data)," files."))
@@ -432,7 +439,7 @@ batchCropRaster <- function(inputFolder,inputExtent){
         # Load the shapefile
         inputExtentsf <- loadShapefile(inputExtent)
         lengthinputExtentsf <- length(inputExtentsf)
-        # Run function for total number of crops
+        # Run function for total number of ID's in shapefile
         for(j in 1:lengthinputExtentsf){
           # Crop tempFile
           tempcrop <- crop(tempFile,inputExtentsf[j,])
@@ -464,7 +471,7 @@ batchCropRaster <- function(inputFolder,inputExtent){
         # Load the shapefile
         inputExtentsf <- inputExtent
         lengthinputExtentsf <- length(inputExtentsf)
-        # Run function for total number of crops
+        # Run function for total number of ID's in shapefile
         for(j in 1:lengthinputExtentsf){
           # Crop tempFile
           tempcrop <- crop(tempFile,inputExtentsf[j,])
@@ -566,16 +573,17 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
   } else {
     numTempFiles <- length(list.files(FFP(paste0("/data/temp/")))) + 1
   }
+
   # 2. Align and crop raster files for further processing
   # Mask files so they are all the same extent
   if(typeof(shapefileAOI) != "S4"){
-    batchMaskRaster(append(requiredDataArray,sfname[1]),rasterStackFolder,FFP("/data/temp/input_data/"))
+    batchMaskRaster(append(requiredDataArray,sfname[1]),rasterStackFolder,FFP(paste0("/data/temp/input_data/")))
   } else {
-    batchMaskRaster(requiredDataArray,rasterStackFolder,FFP("/data/temp/input_data/"))
+    batchMaskRaster(requiredDataArray,rasterStackFolder,FFP(paste0("/data/temp/input_data/")))
   }
 
   # Crop files into tiles for quicker processing
-  batchCropRaster(FFP(paste0("/data/temp/input_data/")),shapefileAOI)
+  batchCropRaster(FFP(paste0("/data/temp/input_data")),shapefileAOI)
 
   # 3. Stack required files based on required data array and export the table
   # Get files in temp folder
@@ -717,7 +725,7 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
           if(!file.exists(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))){
             fileLocation <- FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt"))
             file.create(fileLocation)
-            writeLines(paste0(tempListFiles[[j]]),fileLocation)
+            writeLines(FFP(paste0(tempListFiles[[j]])),fileLocation)
           }
           else {
             fileLocation <- file(FFP(paste0("/data/temp/temp_",i,"/",index,"_processOrder_",i,".txt")))

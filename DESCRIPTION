@@ -21,7 +21,7 @@ Description: The suitability rating system is the 6th iteration of the Agricultu
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports:
+Depends:
     dplyr,
     future,
     geojsonsf,
