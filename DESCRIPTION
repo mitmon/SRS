@@ -27,7 +27,6 @@ Imports:
     geojsonsf,
     parallel,
     plyr,
-    raster,
     rgdal,
     sjmisc,
     sf,
@@ -35,5 +34,6 @@ Imports:
     tidyverse
 Depends:
     purrr,
+    raster,
     stringr
 RoxygenNote: 7.2.0

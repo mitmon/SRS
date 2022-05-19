@@ -43,7 +43,7 @@ deleteFolder <- function(inputFile){
 #' @return Raster
 #' @export
 loadRaster <- function(inputRaster){
-  return(stack(inputRaster))
+  return(raster::stack(inputRaster))
 }
 
 #' Shapefile (Vector file)
