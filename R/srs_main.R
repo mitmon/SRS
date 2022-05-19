@@ -182,28 +182,28 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
         if(str_contains(tempOrder[j], c("egdd","chu"),logic = "or")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("climateDF_1"),temp)
           count <- count + 1
         } else if(str_contains(tempOrder[j], c("ppe_spr","ppeSpr"),logic = "or")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("climateDF_2"),temp)
           count <- count + 1
         } else if(str_contains(tempOrder[j], c("ppe_fall","ppeFall"),logic = "or")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("climateDF_3"),temp)
           count <- count + 1
         } else if(str_contains(tempOrder[j],  c("ppe_grow","ppeGrow"),logic = "or")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("climateDF_4"),temp)
           count <- count + 1
@@ -232,9 +232,16 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
                                     get(paste0('climateDF_3'))[3],
                                     cropType),ncol = 1)
 
-    values(baseClimateRaster) <- climateResults
+    baseClimateRaster <- setValues(baseClimateRaster,climateResults)
+    # Legacy code
+    # values(baseClimateRaster) <- climateResults
+
+    print("made it here 1")
+
     writePermData(baseClimateRaster,FFP(paste0('/data/temp/results/')),
                   paste0('climateResults_',i),"GTiff")
+
+    print("made it here 2")
 
     showNotification("Completed climate index calculation")
 
@@ -269,57 +276,57 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
         if(str_contains(tempOrder[j], c("ppe_grow","ppeGrow"),logic = "or")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_1"),temp)
           count <- count + 1
         } else if(str_contains(tempOrder[j], "silt")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_2"),temp)
           temp <- raster(tempDF, layer = (j+1))
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_3"),temp)
           count <- count + 3
         } else if(str_contains(tempOrder[j], "clay")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_4"),temp)
           temp <- raster(tempDF, layer = (j+1))
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_5"),temp)
           count <- count + 3
         } else if(str_contains(tempOrder[j], "organiccarbon")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_6"),temp)
           count <- count + 3
         } else if(str_contains(tempOrder[j], "pH")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_7"),temp)
           temp <- raster(tempDF, layer = (count+1))
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_8"),temp)
           count <- count + 3
         } else if(str_contains(tempOrder[j], "bulk")){
           temp <- raster(tempDF, layer = (count+1))
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("mineralDF_9"),temp)
           count <- count + 3
@@ -350,7 +357,10 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
                                     get(paste0('mineralDF_8'))[3],
                                     NA,
                                     NA),ncol = 1)
-    values(baseMineralRaster) <- mineralResults
+
+    baseMineralRaster <- setValues(baseMineralRaster,mineralResults)
+    # Legacy code
+    # values(baseMineralRaster) <- mineralResults
     writePermData(baseMineralRaster,FFP(paste0('/data/temp/results/')),
                   paste0('mineralResults_',i),"GTiff")
 
@@ -387,38 +397,38 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
         if(str_contains(tempOrder[j], c("egdd","chu"),logic = "or")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("organicDF_1"),temp)
           count <- count + 1
         } else if(str_contains(tempOrder[j], "ppe")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("organicDF_2"),temp)
           count <- count + 1
         } else if(str_contains(tempOrder[j], "bulk")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("organicDF_3"),temp)
           temp <- raster(tempDF, layer = (count+1))
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("organicDF_4"),temp)
           count <- count + 3
         } else if(str_contains(tempOrder[j], "pH")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("organicDF_5"),temp)
           temp <- raster(tempDF, layer = (count+1))
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("organicDF_6"),temp)
           count <- count + 3
@@ -440,7 +450,9 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
                                     NA,
                                     get(paste0('organicDF_6'))[3],
                                     NA),ncol = 1)
-    values(baseOrganicRaster) <- organicResults
+    baseOrganicRaster <- setValues(baseOrganicRaster,organicResults)
+    # Legacy code
+    # values(baseOrganicRaster) <- organicResults
     writePermData(baseOrganicRaster,FFP(paste0('/data/temp/results/')),
                   paste0('organicResults_',i),"GTiff")
 
@@ -477,14 +489,14 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
         if(str_contains(tempOrder[j], "slopePercent")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("landscapeDF_1"),temp)
           count <- count + 1
         } else if(str_contains(tempOrder[j], "slopeLength") || str_contains(tempOrder[j], "lFactor")){
           temp <- raster(tempDF, layer = count)
           # temp <- rasterToPoints(temp, xy = TRUE)
-          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), values(temp))
+          temp <- cbind(xyFromCell(temp, 1:ncell(temp)), getValues(temp))
           temp <- as.data.frame(temp, xy = TRUE, rm.na = FALSE)
           assign(paste0("landscapeDF_2"),temp)
           count <- count + 1
@@ -502,13 +514,16 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
                                       NA,
                                       NA,
                                       NA),ncol = 1)
-    values(baseLandscapeRaster) <- landscapeResults
+    baseLandscapeRaster <- setValues(baseLandscapeRaster,landscapeResults)
+    # values(baseLandscapeRaster) <- landscapeResults
     writePermData(baseLandscapeRaster,FFP(paste0('/data/temp/results/')),
                   paste0('landscapeResults_',i),"GTiff")
 
     showNotification("Completed landscape index calculation")
   }}
   # 3. Final rating
+
+  print("made it here 3")
 
   # Check to make sure folder exists.
   if(!file.exists(FFP(paste0("/data/temp/results/")))){
@@ -589,7 +604,9 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
                           temp2,
                           temp3,
                           temp4)
-    values(baseRaster) <- tempResults
+    baseRaster <- setValues(baseRaster,tempResults)
+    # Legacy code
+    # values(baseRaster) <- tempResults
 
     # Update progress bar
     updateProgressBar(

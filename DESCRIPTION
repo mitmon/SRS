@@ -21,19 +21,19 @@ Description: The suitability rating system is the 6th iteration of the Agricultu
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports:
+Depends:
     dplyr,
     future,
     geojsonsf,
     parallel,
     plyr,
+    purrr,
+    raster,
     rgdal,
     sjmisc,
     sf,
     sp,
+    stringr,
+    terra,
     tidyverse
-Depends:
-    purrr,
-    raster,
-    stringr
 RoxygenNote: 7.2.0

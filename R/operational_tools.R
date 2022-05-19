@@ -43,7 +43,7 @@ deleteFolder <- function(inputFile){
 #' @return Raster
 #' @export
 loadRaster <- function(inputRaster){
-  return(raster::stack(inputRaster))
+  return(stack(inputRaster))
 }
 
 #' Shapefile (Vector file)
@@ -180,7 +180,7 @@ surfaceAndSubsurface <- function(divideDepth,inputRaster){
     }
   }
 
-  inputRaster <- cbind(xyFromCell(inputRaster, 1:ncell(inputRaster)), values(inputRaster))
+  inputRaster <- cbind(xyFromCell(inputRaster, 1:ncell(inputRaster)), getValues(inputRaster))
   inputRaster <- as.data.frame(inputRaster, xy = TRUE, na.rm = FALSE,optional=TRUE)
 
   inputRaster$surface <- rowMeans(inputRaster[,c(3:divide)])
@@ -190,7 +190,8 @@ surfaceAndSubsurface <- function(divideDepth,inputRaster){
   tempstack <- stack()
 
   for(i in (ncol(inputRaster)-2):ncol(inputRaster)){
-    values(baseRaster) <- inputRaster[,i]
+    baseRaster <- setValues(baseRaster,inputRaster[,i])
+    # values(baseRaster) <- inputRaster[,i]
     tempstack <- stack(tempstack,baseRaster)
   }
 
@@ -285,7 +286,7 @@ batchMaskRaster <- function(requiredDataArray, inputFolder, exportFolder){
 
   # Create a raster with the coordinate for the largest extent
   listFiles_raster <- raster()
-  values(listFiles_raster) <- 0
+  listFiles_raster <- setValues(listFiles_raster,0)
   extent(listFiles_raster) <- c(xMin,xMax,yMin,yMax)
   projection(listFiles_raster) <- CRS("+proj=longlat +datum=WGS84")
 
@@ -387,7 +388,7 @@ batchMaskFolder <- function(inputFolder, exportFolder){
 
   # Create a raster with the coordinate for the largest extent
   listFiles_raster <- raster()
-  values(listFiles_raster) <- 0
+  listFiles_raster <- setValues(listFiles_raster, 0)
   extent(listFiles_raster) <- c(xMin,xMax,yMin,yMax)
   projection(listFiles_raster) <- CRS("+proj=longlat +datum=WGS84")
 
