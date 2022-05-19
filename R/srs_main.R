@@ -22,7 +22,6 @@
 srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCalc,saveLocation){
 
   # setwd("../SRS/")
-  print(getwd())
 
   # 1. Data prep tools
   print("Starting data prep tools...")
@@ -164,7 +163,8 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
     totalFiles <- 0
   for(i in 1:length(totalFilestemp)){
-    if(str_contains(totalFilestemp[i],c("climate",".tif"),logic = "and")){
+    if(str_contains(totalFilestemp[i],c("climate",".tif"),logic = "and") &&
+       !str_contains(totalFilestemp[i],c("aux","xml"),logic = "or")){
       totalFiles <- totalFiles + 1
     }
   }
@@ -258,7 +258,8 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
   totalFiles <- 0
   for(i in 1:length(totalFilestemp)){
-    if(str_contains(totalFilestemp[i],"mineral") && str_contains(totalFilestemp[i],".tif")){
+    if(str_contains(totalFilestemp[i],c("mineral",".tif"),logic = "and") &&
+       !str_contains(totalFilestemp[i],c("aux","xml"),logic = "or")){
       totalFiles <- totalFiles + 1
     }
   }
@@ -379,7 +380,8 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
   totalFiles <- 0
   for(i in 1:length(totalFilestemp)){
-    if(str_contains(totalFilestemp[i],"organic") && str_contains(totalFilestemp[i],".tif")){
+    if(str_contains(totalFilestemp[i],c("organic",".tif"),logic = "and") &&
+       !str_contains(totalFilestemp[i],c("aux","xml"),logic = "or")){
       totalFiles <- totalFiles + 1
     }
   }
@@ -471,7 +473,8 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
   totalFiles <- 0
   for(i in 1:length(totalFilestemp)){
-    if(str_contains(totalFilestemp[i],"landscape") && str_contains(totalFilestemp[i],".tif")){
+    if(str_contains(totalFilestemp[i],c("landscape",".tif"),logic = "and") &&
+       !str_contains(totalFilestemp[i],c("aux","xml"),logic = "or")){
       totalFiles <- totalFiles + 1
     }
   }
@@ -519,8 +522,6 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     showNotification("Completed landscape index calculation")
   }}
   # 3. Final rating
-
-  print("made it here 3")
 
   # Check to make sure folder exists.
   if(!file.exists(FFP(paste0("/data/temp/results/")))){
