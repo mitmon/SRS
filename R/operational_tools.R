@@ -68,6 +68,8 @@ loadShapefile <-function(shapefile){
 #' @export
 writePermData <- function(inputData, exportLocation, exportName, exportType){
 
+  print("here 9")
+
   if(!file.exists(exportLocation)){
     dir.create(exportLocation)
   }

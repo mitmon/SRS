@@ -22,6 +22,7 @@
 srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCalc,saveLocation){
 
   # setwd("../SRS/")
+  print(getwd())
 
   # 1. Data prep tools
   print("Starting data prep tools...")
@@ -163,7 +164,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
     totalFiles <- 0
   for(i in 1:length(totalFilestemp)){
-    if(str_contains(totalFilestemp[i],"climate") && str_contains(totalFilestemp[i],".tif")){
+    if(str_contains(totalFilestemp[i],c("climate",".tif"),logic = "and")){
       totalFiles <- totalFiles + 1
     }
   }
@@ -236,12 +237,8 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     # Legacy code
     # values(baseClimateRaster) <- climateResults
 
-    print("made it here 1")
-
     writePermData(baseClimateRaster,FFP(paste0('/data/temp/results/')),
                   paste0('climateResults_',i),"GTiff")
-
-    print("made it here 2")
 
     showNotification("Completed climate index calculation")
 
