@@ -20,9 +20,6 @@ climateModifyingFactors(
 
 \item{ppeFall}{Precipitation minus potential evapotranspiration for fall}
 }
-\value{
-
-}
 \description{
 The climate modifying factors is a designed to return the percentage deduction
 for early spring moisture, excess fall moisture, and early fall frost. Max

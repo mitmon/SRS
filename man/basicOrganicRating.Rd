@@ -13,9 +13,6 @@ basicOrganicRating(subsurfaceBD, subsurfacepH, subsurfaceSalinity)
 
 \item{subsurfaceSalinity}{The subsurface salinity measured in saturated paste (dS/m). Default is at 60cm depth.}
 }
-\value{
-
-}
 \description{
 The basic organic rating (subsurface factors) are considered as modifiers
 of the surface (base) rating. As such, the basic organic rating is a percentage

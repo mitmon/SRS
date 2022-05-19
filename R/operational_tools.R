@@ -42,7 +42,7 @@ deleteFolder <- function(inputFile){
 #' @param inputRaster Location of input raster file
 #' @return Raster
 #' @export
-loadRaster <-function(inputRaster){
+loadRaster <- function(inputRaster){
   return(stack(inputRaster))
 }
 
@@ -561,10 +561,15 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
       stop("Error loading shapefile. Please enter a valid .shp file.")
     }
   }}
+
   # Get only required .tif files
   listFiles <- listFiles[listFiles %in% requiredDataArray]
+
   # Load the rasters
   listFiles_data <- lapply(listFiles, function(x) loadRaster(paste0(rasterStackFolder,x)))
+  # listFiles_data <- stack(paste0(rasterStackFolder,listFiles[1]))
+
+  print("here02")
 
   # Get number of files in temp folder. This is used to better sort and process
   # recursive stack production.

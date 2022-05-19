@@ -27,12 +27,13 @@ Imports:
     geojsonsf,
     parallel,
     plyr,
-    purrr,
     raster,
     rgdal,
     sjmisc,
     sf,
     sp,
-    stringr,
     tidyverse
-RoxygenNote: 7.1.2
+Depends:
+    purrr,
+    stringr
+RoxygenNote: 7.2.0

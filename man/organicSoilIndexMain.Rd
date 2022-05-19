@@ -35,9 +35,6 @@ organicSoilIndexMain(
 
 \item{subsurfaceSalinity}{The subsurface salinity measured in saturated paste (dS/m). Default is at 60cm depth.}
 }
-\value{
-
-}
 \description{
 The organic soil index main calls all required function and produces the rating
 for organic soil over the study site.

@@ -59,9 +59,6 @@ mineralSoilIndexMain(
 
 \item{subsurfaceSodicity}{Subsurface sodicity (depths 60-200cm)}
 }
-\value{
-
-}
 \description{
 The mineral soil index main calls all required function and produces the rating
 for mineral soil over the study site.

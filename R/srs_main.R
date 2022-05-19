@@ -92,6 +92,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
         value = 5
       )
   }
+
   # Prepare mineral soil data for the mineral soil index
   if("mineral" %in% indicesCalc){
     # Update user. Show notification.
