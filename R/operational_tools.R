@@ -569,8 +569,6 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
   listFiles_data <- lapply(listFiles, function(x) loadRaster(paste0(rasterStackFolder,x)))
   # listFiles_data <- stack(paste0(rasterStackFolder,listFiles[1]))
 
-  print("here02")
-
   # Get number of files in temp folder. This is used to better sort and process
   # recursive stack production.
   if(is_empty(FFP(paste0("/data/temp/")))){
