@@ -691,7 +691,7 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
             } else {
               tempRasterStack <- stack(tempRasterStack,loadRaster(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j]))))
             }
-          } else if (str_contains(tempListFiles[j], '.grd') && (str_contains(tempListFiles[j], 'DEM'))){
+          } else if (str_contains(tempListFiles[j], '.grd') && (str_contains(tempListFiles[j], c('DEM','elevation'),logic = "or"))){
             if(j == 1){
               lsFunction(FFP(paste0("/data/temp/temp_",i,"/",tempListFiles[j])),i)
               tempRasterStack <-  loadRaster(FFP(paste0("/data/temp/temp_",i,"/slope_",i)))
@@ -707,7 +707,7 @@ dataPrep <- function(index,requiredDataArray, rasterStackFolder, shapefileAOI){
         else {
           if(index == "landscape" && str_contains(tempListFiles[j], '.grd')
                                   && str_contains(tempListFiles[j], '.gri')
-                                  && (str_contains(tempListFiles[j], 'DEM'))){
+                                  && (str_contains(tempListFiles[j], c('DEM','elevation'),logic = "or"))){
             pass()
           }
           else if(j == 1){

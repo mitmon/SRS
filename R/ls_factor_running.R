@@ -755,7 +755,7 @@ lsFactorFunction <- function(DEM,counter){
   writeTempData(lFactorArray,paste0("temp_",counter),paste0('lFactor_',counter),'raster')
   listFilesTemp <- list.files(FFP(paste0('/data/temp/temp_',counter,"/")))
   for(tempcounter in 1:length(listFilesTemp)){
-    if(str_contains(listFilesTemp[tempcounter],"DEM")){
+    if(str_contains(listFilesTemp[tempcounter],c("DEM","elevation"),logic = "or")){
       file.remove(FFP(paste0('/data/temp/temp_',counter,"/",listFilesTemp[tempcounter])))
     }
   }

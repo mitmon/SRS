@@ -63,7 +63,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
         mineralList <- append(mineralList,inputDataList[i])}
       if(str_contains(inputDataList[i],c("egdd","ppe_grow","ppeGrow","pH","bulk"),logic = "or")){
         organicList <- append(organicList,inputDataList[i])}
-      if(str_contains(inputDataList[i],c("DEM","slopePercent","slopeLength","lFactor"),logic = "or")){
+      if(str_contains(inputDataList[i],c("DEM","elevation","slopePercent","slopeLength","lFactor"),logic = "or")){
         landscapeList <- append(landscapeList,inputDataList[i])}
     } else if(cropType == "CHU"){
       if(str_contains(inputDataList[i],c("ppe_spr","ppe_fall","ppe_grow","ppeSpr","ppeFall","ppeGrow","chu"),logic = "or")){
@@ -72,28 +72,63 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
         mineralList <- append(mineralList,inputDataList[i])}
       if(str_contains(inputDataList[i],c("chu","ppe_grow","ppeGrow","pH","bulk"),logic = "or")){
         organicList <- append(organicList,inputDataList[i])}
-      if(str_contains(inputDataList[i],c("DEM","slopePercent","slopeLength","lFactor"),logic = "or")){
+      if(str_contains(inputDataList[i],c("DEM","elevation","slopePercent","slopeLength","lFactor"),logic = "or")){
         landscapeList <- append(landscapeList,inputDataList[i])}
     }
   }
 
   # Prepare climate data for the climate index
   if("climate" %in% indicesCalc){
-  dataPrep("climate",climateList,
+    # Update user. Show notification.
+    showNotification("Starting climate data preprocessing...")
+    # Call the data prep function.
+    dataPrep("climate",climateList,
            rasterStackFolder,shapefileAOI)
+    # Update user. Show notification.
+    showNotification("Completed climate data preprocessing")
+    # Update progress bar
+    updateProgressBar(
+        id = "pb1",
+        value = 5
+      )
   }
   # Prepare mineral soil data for the mineral soil index
   if("mineral" %in% indicesCalc){
-  dataPrep("mineral",mineralList,
+    # Update user. Show notification.
+    showNotification("Starting mineral soil data preprocessing...")
+    # Call the data prep function.
+    dataPrep("mineral",mineralList,
            rasterStackFolder,shapefileAOI)
+    # Update user. Show notification.
+    showNotification("Completed mineral soil data preprocessing")
+    # Update progress bar
+    updateProgressBar(
+      id = "pb1",
+      value = 10
+    )
   }
   # Prepare organic soil data for the organic soil index
   if("organic" %in% indicesCalc){
-  dataPrep("organic",organicList,
-           rasterStackFolder,shapefileAOI)
+    # Update user. Show notification.
+    showNotification("Starting organic soil data preprocessing...")
+    # Call the data prep function.
+    dataPrep("organic",organicList,
+             rasterStackFolder,shapefileAOI)
+    # Update user. Show notification.
+    showNotification("Completed organic soil data preprocessing")
+    # Update progress bar
+    updateProgressBar(
+      id = "pb1",
+      value = 15
+    )
   }
   # Prepare landscape data for the landscape index
   if("landscape" %in% indicesCalc){
+    # Update user. Show notification.
+    showNotification("Starting landscape data preprocessing...")
+
+    # Call the data prep function.
+    # If the user enters DEM files instead of LS use this. Else.
     if(!str_contains(landscapeList,c("slopePercent","slopeLength","lFactor"),logic = "or")){
       dataPrep("landscape",landscapeList,
                rasterStackFolder,shapefileAOI)
@@ -101,16 +136,31 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
       dataPrep("landscape",landscapeList,
                rasterStackFolder, shapefileAOI)
     }
+
+    # Update user. Show notification.
+    showNotification("Completed landscape data preprocessing")
+    # Update progress bar
+    updateProgressBar(
+      id = "pb1",
+      value = 30
+    )
   }
 
   # 2. Indices
   # 2a. Climate index
   if("climate" %in% indicesCalc){
-  print("Starting climate index calculation...")
+    showNotification("Starting climate index calculation...")
+    # print("Starting climate index calculation...")
+
+    updateProgressBar(
+      id = "pb1",
+      value = 35
+    )
+
     # Obtain the total number of temp folder that were made.
     # Use this number for the number of times the system has to process the data
-  totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
-  totalFiles <- 0
+    totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
+    totalFiles <- 0
   for(i in 1:length(totalFilestemp)){
     if(str_contains(totalFilestemp[i],"climate") && str_contains(totalFilestemp[i],".tif")){
       totalFiles <- totalFiles + 1
@@ -184,11 +234,21 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     values(baseClimateRaster) <- climateResults
     writePermData(baseClimateRaster,FFP(paste0('/data/temp/results/')),
                   paste0('climateResults_',i),"GTiff")
+
+    showNotification("Completed climate index calculation")
+
   }}
 
   # 2b. Mineral soil index
   if("mineral" %in% indicesCalc){
-  print("Starting mineral soil index calculation...")
+    showNotification("Starting mineral soil index calculation...")
+  # print("Starting mineral soil index calculation...")
+
+    # Update progress bar
+    updateProgressBar(
+      id = "pb1",
+      value = 50
+    )
 
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
   totalFiles <- 0
@@ -292,11 +352,21 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     values(baseMineralRaster) <- mineralResults
     writePermData(baseMineralRaster,FFP(paste0('/data/temp/results/')),
                   paste0('mineralResults_',i),"GTiff")
+
+    showNotification("Completed mineral soil index calculation")
+
   }}
 
   # 2c. Organic soil index
   if("organic" %in% indicesCalc){
-  print("Starting organic soil calculation...")
+    showNotification("Starting organic soil index calculation...")
+  # print("Starting organic soil calculation...")
+
+    # Update progress bar
+    updateProgressBar(
+      id = "pb1",
+      value = 65
+    )
 
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
   totalFiles <- 0
@@ -372,11 +442,21 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     values(baseOrganicRaster) <- organicResults
     writePermData(baseOrganicRaster,FFP(paste0('/data/temp/results/')),
                   paste0('organicResults_',i),"GTiff")
+
+    showNotification("Completed organic soil index calculation")
+
   }}
 
   # 2d. Landscape index
   if("landscape" %in% indicesCalc){
-  print("Starting landscape index calculation...")
+    showNotification("Starting landscape index calculation...")
+  # print("Starting landscape index calculation...")
+
+    # Update progress bar
+    updateProgressBar(
+      id = "pb1",
+      value = 80
+    )
 
   totalFilestemp <- list.files(FFP(paste0("/data/temp/dataTable/")))
   totalFiles <- 0
@@ -424,6 +504,8 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     values(baseLandscapeRaster) <- landscapeResults
     writePermData(baseLandscapeRaster,FFP(paste0('/data/temp/results/')),
                   paste0('landscapeResults_',i),"GTiff")
+
+    showNotification("Completed landscape index calculation")
   }}
   # 3. Final rating
 
@@ -469,6 +551,12 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
       }
     }
 
+    # Update progress bar
+    updateProgressBar(
+      id = "pb1",
+      value = 90
+    )
+
     # Check to see which files exist and calculate rating for each cell if they do
     if(exists("temp1") && !is.null(temp1)){
       temp1 <- sapply(get('temp1'),ratingTable)
@@ -501,6 +589,13 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
                           temp3,
                           temp4)
     values(baseRaster) <- tempResults
+
+    # Update progress bar
+    updateProgressBar(
+      id = "pb1",
+      value = 95
+    )
+
     writePermData(baseRaster,saveLocation,paste0("FinalResults_",i,"_",cropName,".tif"),"GTiff")
     # writePermData(baseRaster,saveLocation,paste0(saveName,".tif"),"GTiff")
 
@@ -512,6 +607,12 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     deleteFolder(paste0("/data/temp/"))
   }
 
-  print(paste0("Completed ", cropName, " calculation."))
+  # Update progress bar
+  updateProgressBar(
+    id = "pb1",
+    value = 100
+  )
+  showNotification(paste0("Completed ", cropName, " calculation"))
+  # print(paste0("Completed ", cropName, " calculation."))
 
 }
