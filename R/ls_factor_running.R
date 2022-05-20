@@ -19,7 +19,9 @@ lsFactorFunction <- function(DEM,counter){
   rasterlist <- array()
   rasterName <- array()
   baseRaster <- raster(DEM)
-  values(baseRaster) <- NA
+  baseRaster <- setValues(baseRaster,NA)
+  # Legacy code
+  # values(baseRaster) <- NA
   nRows <- nrow(DEM)
   nCols <- ncol(DEM)
   cTotal <- nCols*nRows
@@ -105,7 +107,9 @@ lsFactorFunction <- function(DEM,counter){
 
   # Step: Calc max downhill slope angle
 
-  values(baseRaster) <- array(flowdir, dim = c(nRows, nCols))
+  baseRaster <- setValues(baseRaster,(array(flowdir, dim = c(nRows, nCols))))
+  # Legacy code
+  # values(baseRaster) <- array(flowdir, dim = c(nRows, nCols))
   fDircArray <- baseRaster
   elevArray <- DEM
   maxDHSArray <- as.data.frame(matrix(rep(NA), nrow = nRows, ncol = nCols))
@@ -748,9 +752,10 @@ lsFactorFunction <- function(DEM,counter){
 
   lFactorArray[lFactorArray == Inf] <- NA
 
-  values(baseRaster) <- (lFactorArray)
+  baseRaster <- setValues(baseRaster,lFactorArray)
+  # Legacy code
+  # values(baseRaster) <- lFactorArray
   lFactorArray <- baseRaster
-  # print(lFactorArray)
   print(paste0("Done the lFactor!"))
   writeTempData(lFactorArray,paste0("temp_",counter),paste0('lFactor_',counter),'raster')
   listFilesTemp <- list.files(FFP(paste0('/data/temp/temp_',counter,"/")))
