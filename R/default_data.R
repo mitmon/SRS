@@ -3,7 +3,7 @@
 # This R file contains the default data for data tables along with default inputs.
 
 # Creation date: Mar 01, 2022
-# Last updated: Mar 23, 2022
+# Last updated: Jun 02, 2022
 
 #' Alfalfa default data table
 #'
