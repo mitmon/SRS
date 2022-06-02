@@ -91,6 +91,78 @@ SSSGDefaultDF <- function(){
     list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
 }
 
+#' Peas default data table
+#'
+#' The peas default data table holds pre-defined data if there is no user
+#' input data.
+#' @return peas default data
+#' @export
+peasDefaultDF <- function(){
+  return(rbind(
+    list(list(-100,0,0),list(-200,-100,20),list(-300,-200,40),list(-450,-300,70),list(-600,-450,100),list(NA),list(NA)), # Moisture deduction
+    list(list(2700,7000,0),list(2300,2700,40),list(2000,2300,55),list(1700,2000,70),list(1200,1700,80),list(0,1200,90),list(NA)), # Crop heat units
+    list(list(-50,-40,0),list(-40,-10,2.5),list(-10,10,5),list(10,30,7.5),list(30,50,10),list(NA),list(NA)), # Excess spring moisture
+    list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
+}
+
+#' Lentils default data table
+#'
+#' The Lentils default data table holds pre-defined data if there is no user
+#' input data.
+#' @return Lentils default data
+#' @export
+lentilsDefaultDF <- function(){
+  return(rbind(
+    list(list(-100,0,0),list(-200,-100,20),list(-300,-200,40),list(-450,-300,70),list(-600,-450,100),list(NA),list(NA)), # Moisture deduction
+    list(list(2700,7000,0),list(2300,2700,40),list(2000,2300,55),list(1700,2000,70),list(1200,1700,80),list(0,1200,90),list(NA)), # Crop heat units
+    list(list(-50,-40,0),list(-40,-10,2.5),list(-10,10,5),list(10,30,7.5),list(30,50,10),list(NA),list(NA)), # Excess spring moisture
+    list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
+}
+
+#' Dry beans default data table
+#'
+#' The dry beans default data table holds pre-defined data if there is no user
+#' input data.
+#' @return dry beans default data
+#' @export
+drybeansDefaultDF <- function(){
+  return(rbind(
+    list(list(-100,0,0),list(-200,-100,20),list(-300,-200,40),list(-450,-300,70),list(-600,-450,100),list(NA),list(NA)), # Moisture deduction
+    list(list(2700,7000,0),list(2300,2700,40),list(2000,2300,55),list(1700,2000,70),list(1200,1700,80),list(0,1200,90),list(NA)), # Crop heat units
+    list(list(-50,-40,0),list(-40,-10,2.5),list(-10,10,5),list(10,30,7.5),list(30,50,10),list(NA),list(NA)), # Excess spring moisture
+    list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
+}
+
+#' Faba beans default data table
+#'
+#' The faba beans default data table holds pre-defined data if there is no user
+#' input data.
+#' @return faba beans default data
+#' @export
+fababeansDefaultDF <- function(){
+  return(rbind(
+    list(list(-100,0,0),list(-200,-100,20),list(-300,-200,40),list(-450,-300,70),list(-600,-450,100),list(NA),list(NA)), # Moisture deduction
+    list(list(2700,7000,0),list(2300,2700,40),list(2000,2300,55),list(1700,2000,70),list(1200,1700,80),list(0,1200,90),list(NA)), # Crop heat units
+    list(list(-50,-40,0),list(-40,-10,2.5),list(-10,10,5),list(10,30,7.5),list(30,50,10),list(NA),list(NA)), # Excess spring moisture
+    list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
+}
+
+#' Chickpeas default data table
+#'
+#' The chickpeas default data table holds pre-defined data if there is no user
+#' input data.
+#' @return chickpeas default data
+#' @export
+chickpeasDefaultDF <- function(){
+  return(rbind(
+    list(list(-100,0,0),list(-200,-100,20),list(-300,-200,40),list(-450,-300,70),list(-600,-450,100),list(NA),list(NA)), # Moisture deduction
+    list(list(2700,7000,0),list(2300,2700,40),list(2000,2300,55),list(1700,2000,70),list(1200,1700,80),list(0,1200,90),list(NA)), # Crop heat units
+    list(list(-50,-40,0),list(-40,-10,2.5),list(-10,10,5),list(10,30,7.5),list(30,50,10),list(NA),list(NA)), # Excess spring moisture
+    list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
+}
+
+
+
 #' Surface available water holding capacity data table
 #'
 #' The available water holding capacity (texture) aids in the determination of

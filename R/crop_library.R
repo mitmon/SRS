@@ -243,12 +243,5 @@ numberCutsComponent <- function(inputArray,egdd){
 }
 
 ################################################################################
-# Future updates.
-#' User defined crop input
-#'
-#' The user can define their own crop parameters. This function inputs the user
-#' data from the server or from a CSV template file.
-#' @param inputData
-#' @return
-#' @export
+
 
