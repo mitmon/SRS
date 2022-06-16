@@ -4,12 +4,12 @@
 \alias{climateRating}
 \title{Climate rating}
 \usage{
-climateRating(basicClimate, modifiers)
+climateRating(moistureFactor, temperatureFactor, modifiers)
 }
 \arguments{
-\item{basicClimate}{Basic climate rating calculated}
-
 \item{modifiers}{Modifying factors.}
+
+\item{basicClimate}{Basic climate rating calculated}
 }
 \value{
 The climate rating.

@@ -100,7 +100,7 @@ SSSGDefaultDF <- function(){
 peasDefaultDF <- function(){
   return(rbind(
     list(list(-100,0,0),list(-200,-100,20),list(-300,-200,40),list(-450,-300,70),list(-600,-450,100),list(NA),list(NA)), # Moisture deduction
-    list(list(2700,7000,0),list(2300,2700,40),list(2000,2300,55),list(1700,2000,70),list(1200,1700,80),list(0,1200,90),list(NA)), # Crop heat units
+    list(list(1527,7000,0),list(1368,1527,20),list(1209,1368,40),list(1050,1209,55),list(891,1050,70),list(732,891,80),list(0,732,90)), # Crop heat units
     list(list(-50,-40,0),list(-40,-10,2.5),list(-10,10,5),list(10,30,7.5),list(30,50,10),list(NA),list(NA)), # Excess spring moisture
     list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
 }
@@ -114,7 +114,7 @@ peasDefaultDF <- function(){
 lentilsDefaultDF <- function(){
   return(rbind(
     list(list(-100,0,0),list(-200,-100,20),list(-300,-200,40),list(-450,-300,70),list(-600,-450,100),list(NA),list(NA)), # Moisture deduction
-    list(list(2700,7000,0),list(2300,2700,40),list(2000,2300,55),list(1700,2000,70),list(1200,1700,80),list(0,1200,90),list(NA)), # Crop heat units
+    list(list(1740,7000,0),list(1604,1740,20),list(1468,1604,40),list(1332,1468,55),list(1196,1332,70),list(1060,1196,80),list(0,1060,90)), # Crop heat units
     list(list(-50,-40,0),list(-40,-10,2.5),list(-10,10,5),list(10,30,7.5),list(30,50,10),list(NA),list(NA)), # Excess spring moisture
     list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
 }
@@ -128,7 +128,7 @@ lentilsDefaultDF <- function(){
 drybeansDefaultDF <- function(){
   return(rbind(
     list(list(-100,0,0),list(-200,-100,20),list(-300,-200,40),list(-450,-300,70),list(-600,-450,100),list(NA),list(NA)), # Moisture deduction
-    list(list(2700,7000,0),list(2300,2700,40),list(2000,2300,55),list(1700,2000,70),list(1200,1700,80),list(0,1200,90),list(NA)), # Crop heat units
+    list(list(1100,7000,0),list(900,1100,20),list(700,900,40),list(500,700,55),list(300,500,70),list(NA),list(NA)), # Crop heat units
     list(list(-50,-40,0),list(-40,-10,2.5),list(-10,10,5),list(10,30,7.5),list(30,50,10),list(NA),list(NA)), # Excess spring moisture
     list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
 }
@@ -156,7 +156,7 @@ fababeansDefaultDF <- function(){
 chickpeasDefaultDF <- function(){
   return(rbind(
     list(list(-100,0,0),list(-200,-100,20),list(-300,-200,40),list(-450,-300,70),list(-600,-450,100),list(NA),list(NA)), # Moisture deduction
-    list(list(2700,7000,0),list(2300,2700,40),list(2000,2300,55),list(1700,2000,70),list(1200,1700,80),list(0,1200,90),list(NA)), # Crop heat units
+    list(list(1679,7000,0),list(1555,1679,20),list(1431,1555,40),list(1307,1431,55),list(1183,1307,70),list(1059,1183,80),list(0,1059,90)), # Crop heat units
     list(list(-50,-40,0),list(-40,-10,2.5),list(-10,10,5),list(10,30,7.5),list(30,50,10),list(NA),list(NA)), # Excess spring moisture
     list(list(0,20,2),list(20,40,4),list(40,60,6),list(60,80,8),list(80,100,10),list(NA),list(NA)))) # Early fall moisture
 }

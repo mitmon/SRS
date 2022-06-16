@@ -24,10 +24,17 @@
 #' @export
 climateIndexMain <- function(ratingTableArrayMC,ratingTableArrayTF,ratingTableArrayESM,ratingTableArrayEFM, ppe, temperatureFactor, ppeSpring, ppeFall, type){
 
+  # oneA <- mapply(moistureFactorRating,ratingTableArrayMC,ppe)
+  # oneb <- mapply(temperatureFactorRating,ratingTableArrayTF,ppe,temperatureFactor,type)
+  # two <- mapply(climateModifyingFactors,ratingTableArrayESM,ratingTableArrayEFM, ppeSpring, ppeFall)
+  # results <- mapply(climateRating, oneA, oneB, two)
+  # return(results)
+
   one <- mapply(basicClimateRating,ratingTableArrayMC,ratingTableArrayTF,ppe,temperatureFactor,type)
   two <- mapply(climateModifyingFactors,ratingTableArrayESM,ratingTableArrayEFM, ppeSpring, ppeFall)
   results <- mapply(climateRating, one, two)
   return(results)
+
 
 }
 
@@ -59,9 +66,49 @@ basicClimateRating <- function(ratingTableArrayMC,ratingTableArrayTF,ppe,tempera
          crop heat units. Please specify EGDD or CHU")
   }
 
-  return(min(moistureFactor,temperatureFactor))
+  return((100 - min(moistureFactor,temperatureFactor)))
 
 }
+
+#' Moisture factor rating
+#'
+#' @param ratingTableArrayMC Rating table lower and upper bounds for deduction for the moisture component.
+#' @param ppe Precipitation minus potential evapotranspiration
+#' @return Deduction points for the basic climate rating.
+#' @export
+moistureFactorRating <- function(ratingTableArrayMC,ppe){
+
+  moistureFactor <- moistureComponent(ratingTableArrayMC, ppe)
+
+  return(moistureFactor)
+
+}
+
+#' Temperature Factor rating
+#'
+#' @param ratingTableArrayTF Rating table lower and upper bounds for deduction for temperature factors.
+#' @param temperatureFactor Input effective growing degree days or crop heat units for
+#' the study site.
+#' @param type If the crop uses effective growing degree days (EGDD) use EGDD else
+#' if the crop uses crop heat units (CHU) use CHU.
+#' @return Deduction points for the basic climate rating.
+#' @export
+temperatureFactorRating <- function(ratingTableArrayTF,temperatureFactor,type){
+
+  # Need to determine if it's EGDD or CHU
+  if(type == "EGDD"){
+    temperatureFactor <- egddComponent(ratingTableArrayTF, temperatureFactor)
+  } else if(type == "CHU"){
+    temperatureFactor <- chuComponent(ratingTableArrayTF,temperatureFactor)
+  } else {
+    stop("Error determining if the crop uses effective growing degree days or
+         crop heat units. Please specify EGDD or CHU")
+  }
+
+  return(temperatureFactor)
+
+}
+
 
 #' Climate modifying factors
 #'
@@ -97,20 +144,29 @@ climateModifyingFactors <- function(ratingTableArrayESM,ratingTableArrayEFM, ppe
 #' @param modifiers Modifying factors.
 #' @return The climate rating.
 #' @export
-climateRating <- function(basicClimate,modifiers){
+climateRating <- function(climateFactor, modifiers){
 
   # Basic climate rating is lower of moisture component and temperature factor.
   # The basicClimateRating function returns the minimum of the two so no further
   # calculations are required.
-  a <- basicClimate
+  a <- climateFactor
   # Modifiers is the percentage deduction for spring moisture, fall moisture and fall frost.
   # Each individual modifier should not exceed 10% deduction. The
   # climateModifyingFactors returns the sum of the modifiers. Divide by 100 to get %.
   b <- a * (modifiers / 100)
   # Climate rating
   rating <- (a - b)
-  rating[rating < 0] <- 0
-  rating[rating > 100] <- 100
+  ## Dev tools ##
+
+  # rating <- ratingTable(rating) * 100
+  # a <- ratingTable(a) * 10
+  # b <- ratingTable(b) * 1
+  # rating <- rating + a + b
+
+  ##
+  # rating[rating < 0] <- 0
+  # rating[rating > 100] <- 100
+
   return(rating)
 
 }

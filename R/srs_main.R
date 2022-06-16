@@ -45,11 +45,11 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
 
   inputDataList <- list.files(rasterStackFolder)
 
-  if(str_contains(cropType,c("alfalfa","canola","sssg"),logic = "or")){
+  if(str_contains(cropType,c("alfalfa","canola","sssg","peas","lentils","dry beans","faba beans","chickpeas"),logic = "or")){
     cropName <- cropType
     cropType <- "EGDD"
     inputDataList <- purrr::discard(inputDataList,.p = ~str_detect(.x,"chu"))
-  } else if(str_contains(cropType,c("corn","potato","soybean","peas","lentils","dry beans","faba beans","chickpeas"),logic = "or")){
+  } else if(str_contains(cropType,c("corn","potato","soybean"),logic = "or")){
     cropName <- cropType
     cropType <- "CHU"
     inputDataList <- discard(inputDataList,.p = ~str_detect(.x,"egdd"))
@@ -236,6 +236,9 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
     baseClimateRaster <- setValues(baseClimateRaster,climateResults)
     # Legacy code
     # values(baseClimateRaster) <- climateResults
+
+    # writePermData(baseClimateRaster,('/Users/mitmon/Library/Mobile Documents/com~apple~CloudDocs/Desktop - iCloud/AAFC/SRS_V6_3/SRS_V6_Shiny_App/'),
+    #               paste0('climateInter_',i),"GTiff")
 
     writePermData(baseClimateRaster,FFP(paste0('/data/temp/results/')),
                   paste0('climateResults_',i),"GTiff")
