@@ -615,7 +615,7 @@ srsMain <- function(cropType,cropArrays,rasterStackFolder,shapefileAOI,indicesCa
       value = 95
     )
 
-    writePermData(baseRaster,saveLocation,paste0("FinalResults_",i,"_",cropName,".tif"),"GTiff")
+    writePermData(baseRaster,saveLocation,paste0("FinalResults_",cropName,"_",i,"_",".tif"),"GTiff")
     # writePermData(baseRaster,saveLocation,paste0(saveName,".tif"),"GTiff")
 
     # return(baseRaster)
