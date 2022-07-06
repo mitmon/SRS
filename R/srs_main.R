@@ -4,7 +4,7 @@
 # Agri-Foods Canada's suitability rating system.
 
 # Creation date: Mar 06, 2022
-# Last updated: Mar 14, 2022
+# Last updated: Jul 06, 2022
 
 #' SRS Main Function
 #'
